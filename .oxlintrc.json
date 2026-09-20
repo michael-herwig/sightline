@@ -18,14 +18,6 @@
       "rules": {
         "typescript/no-explicit-any": "off"
       }
-    },
-    {
-      "files": ["src/planer/app.ts"],
-      "rules": {
-        "no-unused-vars": "off",
-        "no-unused-expressions": "off",
-        "unicorn/no-useless-fallback-in-spread": "off"
-      }
     }
   ]
 }
