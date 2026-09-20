@@ -16,9 +16,10 @@ export const jbPoe = (it: Item): number =>
   jbGear(it).reduce((a, g) => a + (JUNCTIONS[g.model].poe || 0) * g.n, 0);
 
 // Outputs of a device. A PoE injector has two jacks, but one of them is the
-// input: `poePorts` counts what actually goes onward. For a switch that's the
-// port count itself, which is why the field only appears on the injector.
-const gearPorts = (m: Junction): number => (m.poePorts != null ? m.poePorts : m.ports || 0);
+// input: `poePorts` counts what actually goes onward. Everywhere else the field
+// is 0 — "no PoE output", which says nothing about how many ports there are, so
+// a switch keeps counting its own `ports`.
+const gearPorts = (m: Junction): number => m.poePorts || m.ports || 0;
 
 // A media converter ahead of a switch adds no extra output — its
 // one port feeds the switch internally. So switches count, otherwise converters do.

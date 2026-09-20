@@ -147,8 +147,12 @@ describe("sectionOffsets", () => {
     expect(SECTION_STEP).toBe(220);
   });
 
-  it("the middle one is set before the clearance check and stays put", () => {
-    // Known behaviour: only the comb around the middle runs through fits().
-    expect(sectionOffsets(NO_CONDUIT, [P(0, 0), P(500, 0, "j1"), P(1000, 0)], 1)).toContain(500);
+  it("drops the middle one too when a marker or an end is too close", () => {
+    // A bound vertex right at the middle: the marker sits there, so nothing does.
+    const out = sectionOffsets(NO_CONDUIT, [P(0, 0), P(500, 0, "j1"), P(1000, 0)], 1);
+    expect(out).not.toContain(500);
+    expect(out).toEqual([60, 280, 720, 940]);
+    // Long enough to pass the length guard, too short to clear both ends.
+    expect(sectionOffsets(NO_CONDUIT, line(70), 1)).toEqual([]);
   });
 });

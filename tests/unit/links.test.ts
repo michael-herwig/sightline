@@ -141,7 +141,7 @@ describe("Topology (linkPlan)", () => {
   it("hub: router, ports, PoE budget and SFP balance", () => {
     expect(st("H1")).toMatchObject({ g: "warn", key: "link.hub.ok", vars: { n: 0 } });
     expect(st("H1").more).toEqual([{ key: "link.sfpcount", vars: { n: 5, ports: 1 } }]);
-    expect(gear("H1")).toMatchObject({ watts: 15.4, used: 1, poe: 30, ports: 4 });
+    expect(gear("H1")).toMatchObject({ watts: 15.4, used: 1, poe: 30, ports: 5 });
     expect(st("KH")).toMatchObject({ g: "ok", key: "link.ok", vars: { src: "H1" } });
   });
 

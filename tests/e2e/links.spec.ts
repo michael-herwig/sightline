@@ -170,7 +170,7 @@ test.describe("Topology", () => {
     await expect(page.locator("#f-gears .cabrow")).toHaveCount(0);
     await expect(linkText(page)).toContainText("UniFi Cloud Gateway Fiber");
     await expect(linkText(page)).toContainText("15,4 von 30 W");
-    await expect(linkText(page)).toContainText("1 von 4 belegt");
+    await expect(linkText(page)).toContainText("1 von 5 belegt");
     await expect(linkText(page)).toContainText("5 Faserkabel auf 1 SFP");
     await expect(ring(page, "h1", "warn")).toHaveCount(1);
     await pick(page, "l-cams", "KH");

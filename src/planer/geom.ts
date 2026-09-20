@@ -108,11 +108,13 @@ export function sectionOffsets(_c: Conduit, pts: Point[], k: number): number[] {
   const acc = arcLens(pts),
     total = acc[acc.length - 1];
   if (total / k < SECTION_EDGE) return [];
-  const out = [total / 2];
   const busy = pts.map((p, i) => (p.at ? acc[i] : -1)).filter((v) => v >= 0);
   const edge = SECTION_EDGE * k;
   const fits = (o: number) =>
     o >= edge && o <= total - edge && busy.every((b) => Math.abs(o - b) > edge);
+  // The middle one is no more privileged than the rest: a marker on it, or a
+  // route too short to clear both ends, and it is dropped like any other.
+  const out = fits(total / 2) ? [total / 2] : [];
   for (let d = SECTION_STEP * k; ; d += SECTION_STEP * k) {
     const a = total / 2 - d,
       b = total / 2 + d;
