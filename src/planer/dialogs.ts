@@ -16,6 +16,17 @@ type SpecRow = {
   when?: (m: Model) => boolean;
 };
 
+/**
+ * A product that is no longer current says so at the top of its data sheet —
+ * it is still here because plans that already use it have to keep resolving it.
+ */
+function statusBox(kind: string, m: Model) {
+  if (!m.status || m.status === "current") return "";
+  const next = m.successor && catEntry(kind, m.successor);
+  const to = next ? " " + t("product.successor", { name: tx(next.name) }) : "";
+  return `<p class="warnbox"><span class="mk">!</span> ${esc(t("product." + m.status) + to)}</p>`;
+}
+
 // What showInfo() reads off a CAT_TABS entry.
 type CatTab = { id: string; label: string; note: string };
 
@@ -28,7 +39,9 @@ export function specList(kind: string, m: Model) {
       const g = r.g(m),
         v = r.v(m);
       const mk = g === "ok" ? "✓" : g === "warn" ? "!" : "";
-      return `<dt>${esc(t("spec." + r.k))}</dt><dd class="${g}">${mk ? `<span class="mk">${mk}</span>` : ""}${esc(v)}</dd>`;
+      // `na` = nobody checked. Grey, no mark — a tick would claim an answer.
+      const cls = g === "na" ? "none" : g;
+      return `<dt>${esc(t("spec." + r.k))}</dt><dd class="${cls}">${mk ? `<span class="mk">${mk}</span>` : ""}${esc(v)}</dd>`;
     });
   return `<dl class="spec">${rows.join("")}</dl>`;
 }
@@ -77,7 +90,7 @@ export function showProductInfo(kind: string, key: string) {
   // A router has its own rows, a cable none at all — there the body text carries everything.
   const sk =
     kind === "gear" ? (m.role === "router" ? "router" : null) : kind === "cable" ? null : kind;
-  const parts = [sk ? specList(sk, m) : ""];
+  const parts = [statusBox(kind, m), sk ? specList(sk, m) : ""];
   if (kind === "cable") {
     parts.push(m.info ? tx(m.info) : `<p>${esc(tx(m.note))}</p>`);
     parts.push(

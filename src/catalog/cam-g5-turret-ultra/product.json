@@ -41,6 +41,12 @@
     }
   ],
   "poeIn": "af",
+  "open": {
+    "rtsp": "via-console",
+    "onvif": false,
+    "api": "community",
+    "cloud": "optional"
+  },
   "specs": {
     "res": "2K · 4 MP",
     "ir": 15,

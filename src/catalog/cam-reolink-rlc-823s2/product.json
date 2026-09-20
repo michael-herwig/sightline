@@ -41,6 +41,16 @@
     }
   ],
   "poeIn": "at",
+  "open": {
+    "rtsp": true,
+    "onvif": true,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h265", "h264"],
+    "sub": ["h264"]
+  },
   "specs": {
     "res": "4K · 8 MP · 16× optischer Zoom",
     "ir": 80,

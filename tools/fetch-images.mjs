@@ -1,82 +1,107 @@
-// Fetches the product image URLs from the UniFi store and writes them as
-// `img:` into the catalogues in src/planer/catalogs.ts.
+// Fills in the product pictures for src/catalog/<kind>-<id>/product.json.
 //
-// Why just the URL and not the file: the CDN serves PNGs around 500 kB
-// and ignores size parameters. Twenty products would be ten megabytes
-// in the repo, and none of it belongs there.
-// Anyone who wants the images locally puts them in public/products/ (see the
-// README there); imgUrl() then uses the local path.
+// Two jobs, both opt-in per product:
+//   (default)    look up the vendor page and write its og:image into `img`
+//   --download   fetch that picture into the product's own folder as image.webp,
+//                which the loader then prefers over the remote URL
 //
-// Usage:  ocx exec -- node tools/fetch-images.mjs [--dry]
-import { readFileSync, writeFileSync } from "node:fs";
+// Why the URL is the normal case: the vendor CDNs serve PNGs around 500 kB and
+// ignore size parameters. A hundred products would be fifty megabytes in the
+// repo, and none of it belongs there. A local copy is worth it where the vendor
+// URL rots or the picture has to survive offline — hence the 60 kB ceiling,
+// which in practice only an already-webp asset passes.
+//
+// There is deliberately no image conversion here: that would mean sharp or
+// libvips as a dependency for a job that runs by hand twice a year. Convert
+// outside (`cwebp -q 80 -resize 480 0 in.png -o image.webp`) and drop the file
+// into the product folder — the loader picks it up.
+//
+// Usage:  ocx exec -- task images          (URLs only)
+//         ocx exec -- node tools/fetch-images.mjs --download
+//         ocx exec -- node tools/fetch-images.mjs --dry
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 
-const FILE = new URL("../src/planer/catalogs.ts", import.meta.url);
-const BASE = "https://eu.store.ui.com/eu/en/category/";
+const DIR = new URL("../src/catalog/", import.meta.url);
+const UI_STORE = "https://eu.store.ui.com/eu/en/category/";
+const UA = { "user-agent": "Mozilla/5.0 (sightline)" };
+const MAX_WEBP = 60 * 1024;
+
 const dry = process.argv.includes("--dry");
+const download = process.argv.includes("--download");
 
-let html = readFileSync(FILE, "utf8");
+const folders = readdirSync(DIR, { withFileTypes: true })
+  .filter((d) => d.isDirectory())
+  .map((d) => d.name)
+  .sort();
 
-// oxfmt writes catalogs.ts one property per line and drops quotes from keys
-// that are valid identifiers ("shaft-s" stays quoted, `shaft` doesn't). So a
-// catalogue entry is matched top to bottom, not on one line: from its
-// 2-space-indented `key: {` down to the matching 2-space-indented `},` —
-// nested objects (`note: { … }`, `tags: { … }`) always sit deeper than that.
-const ENTRY_RE = /^ {2}(?:"([a-z0-9-]+)"|([a-z][a-z0-9]*)): \{\n([\s\S]*?)\n {2}\},?$/gm;
+const products = folders.map((name) => {
+  const file = new URL(name + "/product.json", DIR);
+  return { name, file, p: JSON.parse(readFileSync(file, "utf8")) };
+});
 
-const rows = [];
-for (const m of html.matchAll(ENTRY_RE)) {
-  const key = m[1] ?? m[2];
-  const body = m[3];
-  if (/(^|\n)\s*img:\s*"/.test(body)) continue; // already has an image
-  const url = body.match(/^([ \t]*)url:\s*"([^"]+)"/m);
-  if (!url) continue; // no store page (e.g. a housing with no vendor link)
-  rows.push({ key, indent: url[1], url: url[2] });
-}
+// A store path gets the UniFi prefix, an absolute address is used as it stands.
+const pageOf = (p) =>
+  p.links && p.links.vendor
+    ? /^https?:/.test(p.links.vendor)
+      ? p.links.vendor
+      : UI_STORE + p.links.vendor
+    : null;
 
-if (!rows.length) {
-  console.log("nothing to do — all entries already have an image");
-  process.exit(0);
-}
+// ---------------------------------------------------------------- og:image
+const missing = products.filter(({ p }) => !p.img && pageOf(p));
 
 if (dry) {
-  console.log(`${rows.length} entries would be checked (--dry, no requests made):`);
-  for (const r of rows) console.log(`  ${r.key}: ${BASE}${r.url}`);
+  console.log(`${missing.length} products have a vendor page but no image:`);
+  for (const { name, p } of missing) console.log(`  ${name}: ${pageOf(p)}`);
   process.exit(0);
 }
 
-const found = [];
-for (const r of rows) {
-  const page = BASE + r.url;
+for (const { name, file, p } of missing) {
   try {
-    const res = await fetch(page, { headers: { "user-agent": "Mozilla/5.0 (sightline)" } });
+    const res = await fetch(pageOf(p), { headers: UA });
     if (!res.ok) {
-      console.log(`  ${r.key}: HTTP ${res.status}`);
+      console.log(`  ${name}: HTTP ${res.status}`);
       continue;
     }
-    const body = await res.text();
-    const m = body.match(/<meta property="og:image" content="([^"]+)"/i);
+    const m = (await res.text()).match(/<meta property="og:image" content="([^"]+)"/i);
     if (!m) {
-      console.log(`  ${r.key}: no og:image`);
+      console.log(`  ${name}: no og:image`);
       continue;
     }
-    found.push({ key: r.key, indent: r.indent, img: m[1] });
-    console.log(`  ${r.key}: ${m[1]}`);
+    p.img = m[1];
+    writeFileSync(file, JSON.stringify(p, null, 2) + "\n");
+    console.log(`  ${name}: ${m[1]}`);
   } catch (e) {
-    console.log(`  ${r.key}: ${e.message}`);
+    console.log(`  ${name}: ${e.message}`);
   }
 }
+console.log(`${missing.length} products checked for a vendor image`);
 
-let n = 0;
-for (const f of found) {
-  // Anchor on this entry's own key so the img: line lands right above its
-  // url: line, not some other entry's.
-  const re = new RegExp(
-    `(^ {2}(?:"${f.key}"|${f.key}): \\{\\n[\\s\\S]*?\\n)(${f.indent}url: ")`,
-    "m",
-  );
-  if (!re.test(html)) continue;
-  html = html.replace(re, `$1${f.indent}img: "${f.img}",\n$2`);
-  n++;
+// ---------------------------------------------------------------- local copy
+if (!download) process.exit(0);
+
+let saved = 0;
+for (const { name, p } of products) {
+  if (!p.img) continue;
+  try {
+    const res = await fetch(p.img, { headers: UA });
+    if (!res.ok) {
+      console.log(`  ${name}: HTTP ${res.status}`);
+      continue;
+    }
+    const buf = Buffer.from(await res.arrayBuffer());
+    // RIFF....WEBP — the four bytes at offset 8 are the only reliable marker.
+    const webp = buf.length > 12 && buf.toString("ascii", 8, 12) === "WEBP";
+    if (!webp || buf.length > MAX_WEBP) {
+      const why = webp ? `${Math.round(buf.length / 1024)} kB > 60 kB` : "not webp";
+      console.log(`  ${name}: skipped (${why}) — convert by hand, see the header of this file`);
+      continue;
+    }
+    writeFileSync(new URL(name + "/image.webp", DIR), buf);
+    saved++;
+    console.log(`  ${name}: image.webp (${Math.round(buf.length / 1024)} kB)`);
+  } catch (e) {
+    console.log(`  ${name}: ${e.message}`);
+  }
 }
-writeFileSync(FILE, html);
-console.log(`${n} entries got an img: added`);
+console.log(`${saved} local images written`);

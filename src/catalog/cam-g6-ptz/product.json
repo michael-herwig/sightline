@@ -41,6 +41,12 @@
     }
   ],
   "poeIn": "at",
+  "open": {
+    "rtsp": "via-console",
+    "onvif": false,
+    "api": "community",
+    "cloud": "optional"
+  },
   "specs": {
     "res": "4K · 8 MP · 10× optischer Zoom",
     "ir": 30,

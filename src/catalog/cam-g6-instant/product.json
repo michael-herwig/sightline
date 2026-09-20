@@ -39,6 +39,12 @@
       "n": 1
     }
   ],
+  "open": {
+    "rtsp": "via-console",
+    "onvif": false,
+    "api": "community",
+    "cloud": "optional"
+  },
   "specs": {
     "res": "4K · 8 MP",
     "ir": 6,

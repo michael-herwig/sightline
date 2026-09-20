@@ -39,8 +39,8 @@ export interface Port {
   n: number;
   /** "1G", "2.5G", "10G", "100M", "1G/2.5G" — as printed, not normalised. */
   speed?: string;
-  /** PoE class this port hands out. */
-  poe?: "af" | "at" | "bt";
+  /** PoE class this port hands out. `"af/at"` is a port that negotiates either. */
+  poe?: "af" | "at" | "bt" | "af/at";
 }
 
 /** Radiation pattern of an access point. `h: 360` is omnidirectional. */

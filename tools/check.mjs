@@ -69,3 +69,17 @@ console.log("ok — nothing secret in public/, .env.local stays server-side");
   }
 }
 console.log("ok — the price date is stated in catalogue, cost tab, export and guide");
+
+// --- The generated JSON schema matches the types it comes from --------------
+// Editors validate every src/catalog/*/product.json against
+// src/catalog/schema.json. A stale copy would wave through a field that the
+// loader then ignores in silence.
+{
+  const { SCHEMA_JSON, schemaOnDisk } = await import("./catalog-schema.mjs");
+  assert.equal(
+    schemaOnDisk(),
+    SCHEMA_JSON,
+    "src/catalog/schema.json is stale — run: ocx exec -- task catalog:schema",
+  );
+}
+console.log("ok — src/catalog/schema.json matches src/catalog/schema.ts");

@@ -78,22 +78,36 @@ test("catalog: tabs, search, and filter badges", async ({ page }) => {
   expect(await page.locator("#cat-chips .chip[data-facet]").count()).toBeGreaterThanOrEqual(8);
   expect(await page.locator("#cat-cams .item").count()).toBeGreaterThanOrEqual(9);
 
+  // Counts, not exact numbers: the catalogue grows, the search must still narrow
+  // and must still find the one entry the term is really about.
+  const total = await page.locator("#cat-cams .item").count();
   await page.locator("#cat-q").fill("ptz");
-  await expect(page.locator("#cat-cams .item")).toHaveCount(2);
+  expect(await page.locator("#cat-cams .item").count()).toBeLessThan(total);
+  await expect(page.locator('#cat-cams [data-key="g6-ptz"]')).toHaveCount(1);
   await page.locator("#cat-q").fill("reolink");
-  await expect(page.locator("#cat-cams .item")).toHaveCount(8);
+  expect(await page.locator("#cat-cams .item").count()).toBeGreaterThanOrEqual(8);
+  await expect(page.locator('#cat-cams [data-key="g6-bullet"]')).toHaveCount(0);
 
-  // "außen" is both a property and a search term.
+  // "außen" is both a property and a search term, and it turns up in the
+  // descriptions too ("nicht als Innenkamera") — so the search is generous on
+  // purpose. The property itself is what the two chips filter on, and there the
+  // list is exact.
   await page.locator("#cat-q").fill("outdoor");
+  expect(await page.locator("#cat-cams .item").count()).toBeGreaterThanOrEqual(10);
+  await page.locator("#cat-q").fill("");
+
   const cards = page.locator("#cat-cams .item .d");
+  await page.locator('#cat-chips .chip[data-facet="camout"]').click();
   expect(await cards.count()).toBeGreaterThanOrEqual(10);
   for (const txt of await cards.allTextContents()) expect(txt).toMatch(/ · außen$/);
-  await page.locator("#cat-q").fill("innen");
+  await page.locator('#cat-chips .chip[data-facet="camout"]').click();
+
+  await page.locator('#cat-chips .chip[data-facet="camin"]').click();
   expect(await cards.count()).toBeGreaterThanOrEqual(3);
   for (const txt of await cards.allTextContents()) expect(txt).toMatch(/ · nur innen$/);
+  await page.locator('#cat-chips .chip[data-facet="camin"]').click();
 
   // The filter badge narrows further without rebuilding the list.
-  await page.locator("#cat-q").fill("");
   const all = await page.locator("#cat-cams .item").count();
   await page.locator("#cat-chips .chip[data-facet]").first().click();
   await expect(page.locator("#cat-chips .chip[data-facet]").first()).toHaveAttribute(

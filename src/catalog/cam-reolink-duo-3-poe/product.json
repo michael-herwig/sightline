@@ -41,6 +41,16 @@
     }
   ],
   "poeIn": "af",
+  "open": {
+    "rtsp": true,
+    "onvif": true,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h265", "h264"],
+    "sub": ["h264"]
+  },
   "specs": {
     "res": "16 MP · Dual-Sensor · 2× 1/2.7\"",
     "ir": 30,

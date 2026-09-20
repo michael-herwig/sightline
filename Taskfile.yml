@@ -89,8 +89,17 @@ tasks:
       - task: test:e2e
       - ocx exec -- node tools/check.mjs
 
+  catalog:schema:
+    desc: Regenerate src/catalog/schema.json from src/catalog/schema.ts
+    cmds:
+      - ocx exec -- node tools/catalog-schema.mjs
+    sources:
+      - src/catalog/schema.ts
+    generates:
+      - src/catalog/schema.json
+
   images:
-    desc: Write the product image URLs from the UniFi store into the catalogues
+    desc: Write the product image URLs from the vendor store into the product files
     cmds:
       - ocx exec -- node tools/fetch-images.mjs
 

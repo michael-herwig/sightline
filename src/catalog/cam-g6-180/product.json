@@ -41,6 +41,12 @@
     }
   ],
   "poeIn": "at",
+  "open": {
+    "rtsp": "via-console",
+    "onvif": false,
+    "api": "community",
+    "cloud": "optional"
+  },
   "specs": {
     "res": "2× 8 MP (16 MP) Dual-Sensor",
     "ir": 20,

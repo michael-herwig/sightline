@@ -8,6 +8,7 @@ import {
   INFRA,
   JUNCTIONS,
   VENDORS,
+  isCurrent,
   isDevice,
   isHousing,
   vendorOf,
@@ -30,7 +31,7 @@ import {
   setPreview,
   state,
 } from "./store";
-import { CAT_TABS, FACETS, FACETS_AP, FACETS_GEAR, FACETS_JB } from "./specs";
+import { CAT_TABS, FACETS, FACETS_AP, FACETS_GEAR, FACETS_JB, SHOW_DEPRECATED } from "./specs";
 import { $, INFO, esc, h, setStatus } from "./dom";
 import { changed } from "./history";
 import { select, setMode } from "./modes";
@@ -75,6 +76,13 @@ function matchesFacets(m: Model, set: Facet[]) {
   for (const f of set) if (catFacets.has(f.id) && !f.test(m)) return false;
   return true;
 }
+
+// A product that is no longer current stays in the catalogue — old plans have to
+// keep resolving it — but it is not offered any more unless the chip asks for it.
+const offered = (m: Model) => isCurrent(m) || catFacets.has(SHOW_DEPRECATED);
+
+const hit = (m: Model, key: string, q: string, set: Facet[]) =>
+  offered(m) && matchesQuery(m, key, q) && matchesFacets(m, set);
 
 // Card plus ⓘ top right: shows the datasheet without adding anything.
 // Sibling of the card, layered over it via CSS — a button inside a button would be
@@ -141,7 +149,7 @@ function fillCams() {
   fillList(
     "cat-cams",
     catSig(),
-    Object.keys(CAMS).filter((k) => matchesQuery(CAMS[k], k, q) && matchesFacets(CAMS[k], set)),
+    Object.keys(CAMS).filter((k) => hit(CAMS[k], k, q, set)),
     (k: string) => {
       const m = CAMS[k];
       const b = catButton(
@@ -165,7 +173,7 @@ function fillAps() {
   fillList(
     "cat-aps",
     catSig(),
-    Object.keys(APS).filter((k) => matchesQuery(APS[k], k, q) && matchesFacets(APS[k], FACETS_AP)),
+    Object.keys(APS).filter((k) => hit(APS[k], k, q, FACETS_AP)),
     (k: string) => {
       const a = APS[k];
       const b = catButton(
@@ -207,11 +215,9 @@ function clickJb(k: string) {
 // The subheadings travel through fillList() as pseudo-keys.
 function fillJbs() {
   const q = catQuery.jb;
-  const hit = Object.keys(JUNCTIONS).filter(
-    (k) => matchesQuery(JUNCTIONS[k], k, q) && matchesFacets(JUNCTIONS[k], FACETS_JB),
-  );
-  const hous = hit.filter(isHousing),
-    dev = hit.filter(isDevice);
+  const found = Object.keys(JUNCTIONS).filter((k) => hit(JUNCTIONS[k], k, q, FACETS_JB));
+  const hous = found.filter(isHousing),
+    dev = found.filter(isDevice);
   const keys = ([] as string[]).concat(
     hous.length ? ["#housing"] : [],
     hous,
@@ -237,7 +243,7 @@ function fillGear() {
   fillList(
     "cat-gear",
     catSig(),
-    vis.filter((i) => matchesQuery(i, i.id, q) && matchesFacets(i, FACETS_GEAR)).map((i) => i.id),
+    vis.filter((i) => hit(i, i.id, q, FACETS_GEAR)).map((i) => i.id),
     (k: string) => {
       const m = vis.find((i) => i.id === k)!;
       const b = catButton("gear", k, m, tx(m.sub));
@@ -256,9 +262,9 @@ function fillGear() {
 // headings travel through fillList() as pseudo-keys, as with the junctions.
 function fillConds() {
   const q = catQuery.cond;
-  const hit = Object.keys(CONDUITS).filter((k) => matchesQuery(CONDUITS[k], k, q));
-  const tr = hit.filter((k) => !isCableRun(CONDUITS[k])),
-    cb = hit.filter((k) => isCableRun(CONDUITS[k]));
+  const found = Object.keys(CONDUITS).filter((k) => matchesQuery(CONDUITS[k], k, q));
+  const tr = found.filter((k) => !isCableRun(CONDUITS[k])),
+    cb = found.filter((k) => isCableRun(CONDUITS[k]));
   const keys = ([] as string[]).concat(
     tr.length ? ["#trench"] : [],
     tr,

@@ -41,6 +41,15 @@
     }
   ],
   "poeIn": "af",
+  "open": {
+    "rtsp": true,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h264"],
+    "sub": ["h264"]
+  },
   "specs": {
     "res": "5 MP · 1/2.7\"",
     "ir": 30,

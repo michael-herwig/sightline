@@ -41,6 +41,12 @@
     }
   ],
   "poeIn": "af",
+  "open": {
+    "rtsp": "via-console",
+    "onvif": false,
+    "api": "community",
+    "cloud": "optional"
+  },
   "specs": {
     "res": "4K · 8 MP · 1/1.8\"",
     "ir": 30,

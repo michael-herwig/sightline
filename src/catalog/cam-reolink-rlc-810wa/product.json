@@ -39,6 +39,16 @@
       "n": 1
     }
   ],
+  "open": {
+    "rtsp": true,
+    "onvif": true,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h265"],
+    "sub": ["h264"]
+  },
   "specs": {
     "res": "4K · 8 MP · 1/2.7\"",
     "ir": 30,

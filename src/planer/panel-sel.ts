@@ -13,6 +13,7 @@ import {
   VENDORS,
   WAN,
   catEntry,
+  isCurrent,
   isDevice,
   isHousing,
   modelOf,
@@ -354,7 +355,8 @@ const gearAddHtml = (cat: Record<string, Junction>) =>
   `<div class="addcab"><select id="f-gear-new">` +
   optGroups(
     GEAR_GROUPS,
-    Object.keys(cat).filter(isDevice),
+    // Nothing deprecated gets offered here; what is already in a point stays.
+    Object.keys(cat).filter((k) => isDevice(k) && isCurrent(cat[k])),
     (k: string) => gearGroup(cat[k]),
     (g: string) => t("cat.grp." + g),
     (k: string) => `<option value="${k}">${esc(optText("jb", k, cat[k]))}</option>`,
@@ -529,7 +531,7 @@ function buildItemSel(root: HTMLElement, it: Item) {
         // Routers grouped by vendor: UniFi records, a FRITZ!Box doesn't.
         optGroups(
           [...new Set(ROUTERS.map(vendorOf))],
-          ROUTERS.map((r) => r.id),
+          ROUTERS.filter((r) => isCurrent(r) || (hubRouter() || {}).id === r.id).map((r) => r.id),
           (id: string) => vendorOf(catEntry("gear", id)),
           (v: string) => VENDORS[v] || v,
           (id: string) =>
@@ -620,7 +622,10 @@ function buildItemSel(root: HTMLElement, it: Item) {
   // own section below. The housing's datasheet sits behind the ⓘ
   // next to it — the panel holds only fields, lists, and the status.
   const jb = it.kind === "jb";
-  const models = jb ? Object.keys(cat).filter(isHousing) : Object.keys(cat);
+  // A plan may hold a model that is no longer current — it has to stay in the
+  // list, or picking it up again would silently swap the element's model.
+  const usable = (k: string) => isCurrent(cat[k]) || k === it.model;
+  const models = Object.keys(cat).filter((k) => usable(k) && (!jb || isHousing(k)));
   const opt = (k: string) =>
     `<option value="${k}" ${k === it.model ? "selected" : ""}>${esc(optText(it.kind, k, cat[k]))}</option>`;
   // Housings grouped by location (buried, outdoor wall, indoor); cameras and

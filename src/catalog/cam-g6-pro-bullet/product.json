@@ -41,6 +41,12 @@
     }
   ],
   "poeIn": "at",
+  "open": {
+    "rtsp": "via-console",
+    "onvif": false,
+    "api": "community",
+    "cloud": "optional"
+  },
   "specs": {
     "res": "4K · 1/1.2\" · 2,36× Zoom",
     "ir": 40,

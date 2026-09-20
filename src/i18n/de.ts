@@ -475,6 +475,20 @@ export const planner = {
   "ctx.cluster.in": "In die Gruppe zoomen",
   "help.tip.ctx":
     "Rechtsklick öffnet ein Menü zu dem, worauf er trifft: auf der freien Karte setzen, zeichnen und zentrieren; auf einem Element Datenblatt, Kanal von hier, Ausrichten, Duplizieren und Löschen; auf einem Kanal einen Punkt einfügen, auf einem Punktgriff ihn entfernen oder vom Element lösen; auf einer Gruppe deren Mitglieder. Beim Zeichnen gibt es kein Menü — dort schließt der Rechtsklick den Kanal ab. Auf dem Touchgerät öffnet langes Drücken dasselbe Menü.",
+  // Product directory: openness, codecs and the deprecation badge.
+  "spec.openness": "Offenheit",
+  "spec.codecs": "Codecs",
+  "open.console": "RTSP nur über die Hersteller-Konsole",
+  "open.cloud": "Hersteller-Cloud nötig",
+  "open.closed": "geschlossenes System",
+  "open.api.community": "API nur inoffiziell",
+  "open.short.console": "RTSP über Konsole",
+  "open.short.cloud": "nur Cloud",
+  "facet.open": "Offene Standards",
+  "facet.deprecated": "Veraltete zeigen",
+  "product.deprecated": "Veraltet — nicht mehr für neue Pläne.",
+  "product.eol": "Abgekündigt — nicht mehr lieferbar.",
+  "product.successor": "Nachfolger: {name}.",
 };
 
 // ---------- Website: landing page, 404, shared chrome ----------

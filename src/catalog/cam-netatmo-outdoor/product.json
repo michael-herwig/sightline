@@ -39,6 +39,12 @@
       "n": 1
     }
   ],
+  "open": {
+    "rtsp": false,
+    "onvif": false,
+    "api": "documented",
+    "cloud": "required"
+  },
   "specs": {
     "res": "2K+ HDR",
     "ir": 15,

@@ -464,6 +464,20 @@ export const planner: PlannerText = {
   "ctx.cluster.in": "Zoom into the group",
   "help.tip.ctx":
     "A right-click opens a menu for whatever it hits: on the open map place, draw and centre; on an element the data sheet, a conduit from here, point at, duplicate and delete; on a conduit insert a point, on a point handle remove it or detach it from its element; on a group its members. While drawing there is no menu — there a right-click finishes the conduit. On a touch device a long press opens the same menu.",
+  // Product directory: openness, codecs and the deprecation badge.
+  "spec.openness": "Openness",
+  "spec.codecs": "Codecs",
+  "open.console": "RTSP only via the vendor console",
+  "open.cloud": "vendor cloud required",
+  "open.closed": "closed system",
+  "open.api.community": "unofficial API only",
+  "open.short.console": "RTSP via console",
+  "open.short.cloud": "cloud only",
+  "facet.open": "Open standards",
+  "facet.deprecated": "Show deprecated",
+  "product.deprecated": "Deprecated — not for new plans.",
+  "product.eol": "End of life — no longer available.",
+  "product.successor": "Successor: {name}.",
 };
 
 // ---------- Website: landing page, 404, shared chrome ----------
