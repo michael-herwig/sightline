@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema.json",
+  "id": "mikrotik-wap-ax",
+  "kind": "ap",
+  "vendor": "mikrotik",
+  "status": "current",
+  "order": 170,
+  "name": {
+    "de": "MikroTik wAP ax",
+    "en": "MikroTik wAP ax"
+  },
+  "price": 75,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Sehr günstig, wetterfest (IP54), außen. Hof oder Nebengebäude.",
+    "en": "Very cheap, weatherproof (IP54), outdoor. Yard or outbuildings."
+  },
+  "useCases": {
+    "de": "Günstigster Außen-AP, wenn RouterOS keine Hürde ist.",
+    "en": "Cheapest outdoor AP if RouterOS is no hurdle."
+  },
+  "caveats": {
+    "de": "Nicht bei Dauerregen ungeschützt — IP54 ist spritzwasser, nicht Strahlwasser.",
+    "en": "Not unprotected in constant rain — IP54 is splash, not jet."
+  },
+  "links": {
+    "vendor": "https://mikrotik.com/product/wap_ax",
+    "amazon": "https://www.amazon.de/dp/B0DT4PJ62N"
+  },
+  "img": "https://cdn.mikrotik.com/web-assets/rb_images/2410_lg.webp",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "poeIn": "af/at",
+  "specs": {
+    "radius": 35,
+    "out": true,
+    "wifi": "WiFi 6 · 2×2",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP54"
+  }
+}

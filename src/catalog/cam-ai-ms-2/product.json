@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema.json",
+  "id": "ai-ms-2",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 90,
+  "name": {
+    "de": "AI Multi Sensor 2",
+    "en": "AI Multi Sensor 2"
+  },
+  "price": 629,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Zwei unabhängig ausrichtbare Objektive (Übersicht + Nahbereich) in einem Gehäuse. Für große Höfe, wo eine Kamera zwei Blickwinkel abdecken soll.",
+    "en": "Two independently aimable lenses (overview + close-up) in one housing. For large yards where one camera needs to cover two angles."
+  },
+  "useCases": {
+    "de": "Ein Mast, zwei Blickrichtungen: Übersicht und Nahbereich aus einem Gehäuse.",
+    "en": "One pole, two directions: overview and close-up from a single housing."
+  },
+  "caveats": {
+    "de": "Nicht als einfache Ersatzkamera — Preis und Montage sind die einer Doppelinstallation.",
+    "en": "Not as a simple replacement camera — it costs and mounts like two."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-ai-ms-2",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/aee5feaf-475b-43cc-bfdf-df56b22bf48b/3b486708-3647-4583-ad15-5376af9f0464.png",
+  "tags": {
+    "de": ["16 MP", "Dual-Sensor", "IK10"],
+    "en": ["16 MP", "dual-sensor", "IK10"]
+  },
+  "poeIn": "at",
+  "specs": {
+    "res": "16 MP Dual-Sensor (2× 8 MP)",
+    "ir": 20,
+    "fov": 109,
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP66 · IK10",
+    "out": true,
+    "zoom": "2,33× optisch"
+  }
+}

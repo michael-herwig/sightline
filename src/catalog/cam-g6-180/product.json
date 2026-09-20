@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-180",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 40,
+  "name": {
+    "de": "G6 180",
+    "en": "G6 180"
+  },
+  "price": 269,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "180° Panorama ohne Verzerrung. Übersicht über Hof und Wiese, aber nur 20 m IR und keine Identifikation auf Distanz.",
+    "en": "180° panorama without distortion. Good overview of yard and paddock, but only 20 m IR and no identification at distance."
+  },
+  "useCases": {
+    "de": "Eine Ecke, zwei Seiten: Hof und Teich mit einem Gerät statt zwei.",
+    "en": "One corner, two sides: yard and pond with one device instead of two."
+  },
+  "caveats": {
+    "de": "Nicht für Kennzeichen oder Gesichter — die Auflösung verteilt sich auf 180°.",
+    "en": "Not for plates or faces — the resolution spreads across 180°."
+  },
+  "links": {
+    "vendor": "physical-security-panoramic/products/uvc-g6-180",
+    "amazon": "https://www.amazon.de/dp/B0H75W7CNL"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/c2196251-739c-43d0-b840-567a732cd7ef/cc48eefc-2995-4d40-add0-7a36f9e2325e.png",
+  "tags": {
+    "de": ["180°", "Übersicht", "IR 20 m"],
+    "en": ["180°", "overview", "IR 20 m"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "at",
+  "specs": {
+    "res": "2× 8 MP (16 MP) Dual-Sensor",
+    "ir": 20,
+    "fov": 180,
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP66",
+    "out": true
+  }
+}

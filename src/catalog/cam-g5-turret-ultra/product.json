@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g5-turret-ultra",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 120,
+  "name": {
+    "de": "G5 Turret Ultra",
+    "en": "G5 Turret Ultra"
+  },
+  "price": 99,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Kleinste und günstigste PoE-Kamera. Innen im Stall oder an Nebengebäuden völlig ausreichend.",
+    "en": "Smallest and cheapest PoE camera. Plenty for inside the stable or on outbuildings."
+  },
+  "useCases": {
+    "de": "Innen, kurze Distanz, kleines Budget — zum Beispiel die Stallgasse.",
+    "en": "Indoors, short range, small budget — the stable aisle for instance."
+  },
+  "caveats": {
+    "de": "Nicht außen an der Fassade und nicht über 15 m.",
+    "en": "Not outdoors on a façade and not beyond 15 m."
+  },
+  "links": {
+    "vendor": "physical-security-turret/products/uvc-g5-turret-ultra",
+    "amazon": "https://www.amazon.de/dp/B0CZ9Q8J8C"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/54f9bb29-40b8-4dac-9b1c-7ccf0e303aa5/4291a8f4-7390-4bb6-9190-8953739a0a92.png",
+  "tags": {
+    "de": ["2K", "kompakt", "IR 15 m"],
+    "en": ["2K", "compact", "IR 15 m"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "2K · 4 MP",
+    "ir": 15,
+    "fov": 102,
+    "poe": "PoE (802.3af)",
+    "ip": "IP66",
+    "out": false
+  }
+}

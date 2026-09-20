@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-rlc-810a",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 180,
+  "name": {
+    "de": "Reolink RLC-810A",
+    "en": "Reolink RLC-810A"
+  },
+  "price": 80,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Klassische Bullet für Einfahrt oder Grundstücksgrenze — der günstige 4K-PoE-Einstieg.",
+    "en": "Classic bullet for the driveway or property line — the affordable 4K PoE entry."
+  },
+  "useCases": {
+    "de": "Wo eine G6 Bullet zu teuer ist: Einfahrt, Grenze, Stallwand — dieselbe Aufgabe für die Hälfte.",
+    "en": "Where a G6 Bullet is too dear: driveway, boundary, stable wall — the same job for half the price."
+  },
+  "caveats": {
+    "de": "Nicht, wenn alles in Protect mit Smart Detection laufen soll — per ONVIF kommt nur das Bild.",
+    "en": "Not if everything should run in Protect with smart detection — over ONVIF you only get the picture."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/rlc-810a/",
+    "amazon": "https://www.amazon.de/dp/B08F7C37NZ"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2025/04/170301331744858893.3765.jpg.webp",
+  "tags": {
+    "de": ["4K", "außen", "IR 30 m", "ONVIF"],
+    "en": ["4K", "outdoor", "IR 30 m", "ONVIF"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · 1/2.7\"",
+    "ir": 30,
+    "fov": 87,
+    "poe": "PoE (802.3af)",
+    "ip": "IP67",
+    "out": true
+  }
+}

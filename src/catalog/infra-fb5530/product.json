@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema.json",
+  "id": "fb5530",
+  "kind": "infra",
+  "vendor": "avm",
+  "status": "current",
+  "order": 50,
+  "name": {
+    "de": "FRITZ!Box 5530 Fiber",
+    "en": "FRITZ!Box 5530 Fiber"
+  },
+  "price": 187,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Die günstige Glasfaser-FRITZ!Box: SFP-Schacht, WiFi 6, weniger Anschlüsse als die 5590. Kein Rekorder.",
+    "en": "The cheap fibre FRITZ!Box: SFP cage, Wi-Fi 6, fewer ports than the 5590. No recorder."
+  },
+  "useCases": {
+    "de": "Glasfaser im kleinen Haushalt, wenn WiFi 6 und wenige Ports reichen.",
+    "en": "Fibre in a small household when Wi-Fi 6 and a few ports are enough."
+  },
+  "caveats": {
+    "de": "Nicht bei vielen Kabelgeräten — die Anschlüsse werden knapp.",
+    "en": "Not with many wired devices — the ports run out."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-box-5530-fiber-20002960",
+    "amazon": "https://www.amazon.de/dp/B08RB83RZ4"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzbox_5530_fiber_fiber_2000x2000px_de.webp",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 2,
+      "speed": "1G"
+    },
+    {
+      "type": "wan",
+      "dir": "in",
+      "n": 1,
+      "speed": "2.5G"
+    },
+    {
+      "type": "sfp",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "role": "router",
+    "ports": 2,
+    "sfp": false,
+    "poe": 0,
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "Glasfaser (SFP), WiFi 6, günstiger · kein NVR",
+      "en": "Fibre (SFP), Wi-Fi 6, cheaper · no NVR"
+    }
+  }
+}

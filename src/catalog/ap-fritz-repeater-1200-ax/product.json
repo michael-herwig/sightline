@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema.json",
+  "id": "fritz-repeater-1200-ax",
+  "kind": "ap",
+  "vendor": "avm",
+  "status": "current",
+  "order": 180,
+  "name": {
+    "de": "FRITZ!Repeater 1200 AX",
+    "en": "FRITZ!Repeater 1200 AX"
+  },
+  "price": 83,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Steckdosen-Repeater, per LAN als AP nutzbar. Ein Zimmer, im Mesh mit der FRITZ!Box.",
+    "en": "Plug-in repeater, usable as an AP over LAN. One room, in mesh with the FRITZ!Box."
+  },
+  "useCases": {
+    "de": "Ein Zimmer mit Netzwerkdose und FRITZ!Box im Haus — günstig und ohne Controller.",
+    "en": "One room with a network outlet and a FRITZ!Box in the house — cheap, no controller."
+  },
+  "caveats": {
+    "de": "Nicht ohne Steckdose, nicht draußen, kein PoE.",
+    "en": "Not without a socket, not outdoors, no PoE."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-repeater-1200-ax-20002974",
+    "amazon": "https://www.amazon.de/dp/B09N4X3DTJ"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzrepeater_1200_ax_2000x2000px.webp",
+  "tags": {
+    "de": ["kein PoE", "Steckdose", "innen"],
+    "en": ["no PoE", "mains socket", "indoor"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 12,
+    "out": false,
+    "wifi": "WiFi 6 · 2×2",
+    "poe": "kein PoE · Steckdose",
+    "ip": "IP20"
+  }
+}

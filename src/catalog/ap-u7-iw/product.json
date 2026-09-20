@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-iw",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 100,
+  "name": {
+    "de": "U7 In-Wall",
+    "en": "U7 In-Wall"
+  },
+  "price": 145,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Nachfolger des U6 In-Wall: WiFi 7, eingebauter 2,5-GbE-Switch mit einem PoE-Ausgang. Unterputz in der Netzwerkdose, ein Zimmer.",
+    "en": "Successor to the U6 In-Wall: Wi-Fi 7, built-in 2.5 GbE switch with one PoE output. In-wall in the network outlet, one room."
+  },
+  "useCases": {
+    "de": "Zimmer mit Netzwerkdose, das WiFi 7 und nebenbei ein paar Kabelports braucht.",
+    "en": "A room with a network outlet that needs Wi-Fi 7 plus a couple of wired ports."
+  },
+  "caveats": {
+    "de": "Nicht als Flächen-AP — die Antenne sitzt in der Wand.",
+    "en": "Not as an area AP — the antenna sits in the wall."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/u7-iw",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/9ea6158e-bc26-4ac7-946a-55eca465b059/566b1098-3514-46b6-8aee-4fde454d1205.png",
+  "tags": {
+    "de": ["WiFi 7", "Unterputz", "PoE-Ausgang"],
+    "en": ["Wi-Fi 7", "in-wall", "PoE output"]
+  },
+  "poeIn": "af",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 12,
+    "out": false,
+    "wifi": "WiFi 7 · 4×4",
+    "poe": {
+      "de": "PoE (802.3af) · PoE+ nötig für den Durchschleif-Port",
+      "en": "PoE (802.3af) · PoE+ needed for the pass-through port"
+    },
+    "ip": "IP20"
+  }
+}

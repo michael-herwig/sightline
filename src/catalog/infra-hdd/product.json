@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema.json",
+  "id": "hdd",
+  "kind": "infra",
+  "vendor": "any",
+  "status": "current",
+  "order": 120,
+  "name": {
+    "de": "HDD 4 TB (Surveillance)",
+    "en": "HDD 4 TB (surveillance)"
+  },
+  "price": 110,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Festplatte der Surveillance-Klasse — auf Dauerschreiben ausgelegt, nicht auf Tempo. 4 TB tragen grob zwei 4K-Kameras über 30 Tage Daueraufnahme.",
+    "en": "A surveillance-class drive — built for continuous writing, not for speed. 4 TB carries roughly two 4K cameras over 30 days of continuous recording."
+  },
+  "useCases": {
+    "de": "Für jeden UNVR: Menge nach Kameras und Vorhaltezeit wählen, lieber eine Nummer größer.",
+    "en": "For every UNVR: size it by cameras and retention, and go one size up."
+  },
+  "caveats": {
+    "de": "Keine Desktop-Platte einbauen — Dauerschreiben killt sie.",
+    "en": "Do not fit a desktop drive — continuous writing kills it."
+  },
+  "links": {
+    "vendor": "https://www.newegg.com/seagate-skyhawk-st4000vx007-4tb/p/N82E16822179014",
+    "amazon": "https://www.amazon.de/dp/B01LOOJ8UI"
+  },
+  "img": "https://c1.neweggimages.com/productimage/nb640/22-179-014-V01.jpg",
+  "specs": {
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "für UNVR",
+      "en": "for the UNVR"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-mini-dome",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 100,
+  "name": {
+    "de": "G6 Mini Dome",
+    "en": "G6 Mini Dome"
+  },
+  "price": 269,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Sehr kompakte 4K-Kamera, für unauffällige Deckenmontage innen (Flur, Wohnraum). Kein Außeneinsatz.",
+    "en": "Very compact 4K camera for discreet indoor ceiling mounting (hallway, living room). Not for outdoor use."
+  },
+  "useCases": {
+    "de": "Flur, Wohnraum, Büro: 4K unauffällig an der Decke.",
+    "en": "Hallway, living room, office: 4K discreetly on the ceiling."
+  },
+  "caveats": {
+    "de": "Nicht draußen und nicht unter Vordach — reines Innengehäuse ohne IP-Schutz.",
+    "en": "Not outdoors and not under an eave — an indoor housing with no IP rating."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-g6-mini-dome",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/f49b5512-674f-4f96-89cb-8e8dcd6b1aa6/5f7ae61c-7c8c-4c2a-b54b-ba2a268ab23a.png",
+  "tags": {
+    "de": ["4K", "innen", "kompakt"],
+    "en": ["4K", "indoor", "compact"]
+  },
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · 1/1.8\"",
+    "ir": 20,
+    "fov": 110,
+    "poe": "PoE (802.3af)",
+    "ip": "IK08",
+    "out": false
+  }
+}

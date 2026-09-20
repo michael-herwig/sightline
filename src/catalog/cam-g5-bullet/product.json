@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g5-bullet",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 110,
+  "name": {
+    "de": "G5 Bullet",
+    "en": "G5 Bullet"
+  },
+  "price": 129,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Vorgängergeneration, 2K reicht für Übersicht. Zählt beim NVR nicht als 4K.",
+    "en": "Previous generation, 2K is fine for overview. Does not count as 4K against the NVR budget."
+  },
+  "useCases": {
+    "de": "Wenn der Preis zählt und 2K für den Überblick reichen.",
+    "en": "When price matters and 2K is enough for an overview."
+  },
+  "caveats": {
+    "de": "Nicht dort, wo später Gesichter oder Kennzeichen erkennbar sein müssen.",
+    "en": "Not where faces or plates have to be readable later."
+  },
+  "links": {
+    "vendor": "physical-security-bullet/products/uvc-g5-bullet",
+    "amazon": "https://www.amazon.de/dp/B0BWNLTTGF"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/48ca8dea-109e-4d35-af46-b7ad03764207/0cd9d5ff-af60-45bd-a01f-b0fb050e76bb.png",
+  "tags": {
+    "de": ["2K", "günstig"],
+    "en": ["2K", "cheap"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "2K · 5 MP",
+    "ir": 30,
+    "fov": 102,
+    "poe": "PoE (802.3af)",
+    "ip": "IP66",
+    "out": true
+  }
+}

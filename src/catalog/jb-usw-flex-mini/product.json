@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema.json",
+  "id": "usw-flex-mini",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 290,
+  "name": {
+    "de": "USW Flex Mini (Switch, PoE-gespeist)",
+    "en": "USW Flex Mini (switch, PoE-powered)"
+  },
+  "price": 26,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "5-Port-Switch ohne eigenes Netzteil: läuft über ein PoE-Kabel vom vorgeschalteten Switch oder Injektor (oder per 5-V-USB-C). Kein PoE-Ausgang — nur zum Verteilen von Netzwerkports dort, wo keine Steckdose ist.",
+    "en": "5-port switch with no mains adapter of its own: runs off a PoE cable from an upstream switch or injector (or 5V USB-C). No PoE output — only for fanning out network ports where there is no outlet."
+  },
+  "useCases": {
+    "de": "Zwei, drei Netzwerkports in einem Kasten ohne Steckdose, gespeist über das PoE-Kabel.",
+    "en": "Two or three network ports in a box with no outlet, fed over the PoE cable."
+  },
+  "caveats": {
+    "de": "Nicht für Kameras — er reicht kein PoE weiter.",
+    "en": "Not for cameras — it passes no PoE on."
+  },
+  "links": {
+    "vendor": "switching-utility-poe/products/usw-flex-mini"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/5a176b22-af34-40f2-820c-958610df1825/19394e07-5146-4f8c-b72d-7fdbdf679c97.png",
+  "tags": {
+    "de": ["Strom aus dem PoE-Kabel", "kein PoE", "5 Ports"],
+    "en": ["powered over PoE", "no PoE", "5 ports"]
+  },
+  "mount": {
+    "de": "innen, im Kasten oder hinter dem Gerät",
+    "en": "indoors, in a box or behind the device"
+  },
+  "powerIn": "poe",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 5,
+      "speed": "1G"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 5,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "Netzwerkports dort verteilen, wo keine Steckdose ist",
+      "en": "fan out network ports where there is no outlet"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 0,
+    "poePorts": 0
+  }
+}

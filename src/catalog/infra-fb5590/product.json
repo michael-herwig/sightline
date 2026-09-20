@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema.json",
+  "id": "fb5590",
+  "kind": "infra",
+  "vendor": "avm",
+  "status": "current",
+  "order": 40,
+  "name": {
+    "de": "FRITZ!Box 5590 Fiber",
+    "en": "FRITZ!Box 5590 Fiber"
+  },
+  "price": 260,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Glasfaser-Router mit SFP-Schacht für AON, GPON und XGS-PON, WiFi 6. Kein Rekorder.",
+    "en": "Fibre router with an SFP cage for AON, GPON and XGS-PON, Wi-Fi 6. No recorder."
+  },
+  "useCases": {
+    "de": "Glasfaseranschluss, bei dem das SFP-Modul des Anbieters direkt in den Router soll.",
+    "en": "A fibre line where the provider's SFP module should plug straight into the router."
+  },
+  "caveats": {
+    "de": "Nicht bei DSL, und nicht als Rekorder.",
+    "en": "Not for DSL, and not as a recorder."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-box-5590-fiber",
+    "amazon": "https://www.amazon.de/dp/B09ZD4LFR3"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzbox_5590_fiber_fiber_2000x2000px_de.webp",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 4,
+      "speed": "1G"
+    },
+    {
+      "type": "wan",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "role": "router",
+    "ports": 4,
+    "sfp": false,
+    "poe": 0,
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "Glasfaser (SFP: AON/GPON/XGS-PON), WiFi 6 · kein NVR",
+      "en": "Fibre (SFP: AON/GPON/XGS-PON), Wi-Fi 6 · no NVR"
+    }
+  }
+}

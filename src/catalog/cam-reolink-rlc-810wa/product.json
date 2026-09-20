@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-rlc-810wa",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 240,
+  "name": {
+    "de": "Reolink RLC-810WA",
+    "en": "Reolink RLC-810WA"
+  },
+  "price": 85,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "4K ohne Netzwerkkabel dank Wi-Fi 6, braucht aber Steckdose. Nebeneingang, Gartenhaus.",
+    "en": "4K without a network cable thanks to Wi-Fi 6, but needs a socket. Side entrance, garden shed."
+  },
+  "useCases": {
+    "de": "Gartenhaus oder Nebeneingang, wo kein Cat hinkommt, aber eine Steckdose ist.",
+    "en": "Garden shed or side entrance where no Cat cable reaches but a socket exists."
+  },
+  "caveats": {
+    "de": "Nicht, wo das WLAN schwach ist — dann fällt sie aus, wenn es zählt.",
+    "en": "Not where Wi-Fi is weak — it drops out exactly when it matters."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/rlc-810wa/",
+    "amazon": "https://www.amazon.de/dp/B0C8M84Q9W"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2023/09/071011481694081508.6816.jpg.webp",
+  "tags": {
+    "de": ["4K", "WLAN", "kein PoE", "IR 30 m"],
+    "en": ["4K", "Wi-Fi", "no PoE", "IR 30 m"]
+  },
+  "ports": [
+    {
+      "type": "dc",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "res": "4K · 8 MP · 1/2.7\"",
+    "ir": 30,
+    "fov": 89,
+    "poe": "kein PoE · WLAN (Wi-Fi 6)",
+    "ip": "IP67",
+    "out": true,
+    "wifi": true
+  }
+}

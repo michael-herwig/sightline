@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema.json",
+  "id": "u-poe-plus-plus",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 310,
+  "name": {
+    "de": "U-PoE++ (90-W-Injektor)",
+    "en": "U-PoE++ (90W injector)"
+  },
+  "price": 25,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Günstigster Weg zu 802.3bt-Leistung für ein einzelnes Gerät (bis 60 W) aus einem gewöhnlichen Netzwerkport, wenn kein PoE-Switch mit genug Budget zur Hand ist.",
+    "en": "The cheapest way to 802.3bt power (up to 60 W) for a single device from an ordinary network port, when no PoE switch with enough budget is on hand."
+  },
+  "useCases": {
+    "de": "Ein einzelnes PoE++-Gerät an einem Switch, dessen Budget nicht reicht.",
+    "en": "A single PoE++ device on a switch whose budget falls short."
+  },
+  "caveats": {
+    "de": "Nicht für mehrere Geräte — dafür lieber ein Switch mit größerem Budget.",
+    "en": "Not for several devices — a switch with a bigger budget is the better fix."
+  },
+  "links": {
+    "vendor": "accessories-cables/products/u-poe-plus-plus"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/1c303795-9406-459d-bf40-3d7d631ec479/32da745e-e242-4546-ac86-907c88abbca0.png",
+  "tags": {
+    "de": ["Strom nötig", "802.3bt", "ein Abgang"],
+    "en": ["needs power", "802.3bt", "one output"]
+  },
+  "mount": {
+    "de": "an der Steckdose, in der Kabelstrecke",
+    "en": "at the outlet, inline in the run"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "poe": "bt"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 1,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "ein einzelnes Gerät mit bis zu 90 W speisen",
+      "en": "feed a single device with up to 90 W"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 90,
+    "poePorts": 1
+  }
+}

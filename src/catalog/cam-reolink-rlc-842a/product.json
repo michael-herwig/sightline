@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-rlc-842a",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 200,
+  "name": {
+    "de": "Reolink RLC-842A",
+    "en": "Reolink RLC-842A"
+  },
+  "price": 120,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Motorisiertes Varifokal (105°–31°) und IK10. Zum Heranholen von Kennzeichen oder Zufahrt.",
+    "en": "Motorised varifocal (105°–31°) and IK10. For pulling in plates or the driveway."
+  },
+  "useCases": {
+    "de": "Zufahrt oder Tor, wo Kennzeichen lesbar sein sollen: auf das Tor zoomen.",
+    "en": "Driveway or gate where plates should be readable: zoom onto the gate."
+  },
+  "caveats": {
+    "de": "Nicht für Übersicht — eingezoomt wird das Feld eng.",
+    "en": "Not for overview — zoomed in, the field gets narrow."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/rlc-842a/",
+    "amazon": "https://www.amazon.de/dp/B09DKMWK68"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/assets/ogimage/rlc-842a-facebook.jpg",
+  "tags": {
+    "de": ["4K", "5× Zoom", "IK10", "ONVIF"],
+    "en": ["4K", "5× zoom", "IK10", "ONVIF"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · 1/2.8\"",
+    "ir": 30,
+    "fov": 105,
+    "poe": "PoE (802.3af)",
+    "ip": "IP66 · IK10",
+    "out": true,
+    "zoom": "5× optisch"
+  }
+}

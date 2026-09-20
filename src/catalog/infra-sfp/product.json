@@ -1,0 +1,23 @@
+{
+  "$schema": "../schema.json",
+  "id": "sfp",
+  "kind": "infra",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 100,
+  "name": {
+    "de": "Singlemode-SFP-Modul",
+    "en": "Single-mode SFP module"
+  },
+  "price": 0,
+  "priceDate": "2026-09",
+  "specs": {
+    "qty": 0,
+    "on": false,
+    "hidden": true,
+    "sub": {
+      "de": "wird über die Kanäle gezählt",
+      "en": "counted through the conduits"
+    }
+  }
+}

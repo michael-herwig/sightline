@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema.json",
+  "id": "usw-flex",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 220,
+  "name": {
+    "de": "USW Flex (Switch, außentauglich)",
+    "en": "USW Flex (switch, outdoor-capable)"
+  },
+  "price": 89,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Fünf Ports, davon PoE mit 46 W gesamt, wetterfest — es braucht kein zusätzliches Gehäuse. Kein SFP: die Faser endet davor in einem Medienkonverter.",
+    "en": "Five ports, PoE with 46 W total, weatherproof — no extra housing needed. No SFP: the fibre ends in a media converter before it."
+  },
+  "useCases": {
+    "de": "Zwei, drei Kameras oder ein AP draußen am Mast, ohne Platz für einen Kasten.",
+    "en": "Two or three cameras or an AP outdoors on a pole, with no room for a box."
+  },
+  "caveats": {
+    "de": "Nicht am Faserende ohne Medienkonverter, und nicht für PoE++-Geräte.",
+    "en": "Not at a fibre end without a media converter, and not for PoE++ devices."
+  },
+  "links": {
+    "vendor": "switching-utility/products/usw-flex"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/c9a07d37-b390-4a5b-89c5-3cdab8e011c7/4bcd3c2b-a8b1-4be1-baab-deda172291cd.png",
+  "tags": {
+    "de": ["Strom nötig", "kein SFP · Medienkonverter davor", "wetterfest", "PoE 46 W"],
+    "en": ["needs power", "no SFP · media converter first", "weatherproof", "PoE 46 W"]
+  },
+  "mount": {
+    "de": "außen an Wand oder Mast, auch ohne Kasten",
+    "en": "outdoors on a wall or pole, even without a box"
+  },
+  "powerIn": "poe",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 4,
+      "speed": "1G",
+      "poe": "at"
+    },
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "specs": {
+    "ip": "IP54",
+    "ports": 5,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "5 Ports mit PoE, wetterfest, ohne Kasten",
+      "en": "5 ports with PoE, weatherproof, no box"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 46
+  }
+}

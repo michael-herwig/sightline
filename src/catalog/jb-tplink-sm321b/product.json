@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema.json",
+  "id": "tplink-sm321b",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 360,
+  "name": {
+    "de": "TP-Link SM321B (SFP-Modul, BiDi, Singlemode)",
+    "en": "TP-Link SM321B (SFP module, BiDi, single-mode)"
+  },
+  "price": 24,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Gegenstück zum SM321A — beide zusammen ersetzen ein normales SFP-Paar auf einer einzelnen Faser. Ohne das jeweils andere Ende bleibt die Strecke dunkel.",
+    "en": "Counterpart to the SM321A — together they replace a normal SFP pair on a single fibre. Without its matching far end, the run stays dark."
+  },
+  "useCases": {
+    "de": "Das andere Ende derselben Faser, immer zusammen mit dem SM321A.",
+    "en": "The far end of the same fibre, always together with the SM321A."
+  },
+  "caveats": {
+    "de": "Nicht zweimal dasselbe Modul bestellen — A und B gehören paarweise.",
+    "en": "Not two of the same module — A and B belong in pairs."
+  },
+  "links": {
+    "vendor": "https://www.tp-link.com/de/business-networking/omada-accessory-module-cable/sm321b/"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/SM321B_UN_3.30_2310_large_20231030022336x.jpg",
+  "tags": {
+    "de": ["kein Strom", "nur mit SM321A", "eine Faser", "20 km"],
+    "en": ["no power draw", "only with the SM321A", "one strand", "20 km"]
+  },
+  "mount": {
+    "de": "steckt im SFP-Schacht des Switches",
+    "en": "plugs into the switch's SFP cage"
+  },
+  "powerIn": "none",
+  "ports": [
+    {
+      "type": "sfp",
+      "dir": "both",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 0,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "das Gegenstück am anderen Ende derselben Faser",
+      "en": "the far end of the same single fibre"
+    },
+    "sfp": true,
+    "sfpPorts": 0,
+    "poe": 0
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema.json",
+  "id": "cab-sw",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "any",
+  "status": "current",
+  "order": 70,
+  "name": {
+    "de": "Leergehäuse IP66 für Switch, klein",
+    "en": "Empty enclosure IP66 for a switch, small"
+  },
+  "price": 25,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Leeres ABS-Gehäuse, 202×122×75 mm: Platz für einen 5-Port-Switch mit Kabelverschraubungen, nicht für acht Ports. Dafür der große Verteilerkasten.",
+    "en": "Empty ABS enclosure, 202×122×75 mm: room for a 5-port switch with cable glands, not for eight ports. Use the large cabinet for those."
+  },
+  "useCases": {
+    "de": "Ein kleiner Switch draußen an Wand oder Mast, ohne eigenes Außengehäuse.",
+    "en": "A small switch outdoors on a wall or pole, without an outdoor housing of its own."
+  },
+  "caveats": {
+    "de": "Nicht für einen 8- oder 16-Port-Switch — dafür ist er zu klein.",
+    "en": "Not for an 8- or 16-port switch — too small for that."
+  },
+  "links": {
+    "vendor": "https://www.elektrotresen.de/Installationsmaterial/Abzweig-und-Befestigungsmaterial/Kabelabzweigkaesten/Leergehaeuse/Spelsberg-Leergeh-use-TG-ABS-2012-8-o.html"
+  },
+  "img": "https://www.elektrotresen.de/media/images/info/307/141/8403140/10840314099.jpg",
+  "tags": {
+    "de": ["keine Erdarbeit", "kein Strom", "nur kleine Geräte"],
+    "en": ["no earthwork", "no power", "small devices only"]
+  },
+  "mount": {
+    "de": "Wand- oder Mastmontage",
+    "en": "Wall or pole mount"
+  },
+  "specs": {
+    "ip": "IP66",
+    "ports": 2,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "ein kleiner Switch draußen an Wand oder Mast",
+      "en": "a small switch outdoors on a wall or pole"
+    }
+  }
+}

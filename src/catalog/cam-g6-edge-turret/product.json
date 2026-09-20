@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-edge-turret",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 80,
+  "name": {
+    "de": "G6 Edge Turret",
+    "en": "G6 Edge Turret"
+  },
+  "price": 629,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Turret-Variante der G6 Edge Dome, gleiche Technik, für Unterzug-/Deckenmontage statt Wand.",
+    "en": "Turret variant of the G6 Edge Dome, same internals, for soffit/ceiling mounting instead of a wall."
+  },
+  "useCases": {
+    "de": "Dieselbe Technik unter Unterzug oder Decke, wo eine Dome nicht passt.",
+    "en": "The same internals under a soffit or ceiling, where a dome does not fit."
+  },
+  "caveats": {
+    "de": "Nicht dort, wo jemand zuschlagen kann — IK04 statt IK10.",
+    "en": "Not where someone can take a swing at it — IK04 instead of IK10."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-g6-edge-turret",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/802a5185-1d4a-45d1-b4bb-6b1d4036c52d/e545457a-b588-4afc-94a5-ffd86fc50b8d.png",
+  "tags": {
+    "de": ["4K", "standalone", "IR 40 m"],
+    "en": ["4K", "standalone", "IR 40 m"]
+  },
+  "poeIn": "at",
+  "specs": {
+    "res": "4K · 8 MP · 1/1.2\"",
+    "ir": 40,
+    "fov": 114,
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP66 · IK04",
+    "out": true,
+    "zoom": "2,36× optisch"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-dome",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 30,
+  "name": {
+    "de": "G6 Dome",
+    "en": "G6 Dome"
+  },
+  "price": 249,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Vandalensicher. Nur sinnvoll, wo jemand rankommt und zuschlagen kann.",
+    "en": "Vandal resistant. Only worth it where someone can reach it and take a swing."
+  },
+  "useCases": {
+    "de": "Innen an der Decke, unauffällig und vandalismusfest.",
+    "en": "Indoors on the ceiling, discreet and vandal resistant."
+  },
+  "caveats": {
+    "de": "Nicht ungeschützt an der Fassade und nicht auf Distanz.",
+    "en": "Not unprotected on a façade and not at a distance."
+  },
+  "links": {
+    "vendor": "physical-security-dome/products/uvc-g6-dome",
+    "amazon": "https://www.amazon.de/dp/B0FJZV8282"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/2f241968-e3be-42c2-98fc-7d879b360d25/1e661d71-79eb-4f79-9f17-2199b3655bb4.png",
+  "tags": {
+    "de": ["4K", "IK10"],
+    "en": ["4K", "IK10"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · 1/1.8\"",
+    "ir": 30,
+    "fov": 106,
+    "poe": "PoE (802.3af)",
+    "ip": "IP66 · IK10",
+    "out": false
+  }
+}

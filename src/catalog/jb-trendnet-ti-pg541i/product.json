@@ -1,0 +1,73 @@
+{
+  "$schema": "../schema.json",
+  "id": "trendnet-ti-pg541i",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "trendnet",
+  "status": "current",
+  "order": 330,
+  "name": {
+    "de": "TRENDnet TI-PG541i (DIN-Schienen-Switch, PoE+)",
+    "en": "TRENDnet TI-PG541i (DIN-rail switch, PoE+)"
+  },
+  "price": 239,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Industrieausführung fürs Rack oder den Schaltschrank: 4× Gigabit-PoE+ (120 W), 1× Kupfer, 1× SFP, Hutschiene, −40 bis 70 °C, redundante Spannungsversorgung möglich.",
+    "en": "Industrial version for a rack or cabinet: 4× gigabit PoE+ (120 W), 1× copper, 1× SFP, DIN rail, −40 to 70 °C, redundant power input possible."
+  },
+  "useCases": {
+    "de": "Schaltschrank in Werkstatt oder Stall, wo der Switch auf die Hutschiene soll.",
+    "en": "A cabinet in a workshop or stable where the switch goes on a DIN rail."
+  },
+  "caveats": {
+    "de": "Nicht im Wohnhaus — dort tut ein gewöhnlicher Switch dasselbe für weniger.",
+    "en": "Not in the house — an ordinary switch does the same for less there."
+  },
+  "links": {
+    "vendor": "https://www.trendnet.com/products/PoE/PoE-Switch/TI-PG541i"
+  },
+  "img": "https://www.trendnet.com/images/products/photos/TI-PG541i_v2.6/TI-PG541i_(v2.xR)_d01_2.webp",
+  "tags": {
+    "de": ["Strom nötig", "Hutschiene", "−40 bis 70 °C", "1× SFP"],
+    "en": ["needs power", "DIN rail", "−40 to 70 °C", "1× SFP"]
+  },
+  "mount": {
+    "de": "auf der Hutschiene im Schaltschrank",
+    "en": "on the DIN rail in a cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 4,
+      "speed": "1G",
+      "poe": "at"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp",
+      "dir": "both",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP30",
+    "ports": 5,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "PoE-Switch für den Schaltschrank, auf der Hutschiene",
+      "en": "a PoE switch for the cabinet, on a DIN rail"
+    },
+    "sfp": true,
+    "sfpPorts": 1,
+    "poe": 120
+  }
+}

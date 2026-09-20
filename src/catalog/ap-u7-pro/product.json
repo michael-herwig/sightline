@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-pro",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 20,
+  "name": {
+    "de": "U7 Pro",
+    "en": "U7 Pro"
+  },
+  "price": 189,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 7, 6 GHz, innen. Der Standard-AP fürs Wohnhaus.",
+    "en": "Wi-Fi 7, 6 GHz, indoor. The default AP for the house."
+  },
+  "useCases": {
+    "de": "Der Standard fürs Wohnhaus, auch bei vielen Geräten.",
+    "en": "The default for the house, also with many devices."
+  },
+  "caveats": {
+    "de": "Nicht außen — IP20, er verträgt keinen Regen.",
+    "en": "Not outdoors — IP20, it does not take rain."
+  },
+  "links": {
+    "vendor": "wifi-flagship/products/u7-pro",
+    "amazon": "https://www.amazon.de/dp/B0CSR63FMH"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/fa8dd4e4-36c8-4c79-a928-22c7bff2ce29/ab5bc8a4-6135-402e-a695-e3ea5e16d3e6.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G/2.5G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 18,
+    "out": false,
+    "wifi": "WiFi 7 · 6 GHz",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "netatmo-outdoor",
+  "kind": "cam",
+  "vendor": "netatmo",
+  "status": "current",
+  "order": 300,
+  "name": {
+    "de": "Netatmo Außenkamera",
+    "en": "Netatmo Außenkamera"
+  },
+  "price": 250,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Kamera, Flutlicht und Sirene in einer Außenleuchte. Speichert lokal ohne Abo, braucht WLAN und 230 V. Kein NVR — nur App.",
+    "en": "Camera, floodlight and siren in an outdoor light. Local storage, no subscription, needs Wi-Fi and mains. No NVR — app only."
+  },
+  "useCases": {
+    "de": "Ein einzelnes Gerät an Haustür oder Einfahrt, das eine Außenleuchte ersetzt — App statt NVR.",
+    "en": "A single device at the front door or driveway that replaces an outdoor light — app instead of NVR."
+  },
+  "caveats": {
+    "de": "Nicht als Teil eines Kamerasystems: kein ONVIF, keine NVR-Aufzeichnung, braucht 230 V.",
+    "en": "Not as part of a camera system: no ONVIF, no NVR recording, needs mains."
+  },
+  "links": {
+    "vendor": "https://www.netatmo.com/de-de/outdoor-camera-original-black",
+    "amazon": "https://www.amazon.de/dp/B0B8DWD24V"
+  },
+  "img": "https://www.netatmo.com/img/5a052ce9-ea06-451a-a644-03555c010709",
+  "tags": {
+    "de": ["WLAN", "kein PoE", "Strom nötig", "Flutlicht", "kein NVR"],
+    "en": ["Wi-Fi", "no PoE", "needs power", "floodlight", "no NVR"]
+  },
+  "ports": [
+    {
+      "type": "dc",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "res": "2K+ HDR",
+    "ir": 15,
+    "fov": 130,
+    "poe": "kein PoE · 230 V (ersetzt eine Außenleuchte)",
+    "ip": "IP66",
+    "out": true,
+    "wifi": true
+  }
+}

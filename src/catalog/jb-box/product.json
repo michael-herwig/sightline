@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "box",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "any",
+  "status": "current",
+  "order": 40,
+  "name": {
+    "de": "Gel-Abzweigdose IP68",
+    "en": "Gel-filled junction box IP68"
+  },
+  "price": 15,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Billig und dicht, aber einmalig: zum Öffnen muss aufgegraben werden. Nur für Abzweige, die sich nie ändern.",
+    "en": "Cheap and watertight, but one-shot: opening it means digging. Only for branches that never change."
+  },
+  "useCases": {
+    "de": "Ein Abzweig, der sich sicher nie ändert, und das Budget ist knapp.",
+    "en": "A branch that will never change, on a tight budget."
+  },
+  "caveats": {
+    "de": "Nicht wo später nachgezogen wird — Öffnen heißt aufgraben.",
+    "en": "Not where cables get added later — opening it means digging."
+  },
+  "links": {
+    "vendor": "https://www.elektrikshop.de/cellpack-gel-muffe-easycell-easy-2-v-3x1-5-2-5.html",
+    "amazon": "https://www.amazon.de/dp/B00M1UXU3Q",
+    "amazonSimilar": true
+  },
+  "img": "https://www.elektrikshop.de/images/product_images/original_images/5165_0.jpg",
+  "tags": {
+    "de": ["Erdarbeit", "kein Strom", "nicht mehr zugänglich"],
+    "en": ["earthwork", "no power", "not reachable"]
+  },
+  "mount": {
+    "de": "Direkt im Erdreich",
+    "en": "Direct burial"
+  },
+  "specs": {
+    "ip": "IP68",
+    "ports": 3,
+    "power": false,
+    "dig": true,
+    "use": {
+      "de": "billigster Abzweig, danach zugeschüttet",
+      "en": "cheapest branch, buried afterwards"
+    }
+  }
+}

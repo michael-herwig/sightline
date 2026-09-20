@@ -1,0 +1,69 @@
+{
+  "$schema": "../schema.json",
+  "id": "usw-industrial",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 160,
+  "name": {
+    "de": "USW Industrial (Switch)",
+    "en": "USW Industrial (switch)"
+  },
+  "price": 449,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Aluminiumgehäuse, lüfterlos, 10 Gigabit-Ports, davon 8× PoE++ (60 W je Port). Für Staub, Hitze, Kälte. Kein SFP.",
+    "en": "Aluminium housing, fanless, 10 gigabit ports, 8 of them PoE++ (60 W per port). For dust, heat, cold. No SFP."
+  },
+  "useCases": {
+    "de": "Stall oder Werkstatt mit Staub und Temperaturen, PTZ oder Flutlicht am Port.",
+    "en": "Stable or workshop with dust and temperature swings, PTZ or floodlights on the ports."
+  },
+  "caveats": {
+    "de": "Nicht im Wohnhaus — dafür ist er dreimal zu teuer.",
+    "en": "Not in the house — three times too expensive for that."
+  },
+  "links": {
+    "vendor": "switching-utility/products/usw-industrial",
+    "amazon": "https://www.amazon.de/dp/B081QW97LB"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/e9c1cd60-bc9d-4e80-9e17-7a3dbecf9f29/2fad00b0-046a-4040-abb5-a206120bffb6.png",
+  "tags": {
+    "de": ["Strom nötig", "kein SFP · Medienkonverter davor", "PoE++ 430 W", "trocken montieren"],
+    "en": ["needs power", "no SFP · media converter first", "PoE++ 430 W", "mount dry"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "1G",
+      "poe": "bt"
+    },
+    {
+      "type": "rj45",
+      "dir": "both",
+      "n": 2,
+      "speed": "1G"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 10,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "8× PoE++, robust, lüfterlos",
+      "en": "8× PoE++, rugged, fanless"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 430
+  }
+}

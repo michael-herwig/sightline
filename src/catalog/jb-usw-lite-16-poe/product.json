@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema.json",
+  "id": "usw-lite-16-poe",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 150,
+  "name": {
+    "de": "USW Lite 16 PoE (Switch)",
+    "en": "USW Lite 16 PoE (switch)"
+  },
+  "price": 179,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "16 Ports, davon 8 mit PoE+ (45 W gesamt), kein SFP. Für den Verteiler mit vielen Kabeln, Faser über Medienkonverter.",
+    "en": "16 ports, 8 of them PoE+ (45 W total), no SFP. For a distributor with many cables, fibre via media converter."
+  },
+  "useCases": {
+    "de": "Werkstatt oder Stall mit vielen Dosen und wenigen PoE-Geräten.",
+    "en": "Workshop or stable with many outlets and few PoE devices."
+  },
+  "caveats": {
+    "de": "Nicht für acht Kameras — 45 W reichen für drei, vier.",
+    "en": "Not for eight cameras — 45 W covers three or four."
+  },
+  "links": {
+    "vendor": "switching-utility/products/usw-lite-16-poe",
+    "amazon": "https://www.amazon.de/dp/B08KC1YQZ9"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/e726eace-a772-4f12-bfad-c68baf20e51f/9ecfc657-5e31-4135-89b5-46b3537b35fc.png",
+  "tags": {
+    "de": ["Strom nötig", "kein SFP · Medienkonverter davor", "PoE+ 45 W", "trocken montieren"],
+    "en": ["needs power", "no SFP · media converter first", "PoE+ 45 W", "mount dry"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 16,
+      "speed": "1G",
+      "poe": "at"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 16,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "16 Ports, 8× PoE+",
+      "en": "16 ports, 8× PoE+"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 45
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema.json",
+  "id": "tplink-poe380s",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 320,
+  "name": {
+    "de": "TP-Link POE380S (PoE++-Injektor, 90 W)",
+    "en": "TP-Link POE380S (PoE++ injector, 90W)"
+  },
+  "price": 49,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Speist ein einzelnes Gerät mit bis zu 90 W (802.3bt Typ 4) — die Oberklasse neben dem POE170S (60 W), etwa für PoE++-Kameras mit Heizung oder große PTZ-Modelle.",
+    "en": "Feeds a single device with up to 90 W (802.3bt Type 4) — the step up from the POE170S (60 W), for PoE++ cameras with heaters or large PTZ models."
+  },
+  "useCases": {
+    "de": "Eine PTZ-Kamera oder ein Gerät mit Heizung, das mehr als 60 W zieht.",
+    "en": "A PTZ camera or a device with a heater that draws more than 60 W."
+  },
+  "caveats": {
+    "de": "Nicht wenn 60 W reichen — der POE170S kostet die Hälfte.",
+    "en": "Not when 60 W is enough — the POE170S costs half."
+  },
+  "links": {
+    "vendor": "https://www.tp-link.com/de/business-networking/omada-accessory-power-poe/poe380s/"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/POE380S(UN)_1.0_01_large_20231120073148d.jpg",
+  "tags": {
+    "de": ["Strom nötig", "802.3bt Typ 4", "ein Abgang"],
+    "en": ["needs power", "802.3bt type 4", "one output"]
+  },
+  "mount": {
+    "de": "an der Steckdose, in der Kabelstrecke",
+    "en": "at the outlet, inline in the run"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "poe": "bt"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 2,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "ein PoE++-Gerät mit voller Leistung speisen",
+      "en": "feed one PoE++ device at full power"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 90,
+    "poePorts": 1
+  }
+}

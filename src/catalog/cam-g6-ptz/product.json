@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-ptz",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 50,
+  "name": {
+    "de": "G6 PTZ",
+    "en": "G6 PTZ"
+  },
+  "price": 359,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Schwenkt, zoomt und verfolgt Personen automatisch. Für große Flächen, sieht aber immer nur dahin, wo sie gerade guckt.",
+    "en": "Pans, zooms and auto-tracks people. Made for large areas, but only ever sees where it happens to be pointing."
+  },
+  "useCases": {
+    "de": "Große Fläche, die man im Zweifel heranholen will.",
+    "en": "A large area you may want to zoom into."
+  },
+  "caveats": {
+    "de": "Nicht als einzige Kamera: wo sie gerade nicht hinsieht, nimmt sie nichts auf.",
+    "en": "Not as your only camera: wherever it is not looking, nothing is recorded."
+  },
+  "links": {
+    "vendor": "physical-security-ptz/products/uvc-g6-ptz",
+    "amazon": "https://www.amazon.de/dp/B0FPDH5WXG"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/8b0777b6-851e-45f8-b4d2-b98b598c1ebc/117bc92a-0154-43fe-9db4-59ba8be2ed3f.png",
+  "tags": {
+    "de": ["PTZ", "Tracking", "10× Zoom"],
+    "en": ["PTZ", "tracking", "10× zoom"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "at",
+  "specs": {
+    "res": "4K · 8 MP · 10× optischer Zoom",
+    "ir": 30,
+    "fov": 360,
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP66",
+    "out": true
+  }
+}

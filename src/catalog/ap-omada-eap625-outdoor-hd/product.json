@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "omada-eap625-outdoor-hd",
+  "kind": "ap",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 150,
+  "name": {
+    "de": "TP-Link EAP625-Outdoor HD",
+    "en": "TP-Link EAP625-Outdoor HD"
+  },
+  "price": 166,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Vergossen, IP68, viele Nutzer. Für harte Umgebung außen.",
+    "en": "Fully potted, IP68, many users. For harsh outdoor spots."
+  },
+  "useCases": {
+    "de": "Stall, Waschplatz, Staub und Nässe — wo IP67 nicht reicht.",
+    "en": "Stable, wash bay, dust and wet — where IP67 is not enough."
+  },
+  "caveats": {
+    "de": "Nicht für maximale Reichweite; Vorteil ist die Dichtheit.",
+    "en": "Not for maximum range; the advantage is the sealing."
+  },
+  "links": {
+    "vendor": "https://www.omadanetworks.com/de/business-networking/omada-wifi-outdoor/eap625-outdoor-hd/",
+    "amazon": "https://www.amazon.de/dp/B0CSSSBHK9"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/overview_01_large_20241227055620p.jpg",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 30,
+    "out": true,
+    "wifi": "WiFi 6 · 2×2",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP68"
+  }
+}

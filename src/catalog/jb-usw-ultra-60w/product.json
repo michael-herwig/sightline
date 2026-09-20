@@ -1,0 +1,69 @@
+{
+  "$schema": "../schema.json",
+  "id": "usw-ultra-60w",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 140,
+  "name": {
+    "de": "USW Ultra 60W (Switch)",
+    "en": "USW Ultra 60W (switch)"
+  },
+  "price": 129,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Kleiner 8-Port-PoE+-Switch (52 W), lüfterlos, kein SFP: die Faser endet davor in einem Medienkonverter.",
+    "en": "Small 8-port PoE+ switch (52 W), fanless, no SFP: the fibre ends in a media converter before it."
+  },
+  "useCases": {
+    "de": "Ein Nebengebäude mit zwei, drei Kameras und einem AP.",
+    "en": "An outbuilding with two or three cameras and an AP."
+  },
+  "caveats": {
+    "de": "Nicht ohne Medienkonverter an der Faser, und nicht für PoE++-Geräte.",
+    "en": "Not on fibre without a media converter, and not for PoE++ devices."
+  },
+  "links": {
+    "vendor": "switching-utility/collections/pro-ultra/products/usw-ultra-60w",
+    "amazon": "https://www.amazon.de/dp/B0D1XRYF2G"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/d1af5d9b-b74c-4881-99af-033b71ed1590/f80567f8-ba09-4a75-982d-6fd636623492.png",
+  "tags": {
+    "de": ["Strom nötig", "kein SFP · Medienkonverter davor", "PoE+ 52 W", "trocken montieren"],
+    "en": ["needs power", "no SFP · media converter first", "PoE+ 52 W", "mount dry"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 7,
+      "speed": "1G",
+      "poe": "at"
+    },
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "8× PoE+, kompakt, lüfterlos",
+      "en": "8× PoE+, compact, fanless"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 52
+  }
+}

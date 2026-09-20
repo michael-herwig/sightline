@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-turret",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 20,
+  "name": {
+    "de": "G6 Turret",
+    "en": "G6 Turret"
+  },
+  "price": 179,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Gleiche Technik wie Bullet, für Decken- und Unterzugmontage (Stallgasse, Vordach).",
+    "en": "Same internals as the Bullet, for ceiling and soffit mounting (stable aisle, porch roof)."
+  },
+  "useCases": {
+    "de": "Flach an der Wand oder unter dem Vordach, wo eine Bullet zu sperrig wäre.",
+    "en": "Flat on a wall or under an eave, where a bullet would be too bulky."
+  },
+  "caveats": {
+    "de": "Nicht für weite Strecken bei Nacht.",
+    "en": "Not for long distances at night."
+  },
+  "links": {
+    "vendor": "physical-security-turret/products/uvc-g6-turret",
+    "amazon": "https://www.amazon.de/dp/B0F81MRNMC"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/cc0e6f23-b53b-45b5-bff5-faf69f4fbf30/40f697ee-d5c1-4e96-b418-1c642ab1ea19.png",
+  "tags": {
+    "de": ["4K", "Decke", "IR 30 m"],
+    "en": ["4K", "ceiling", "IR 30 m"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · 1/1.8\"",
+    "ir": 30,
+    "fov": 106,
+    "poe": "PoE (802.3af)",
+    "ip": "IP66",
+    "out": true
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema.json",
+  "id": "fritz-repeater-6000",
+  "kind": "ap",
+  "vendor": "avm",
+  "status": "current",
+  "order": 200,
+  "name": {
+    "de": "FRITZ!Repeater 6000",
+    "en": "FRITZ!Repeater 6000"
+  },
+  "price": 220,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "AVMs stärkster WiFi-6-Repeater, 2,5-GbE-Port. Als AP per Kabel in Werkstatt oder großem Raum.",
+    "en": "AVM's strongest Wi-Fi 6 repeater, 2.5 GbE port. As a wired AP in a workshop or large room."
+  },
+  "useCases": {
+    "de": "Großer Raum oder Werkstatt mit FRITZ!Box, wenn 4×4 und 2,5 GbE gewünscht sind.",
+    "en": "Large room or workshop with a FRITZ!Box when 4×4 and 2.5 GbE are wanted."
+  },
+  "caveats": {
+    "de": "Nicht draußen; für den Preis gibt es PoE-APs mit Controller.",
+    "en": "Not outdoors; for the money there are PoE APs with a controller."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-repeater-6000",
+    "amazon": "https://www.amazon.de/dp/B092VWMBZ2"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzrepeater_6000_2000x2000px.webp",
+  "tags": {
+    "de": ["kein PoE", "Steckdose", "innen"],
+    "en": ["no PoE", "mains socket", "indoor"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "2.5G"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 22,
+    "out": false,
+    "wifi": "WiFi 6 · 4×4 · Tri-Band",
+    "poe": "kein PoE · Steckdose",
+    "ip": "IP20"
+  }
+}

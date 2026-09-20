@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "u6-enterprise",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 80,
+  "name": {
+    "de": "U6 Enterprise",
+    "en": "U6 Enterprise"
+  },
+  "price": 250,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 6E mit 6 GHz, 4×4, innen. Für viele Geräte im Haupthaus.",
+    "en": "Wi-Fi 6E with 6 GHz, 4×4, indoor. Many clients in the main house."
+  },
+  "useCases": {
+    "de": "Haupthaus mit vielen Geräten, Homeoffice, 6-GHz-Clients.",
+    "en": "Main house with many devices, home office, 6 GHz clients."
+  },
+  "caveats": {
+    "de": "Nicht für kleine Räume oder außen — Geld für Reichweite bringt es nicht.",
+    "en": "Not for small rooms or outdoors — money spent on density, not range."
+  },
+  "links": {
+    "vendor": "wifi-flagship/products/u6-enterprise",
+    "amazon": "https://www.amazon.de/dp/B0B395SS6T"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/f9118c0f-060b-4fd7-99ce-ace671c7a1fe/6f2a87a4-193d-43e0-b253-aa0ea0795694.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G/2.5G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 20,
+    "out": false,
+    "wifi": "WiFi 6E · 4×4 · 6 GHz",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

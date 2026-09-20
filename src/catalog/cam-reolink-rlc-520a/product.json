@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-rlc-520a",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 250,
+  "name": {
+    "de": "Reolink RLC-520A",
+    "en": "Reolink RLC-520A"
+  },
+  "price": 55,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Günstiger PoE-Einstieg als Dome. Reicht für Nebeneingang, Garage, Werkstatt.",
+    "en": "Budget PoE dome. Enough for a side door, garage or workshop."
+  },
+  "useCases": {
+    "de": "Nebeneingang, Garage, Werkstatt: günstige Kontrolle auf kurze Distanz.",
+    "en": "Side door, garage, workshop: cheap coverage at short range."
+  },
+  "caveats": {
+    "de": "Nicht zur Identifikation: 5 MP und 80° reichen nur für die Nähe.",
+    "en": "Not for identification: 5 MP and 80° only work up close."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/rlc-520a/",
+    "amazon": "https://www.amazon.de/dp/B08KG1517Y"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2025/07/090349121752032952.7475.jpg.webp",
+  "tags": {
+    "de": ["5 MP", "günstig", "IR 30 m", "ONVIF"],
+    "en": ["5 MP", "budget", "IR 30 m", "ONVIF"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "5 MP · 1/2.7\"",
+    "ir": 30,
+    "fov": 80,
+    "poe": "PoE (802.3af)",
+    "ip": "IP67",
+    "out": true
+  }
+}

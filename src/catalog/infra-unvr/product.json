@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema.json",
+  "id": "unvr",
+  "kind": "infra",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 110,
+  "name": {
+    "de": "UNVR (separater Recorder)",
+    "en": "UNVR (separate recorder)"
+  },
+  "price": 269,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Eigener Rekorder mit vier Festplattenschächten. Nötig, sobald kein UniFi-Gateway aufzeichnet oder mehr als rund fünf 4K-Kameras laufen.",
+    "en": "A recorder of its own with four drive bays. Needed as soon as no UniFi gateway records, or more than about five 4K cameras run."
+  },
+  "useCases": {
+    "de": "Ab etwa sechs 4K-Kameras, bei langer Vorhaltezeit oder wenn der Router kein UniFi-Gateway ist.",
+    "en": "From about six 4K cameras, with long retention, or when the router is not a UniFi gateway."
+  },
+  "caveats": {
+    "de": "Nicht bei drei Kameras am UCG Fiber — das kann es selbst.",
+    "en": "Not for three cameras on a UCG Fiber — it handles those itself."
+  },
+  "links": {
+    "vendor": "network-video-recorders/products/unvr",
+    "amazon": "https://www.amazon.de/dp/B08CT8QGWK"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/8a3b51c6-d3e9-4ea7-95b3-49a1253c4542/1d0a75b2-8096-4e1a-be7f-b3e57c681322.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp+",
+      "dir": "in",
+      "n": 1,
+      "speed": "10G"
+    }
+  ],
+  "specs": {
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "ab 6× 4K empfohlen · 4 HDD-Schächte",
+      "en": "recommended from 6× 4K · 4 HDD bays"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema.json",
+  "id": "mikrotik-crs305",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "mikrotik",
+  "status": "current",
+  "order": 270,
+  "name": {
+    "de": "MikroTik CRS305-1G-4S+IN (Switch)",
+    "en": "MikroTik CRS305-1G-4S+IN (switch)"
+  },
+  "price": 149,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Vier SFP+-Schächte (bis 10G) plus ein Gigabit-Kupferport, kein PoE. Für die Zentrale, wenn mehrere Gebäude je eine eigene Faser dorthin ziehen. Kupfergeräte dahinter brauchen einen eigenen PoE-Switch.",
+    "en": "Four SFP+ cages (up to 10G) plus one gigabit copper port, no PoE. For the hub when several buildings each run their own fibre there. Copper devices behind it need a PoE switch of their own."
+  },
+  "useCases": {
+    "de": "Mehrere Gebäude, jedes mit eigener Faser zum Haupthaus, sollen an einem Punkt zusammenlaufen.",
+    "en": "Several buildings, each with its own fibre to the main house, need to come together at one point."
+  },
+  "caveats": {
+    "de": "Nicht wenn dort auch Kupfergeräte mit PoE hängen sollen — er liefert selbst kein PoE.",
+    "en": "Not when copper devices with PoE hang off it too — it supplies no PoE itself."
+  },
+  "links": {
+    "vendor": "https://mikrotik.com/product/crs305_1g_4s_in"
+  },
+  "img": "https://cdn.mikrotik.com/web-assets/rb_images/1659_tm.webp",
+  "tags": {
+    "de": ["Strom nötig", "kein PoE", "4× SFP+", "nur Faseraggregation"],
+    "en": ["needs power", "no PoE", "4× SFP+", "fibre aggregation only"]
+  },
+  "mount": {
+    "de": "innen, Tischgerät",
+    "en": "indoors, desktop unit"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp+",
+      "dir": "both",
+      "n": 4,
+      "speed": "10G"
+    }
+  ],
+  "poeIn": "af/at",
+  "specs": {
+    "ip": "IP20",
+    "ports": 1,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "vier Glasfaserstrecken an einem Punkt bündeln",
+      "en": "bundle four fibre runs at one point"
+    },
+    "sfp": true,
+    "sfpPorts": 4,
+    "poe": 0
+  }
+}

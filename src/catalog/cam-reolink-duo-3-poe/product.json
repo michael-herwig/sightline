@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-duo-3-poe",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 210,
+  "name": {
+    "de": "Reolink Duo 3 PoE",
+    "en": "Reolink Duo 3 PoE"
+  },
+  "price": 175,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "180° aus zwei Objektiven ohne sichtbare Naht. Für lange Grenzen oder große Höfe.",
+    "en": "180° from two lenses with no visible seam. For long boundaries or big yards."
+  },
+  "useCases": {
+    "de": "Lange Grundstücksgrenze, breite Hofseite: eine Kamera statt zwei.",
+    "en": "Long boundary, wide yard side: one camera instead of two."
+  },
+  "caveats": {
+    "de": "Nicht zur Identifikation auf Distanz — 180° verteilen die Pixel.",
+    "en": "Not for identification at distance — 180° spreads the pixels thin."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/reolink-duo-3-poe/",
+    "amazon": "https://www.amazon.de/dp/B0CM34VG3X"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2024/01/030826541704270414.65.png",
+  "tags": {
+    "de": ["180°", "Übersicht", "IR 30 m", "ONVIF"],
+    "en": ["180°", "overview", "IR 30 m", "ONVIF"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "16 MP · Dual-Sensor · 2× 1/2.7\"",
+    "ir": 30,
+    "fov": 180,
+    "poe": "PoE (802.3af)",
+    "ip": "IP67",
+    "out": true
+  }
+}

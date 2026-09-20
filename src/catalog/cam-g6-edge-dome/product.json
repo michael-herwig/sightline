@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-edge-dome",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 70,
+  "name": {
+    "de": "G6 Edge Dome",
+    "en": "G6 Edge Dome"
+  },
+  "price": 629,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Neu, nicht im Katalog: läuft standalone ohne NVR (microSD), großer 1/1.2\"-Sensor, 40 m IR, 2,36× Zoom. Deutlich teurer als G6 Dome.",
+    "en": "New, not in the catalog: runs standalone without an NVR (microSD), large 1/1.2\" sensor, 40 m IR, 2.36× zoom. Notably pricier than the G6 Dome."
+  },
+  "useCases": {
+    "de": "Wenn die Kamera ohne Konsole aufzeichnen und trotzdem nachts 4K liefern soll.",
+    "en": "When the camera should record without a console and still deliver 4K at night."
+  },
+  "caveats": {
+    "de": "Nicht wo eine G6 Dome reicht — sie kostet das Zweieinhalbfache.",
+    "en": "Not where a G6 Dome does the job — this costs two and a half times as much."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-g6-edge-dome",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/78af4fc9-c880-4c19-84fe-29adbecc0827/68533c5d-bf5c-41dd-826c-e665d22d2e6e.png",
+  "tags": {
+    "de": ["4K", "standalone", "IR 40 m", "IK10"],
+    "en": ["4K", "standalone", "IR 40 m", "IK10"]
+  },
+  "poeIn": "at",
+  "specs": {
+    "res": "4K · 8 MP · 1/1.2\"",
+    "ir": 40,
+    "fov": 114,
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP66 · IK10",
+    "out": true,
+    "zoom": "2,36× optisch"
+  }
+}

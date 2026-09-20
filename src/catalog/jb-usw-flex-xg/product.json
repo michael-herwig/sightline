@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema.json",
+  "id": "usw-flex-xg",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 300,
+  "name": {
+    "de": "USW Flex XG (Switch, PoE-gespeist, 10G)",
+    "en": "USW Flex XG (switch, PoE-powered, 10G)"
+  },
+  "price": 270,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Wie der Flex Mini, aber mit Multi-Gigabit-Kupferports (10G/2,5G gemischt) und ebenfalls ohne eigenes Netzteil — läuft über PoE oder USB-C. Kein PoE-Ausgang.",
+    "en": "Like the Flex Mini, but with multi-gigabit copper ports (10G/2.5G mix) and likewise no mains adapter of its own — runs off PoE or USB-C. No PoE output."
+  },
+  "useCases": {
+    "de": "Mehrere 10G-Ports ohne Steckdose, etwa am Rekorder im Rack.",
+    "en": "Several 10G ports with no outlet, at the recorder in the rack say."
+  },
+  "caveats": {
+    "de": "Nicht als gewöhnlicher Verteiler — für Gigabit ist der Flex Mini ein Zehntel so teuer.",
+    "en": "Not as an ordinary fan-out — for gigabit the Flex Mini costs a tenth."
+  },
+  "links": {
+    "vendor": "switching-utility-poe/products/usw-flex-xg"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/61d6b40e-0997-4ce0-b723-bb0c2c4aafa2/9d558a4b-49c7-435d-b574-94f6581e23a9.png",
+  "tags": {
+    "de": ["Strom aus dem PoE-Kabel", "kein PoE", "10G"],
+    "en": ["powered over PoE", "no PoE", "10G"]
+  },
+  "mount": {
+    "de": "innen, Tischgerät",
+    "en": "indoors, desktop unit"
+  },
+  "powerIn": "poe",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 4,
+      "speed": "10G"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 5,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "10G-Ports ohne Steckdose, etwa am Rekorder",
+      "en": "10G ports with no outlet, at the recorder say"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 0,
+    "poePorts": 0
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-video-doorbell-poe",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 290,
+  "name": {
+    "de": "Reolink Video Doorbell PoE",
+    "en": "Reolink Video Doorbell PoE"
+  },
+  "price": 108,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Echte PoE-Türklingel mit ONVIF/RTSP (offener als die meisten Reolink-Kameras). Passt zum bestehenden PoE-NVR-Konzept, gehört an die Haustür.",
+    "en": "Genuine PoE doorbell with ONVIF/RTSP (more open than most Reolink cameras). Fits the existing PoE/NVR setup, belongs at the front door."
+  },
+  "useCases": {
+    "de": "Haustür im PoE-Netz, wenn die Klingel per ONVIF im eigenen Rekorder landen soll.",
+    "en": "A front door on the PoE network, when the doorbell should land in your own recorder over ONVIF."
+  },
+  "caveats": {
+    "de": "Nicht ohne PoE-Leitung bis zur Tür.",
+    "en": "Not without a PoE cable up to the door."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/reolink-video-doorbell-poe/",
+    "amazon": null
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2023/07/060323501688613830.9308.png",
+  "tags": {
+    "de": ["Türklingel", "PoE", "ONVIF"],
+    "en": ["doorbell", "PoE", "ONVIF"]
+  },
+  "poeIn": "af",
+  "open": {
+    "rtsp": true,
+    "onvif": true,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h264"],
+    "sub": ["h264"]
+  },
+  "specs": {
+    "res": "5 MP · 1/2.7\"",
+    "ir": 5,
+    "fov": 100,
+    "poe": "PoE (802.3af)",
+    "ip": "IP65",
+    "out": true
+  }
+}

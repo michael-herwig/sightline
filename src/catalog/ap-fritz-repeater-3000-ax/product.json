@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema.json",
+  "id": "fritz-repeater-3000-ax",
+  "kind": "ap",
+  "vendor": "avm",
+  "status": "current",
+  "order": 190,
+  "name": {
+    "de": "FRITZ!Repeater 3000 AX",
+    "en": "FRITZ!Repeater 3000 AX"
+  },
+  "price": 180,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Drei Funkeinheiten, 2× LAN. Per Kabel an die FRITZ!Box, Raum mit mehr Geräten.",
+    "en": "Three radios, 2× LAN. Wired to the FRITZ!Box, a room with more devices."
+  },
+  "useCases": {
+    "de": "Wohnbereich mit vielen Geräten in einer FRITZ!-Umgebung.",
+    "en": "Living area with many devices in a FRITZ! setup."
+  },
+  "caveats": {
+    "de": "Nicht draußen und nicht, wenn PoE-APs an einem Switch geplant sind.",
+    "en": "Not outdoors, and not if PoE APs on a switch are planned."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-repeater-3000-ax-20003197",
+    "amazon": "https://www.amazon.de/dp/B0BKGZZP2P"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzrepeater_3000_ax_2000x2000px.webp",
+  "tags": {
+    "de": ["kein PoE", "Steckdose", "innen"],
+    "en": ["no PoE", "mains socket", "indoor"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 2,
+      "speed": "1G"
+    }
+  ],
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 18,
+    "out": false,
+    "wifi": "WiFi 6 · 2×2 · Tri-Band",
+    "poe": "kein PoE · Steckdose",
+    "ip": "IP20"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "../schema.json",
+  "id": "trendnet-tpe-e100",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "trendnet",
+  "status": "current",
+  "order": 240,
+  "name": {
+    "de": "TRENDnet TPE-E100 (PoE-Extender)",
+    "en": "TRENDnet TPE-E100 (PoE extender)"
+  },
+  "price": 39,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Sitzt mitten in der Leitung und macht aus einer 100-m-Cat-Strecke bis zu 200 m, PoE läuft mit durch. Eigenen Strom braucht er nicht, er zieht vom PoE-Budget des Switches.",
+    "en": "Sits mid-run and turns a 100 m Cat run into up to 200 m, PoE passing through. It needs no mains of its own, it draws from the switch's PoE budget."
+  },
+  "useCases": {
+    "de": "Eine Kamera oder ein AP liegt mehr als 100 m vom Switch entfernt und Glasfaser ist keine Option.",
+    "en": "A camera or AP sits more than 100 m from the switch and fibre is not an option."
+  },
+  "caveats": {
+    "de": "Nicht statt Glasfaser planen, wenn ohnehin gegraben wird.",
+    "en": "Not instead of fibre when digging is happening anyway."
+  },
+  "links": {
+    "vendor": "https://www.trendnet.com/products/PoE/PoE-Extender/TPE-E100"
+  },
+  "img": "https://www.trendnet.com/images/products/photos/TPE-E100_v2/TPE-E100_v2_d01_2.webp",
+  "tags": {
+    "de": ["Strom aus dem PoE-Budget", "802.3af/at", "100 m mehr Reichweite"],
+    "en": ["draws from the PoE budget", "802.3af/at", "100 m more reach"]
+  },
+  "mount": {
+    "de": "in der Kabelstrecke, etwa im Verteilerkasten",
+    "en": "inline in the run, e.g. in the cabinet"
+  },
+  "powerIn": "poe",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 2,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "verlängert eine PoE-Strecke um bis zu 100 m",
+      "en": "extends a PoE run by up to 100 m"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 0,
+    "extend": 100
+  }
+}

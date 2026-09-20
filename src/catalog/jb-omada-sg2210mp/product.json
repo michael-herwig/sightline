@@ -1,0 +1,69 @@
+{
+  "$schema": "../schema.json",
+  "id": "omada-sg2210mp",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 180,
+  "name": {
+    "de": "TP-Link TL-SG2210MP (Switch)",
+    "en": "TP-Link TL-SG2210MP (switch)"
+  },
+  "price": 150,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "8× PoE+ mit 150 W gesamt plus 2× Gigabit-SFP: die Faser geht direkt hinein, kein Medienkonverter nötig.",
+    "en": "8× PoE+ with 150 W total plus 2× gigabit SFP: the fibre plugs straight in, no media converter needed."
+  },
+  "useCases": {
+    "de": "Das Faserende mit vielen Kameras — SFP rein, acht PoE-Ports raus, ein Gerät.",
+    "en": "The fibre end with many cameras — SFP in, eight PoE ports out, one box."
+  },
+  "caveats": {
+    "de": "Nicht für 2,5 GbE oder PoE++.",
+    "en": "Not for 2.5 GbE or PoE++."
+  },
+  "links": {
+    "vendor": "https://www.omadanetworks.com/de/business-networking/omada-switch-access/tl-sg2210mp/",
+    "amazon": "https://www.amazon.de/dp/B08FRMHX14"
+  },
+  "img": "https://static.tp-link.com/TL-SG2210MP(UN)1.0-01_normal_1594869369356n.jpg",
+  "tags": {
+    "de": ["Strom nötig", "Glasfaser → LAN", "PoE+ 150 W", "trocken montieren"],
+    "en": ["needs power", "fibre → LAN", "PoE+ 150 W", "mount dry"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "1G",
+      "poe": "at"
+    },
+    {
+      "type": "sfp",
+      "dir": "both",
+      "n": 2,
+      "speed": "1G"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "8× PoE+ (150 W) + 2× SFP",
+      "en": "8× PoE+ (150 W) + 2× SFP"
+    },
+    "sfp": true,
+    "sfpPorts": 2,
+    "poe": 150
+  }
+}

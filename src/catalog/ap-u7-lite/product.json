@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-lite",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 10,
+  "name": {
+    "de": "U7 Lite",
+    "en": "U7 Lite"
+  },
+  "price": 99,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 7, 2×2, innen. Reicht für ein kleines Haus oder den Stall innen.",
+    "en": "Wi-Fi 7, 2×2, indoor. Enough for a small house or inside the stable."
+  },
+  "useCases": {
+    "de": "Ein kleiner Innenraum, Grundversorgung.",
+    "en": "One small indoor room, basic coverage."
+  },
+  "caveats": {
+    "de": "Nicht für ein ganzes Haus und nicht draußen.",
+    "en": "Not for a whole house and not outdoors."
+  },
+  "links": {
+    "vendor": "wifi-entry/products/u7-lite",
+    "amazon": "https://www.amazon.de/dp/B0F2GCYRGS"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/253cc208-4b09-4b2e-9d1a-7aa1e8f93507/49241c96-878f-4e40-8541-c2e89c1c5e6e.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "2.5G"
+    }
+  ],
+  "poeIn": "af",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 14,
+    "out": false,
+    "wifi": "WiFi 7 · 2×2",
+    "poe": "PoE (802.3af)",
+    "ip": "IP20"
+  }
+}

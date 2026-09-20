@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "u6-plus",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 70,
+  "name": {
+    "de": "U6+",
+    "en": "U6+"
+  },
+  "price": 89,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 6, günstig, innen. Wohnräume oder kleine Nebenräume.",
+    "en": "Wi-Fi 6, cheap, indoor. Living areas or small side rooms."
+  },
+  "useCases": {
+    "de": "Ein Zimmer oder ein kleines Nebengebäude innen, ohne WiFi 7 zu brauchen.",
+    "en": "One room or a small outbuilding indoors, no need for Wi-Fi 7."
+  },
+  "caveats": {
+    "de": "Nicht draußen und nicht für viele Geräte.",
+    "en": "Not outdoors and not for many devices."
+  },
+  "links": {
+    "vendor": "all-wifi/products/u6-plus",
+    "amazon": "https://www.amazon.de/dp/B0BYL7G7SZ"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/6d5c6141-e2e9-416a-b789-53e59416bb1a/853bc73b-f65b-4e59-a171-75c9a4a4615e.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "poeIn": "af",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 15,
+    "out": false,
+    "wifi": "WiFi 6 · 2×2",
+    "poe": "PoE (802.3af)",
+    "ip": "IP20"
+  }
+}

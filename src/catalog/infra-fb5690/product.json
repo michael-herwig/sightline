@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema.json",
+  "id": "fb5690",
+  "kind": "infra",
+  "vendor": "avm",
+  "status": "current",
+  "order": 30,
+  "name": {
+    "de": "FRITZ!Box 5690 Pro",
+    "en": "FRITZ!Box 5690 Pro"
+  },
+  "price": 340,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Router für Glasfaser (SFP) oder DSL, WiFi 7 im Tri-Band. Kein Rekorder: die Aufzeichnung übernimmt ein UNVR.",
+    "en": "Router for fibre (SFP) or DSL, Wi-Fi 7 tri-band. No recorder: a UNVR does the recording."
+  },
+  "useCases": {
+    "de": "Ein Anschluss, der heute DSL ist und morgen Glasfaser sein kann.",
+    "en": "A line that is DSL today and may be fibre tomorrow."
+  },
+  "caveats": {
+    "de": "Nicht, wenn ein UniFi-Gateway ohnehin Router und Rekorder stellt.",
+    "en": "Not when a UniFi gateway is already the router and recorder."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-box-5690-pro",
+    "amazon": "https://www.amazon.de/dp/B0D8JCN5P4"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzbox_5690_pro_fiber_dsl_2000x2000px_de.webp",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "2.5G"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 4,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "role": "router",
+    "ports": 5,
+    "sfp": false,
+    "poe": 0,
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "Glasfaser (SFP) oder DSL, WiFi 7 Tri-Band · kein NVR",
+      "en": "Fibre (SFP) or DSL, Wi-Fi 7 tri-band · no NVR"
+    }
+  }
+}

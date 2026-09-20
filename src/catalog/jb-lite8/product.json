@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema.json",
+  "id": "lite8",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 120,
+  "name": {
+    "de": "USW Lite 8 PoE (Switch)",
+    "en": "USW Lite 8 PoE (switch)"
+  },
+  "price": 99,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Günstiger, aber ohne SFP: die Zuleitung muss dann Cat6A sein, keine Glasfaser. 52 W PoE-Budget.",
+    "en": "Cheaper, but no SFP: the feed then has to be Cat6A, not fibre. 52 W PoE budget."
+  },
+  "useCases": {
+    "de": "Günstiger Switch, wenn die Zuleitung ohnehin Cat6A ist.",
+    "en": "A cheap switch when the feed is Cat6A anyway."
+  },
+  "caveats": {
+    "de": "Nicht am Glasfaserende — er hat keinen SFP-Anschluss.",
+    "en": "Not at the end of a fibre — it has no SFP port."
+  },
+  "links": {
+    "vendor": "switching-utility-poe/products/usw-lite-8-poe",
+    "amazon": "https://www.amazon.de/dp/B08MBRKG2Q"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/75c44878-4e73-446e-8e86-f207db6b2b7c/53b8b06b-69c7-424f-bb81-2f8405356c65.png",
+  "tags": {
+    "de": ["Strom nötig", "keine Glasfaser", "PoE"],
+    "en": ["needs power", "no fibre", "PoE"]
+  },
+  "mount": {
+    "de": "innen",
+    "en": "indoors"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "1G",
+      "poe": "at"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "8× Netzwerk mit PoE, aber nur über Cat6A",
+      "en": "8× network with PoE, but fed by Cat6A"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 52
+  }
+}

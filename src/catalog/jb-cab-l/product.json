@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema.json",
+  "id": "cab-l",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "any",
+  "status": "current",
+  "order": 60,
+  "name": {
+    "de": "Verteilerkasten außen, groß (2-reihig)",
+    "en": "Outdoor distribution cabinet, large (2-row)"
+  },
+  "price": 119,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Zweireihige Ausführung des Verteilerkastens: Switch, Überspannungsschutz und PoE-Injektor passen nebeneinander auf die DIN-Schiene. Für einen Durchgangs-Abzweig reicht der kleine.",
+    "en": "Two-row version of the distribution cabinet: switch, surge protector and PoE injector fit side by side on the DIN rail. A pass-through branch is fine with the small one."
+  },
+  "useCases": {
+    "de": "Abzweig über Grund mit Switch, Überspannungsschutz und PoE-Injektor zusammen.",
+    "en": "A branch above ground with a switch, surge protector and PoE injector together."
+  },
+  "caveats": {
+    "de": "Nicht für einen einfachen Durchgangs-Abzweig — dafür reicht der kleine Verteilerkasten.",
+    "en": "Not for a simple pass-through branch — the small cabinet covers that."
+  },
+  "links": {
+    "vendor": "https://www.elektrikshop.de/kleinverteiler-2-reihig-feuchtraum-ip65-73342801-ak28-spelsberg.html"
+  },
+  "img": "https://www.elektrikshop.de/images/product_images/popup_images/498_0.jpg",
+  "tags": {
+    "de": ["keine Erdarbeit", "kein Strom", "DIN-Schiene", "viel Platz"],
+    "en": ["no earthwork", "no power", "DIN rail", "plenty of room"]
+  },
+  "mount": {
+    "de": "Wand- oder Sockelmontage",
+    "en": "Wall or pedestal mount"
+  },
+  "specs": {
+    "ip": "IP65",
+    "ports": 12,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "Abzweig über Grund mit Platz für mehrere Geräte",
+      "en": "branch above ground with room for several devices"
+    }
+  }
+}

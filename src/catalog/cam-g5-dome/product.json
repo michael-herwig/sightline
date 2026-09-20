@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema.json",
+  "id": "g5-dome",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 140,
+  "name": {
+    "de": "G5 Dome",
+    "en": "G5 Dome"
+  },
+  "price": 172,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Vorgänger der G6 Dome, günstiger und nur 2K. Wie diese nur unter Dach wetterfest, aber vandalensicher (IK08).",
+    "en": "Predecessor of the G6 Dome, cheaper and only 2K. Weatherproof under cover only, like it, but vandal resistant (IK08)."
+  },
+  "useCases": {
+    "de": "Deckenmontage unter Dach, wenn 2K reichen und jemand rankommen könnte.",
+    "en": "Ceiling mounting under cover, when 2K is enough and someone could reach it."
+  },
+  "caveats": {
+    "de": "Nicht frei an der Fassade — IPX4 verträgt keinen Schlagregen.",
+    "en": "Not exposed on a façade — IPX4 does not take driving rain."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-g5-dome",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/1c20460a-b90b-4430-bbf1-8adf26ec2122/46b73c63-f1fb-4b07-844e-fa3315bb0327.png",
+  "tags": {
+    "de": ["2K", "günstig", "IK08"],
+    "en": ["2K", "budget", "IK08"]
+  },
+  "poeIn": "af",
+  "specs": {
+    "res": "2K · 4 MP (5 MP Sensor)",
+    "ir": 9,
+    "fov": 102,
+    "poe": "PoE (802.3af)",
+    "ip": "IPX4 · IK08",
+    "out": false
+  }
+}

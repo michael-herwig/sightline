@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema.json",
+  "id": "fb6690",
+  "kind": "infra",
+  "vendor": "avm",
+  "status": "current",
+  "order": 60,
+  "name": {
+    "de": "FRITZ!Box 6690 Cable",
+    "en": "FRITZ!Box 6690 Cable"
+  },
+  "price": 287,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Router für den Kabelanschluss (DOCSIS 3.1) mit WiFi 6. Kein Rekorder.",
+    "en": "Router for a cable connection (DOCSIS 3.1) with Wi-Fi 6. No recorder."
+  },
+  "useCases": {
+    "de": "Kabelanschluss (Vodafone, PŸUR): der Router spricht DOCSIS direkt.",
+    "en": "A cable line (Vodafone, PŸUR): the router speaks DOCSIS directly."
+  },
+  "caveats": {
+    "de": "Nicht bei DSL oder Glasfaser, und nicht als Rekorder.",
+    "en": "Not for DSL or fibre, and not as a recorder."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-box-6690-cable",
+    "amazon": "https://www.amazon.de/dp/B09P1KD19W"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzbox_6690_cable_cable_2000x2000px_de.webp",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "2.5G"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 3,
+      "speed": "1G"
+    }
+  ],
+  "specs": {
+    "role": "router",
+    "ports": 4,
+    "sfp": false,
+    "poe": 0,
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "Kabel DOCSIS 3.1, WiFi 6 · kein NVR",
+      "en": "Cable DOCSIS 3.1, Wi-Fi 6 · no NVR"
+    }
+  }
+}

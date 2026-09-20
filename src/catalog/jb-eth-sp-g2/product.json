@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema.json",
+  "id": "eth-sp-g2",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 250,
+  "name": {
+    "de": "Ethernet-Überspannungsschutz (ETH-SP-G2)",
+    "en": "Ethernet surge protector (ETH-SP-G2)"
+  },
+  "price": 12,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Passiv, ohne eigenen Verbrauch: leitet PoE bis 802.3bt (60 W) durch und einen Überspannungsimpuls zur Erde ab. Er ersetzt keine Erdung, er braucht eine.",
+    "en": "Passive, draws nothing itself: passes PoE through up to 802.3bt (60 W) and shunts a surge to earth. It does not replace grounding, it requires it."
+  },
+  "useCases": {
+    "de": "Vor jeder Kamera und jedem AP am Ende einer langen Außenstrecke, wegen Blitzeinschlag in der Nähe.",
+    "en": "Ahead of every camera and AP at the end of a long outdoor run, against a nearby lightning strike."
+  },
+  "caveats": {
+    "de": "Nicht als Ersatz für eine Erdung — er leitet nur ab, wohin er verbunden ist.",
+    "en": "Not a substitute for grounding — it only shunts to where it is connected."
+  },
+  "links": {
+    "vendor": "accessories-cables/products/ethernet-surge-protector",
+    "amazon": "https://www.amazon.de/dp/B079HXKRW1"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/e46e1950-4194-4fa1-9908-5803287b52c3/62caf686-2476-4da0-be1e-e19887698024.png",
+  "tags": {
+    "de": ["kein Strom", "PoE-Durchleitung bis 60 W", "Gigabit"],
+    "en": ["no power draw", "PoE passthrough to 60 W", "gigabit"]
+  },
+  "mount": {
+    "de": "in Reihe im Kabel, geerdet",
+    "en": "inline in the cable, grounded"
+  },
+  "powerIn": "none",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "both",
+      "n": 2,
+      "speed": "10G"
+    }
+  ],
+  "specs": {
+    "ip": "IPX5",
+    "ports": 2,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "Blitz- und Überspannungsschutz vor einem Außengerät",
+      "en": "lightning and surge protection ahead of an outdoor device"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 0
+  }
+}

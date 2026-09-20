@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-pro-max",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 30,
+  "name": {
+    "de": "U7 Pro Max",
+    "en": "U7 Pro Max"
+  },
+  "price": 269,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Neues Flaggschiff über dem U7 Pro: 8 Spatial Streams statt 4, 500+ Clients, Spectral-Scanning-Engine. Für sehr dichte Belegung.",
+    "en": "New flagship above the U7 Pro: 8 spatial streams instead of 4, 500+ clients, a spectral scanning engine. For very dense occupancy."
+  },
+  "useCases": {
+    "de": "Haupthaus mit sehr vielen Geräten, wo der U7 Pro an die Grenze kommt.",
+    "en": "A main house with very many devices, where the U7 Pro runs out of room."
+  },
+  "caveats": {
+    "de": "Nicht für Reichweite — der Aufpreis kauft Dichte, keine Meter.",
+    "en": "Not for range — the surcharge buys density, not metres."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/u7-pro-max",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/350070a0-ae43-431b-b052-8e849c3b0a75/bad94693-bc54-4ab4-b060-9b972401941c.png",
+  "tags": {
+    "de": ["WiFi 7", "6 GHz", "sehr dicht"],
+    "en": ["Wi-Fi 7", "6 GHz", "very dense"]
+  },
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 20,
+    "out": false,
+    "wifi": "WiFi 7 · 8 Spatial Streams · 6 GHz",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

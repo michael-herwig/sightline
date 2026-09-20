@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema.json",
+  "id": "omada-sg2008p",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 170,
+  "name": {
+    "de": "TP-Link SG2008P (Switch)",
+    "en": "TP-Link SG2008P (switch)"
+  },
+  "price": 86,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "8 Ports, 4× PoE+ (62 W), kein SFP. Günstigster Omada-Einstieg; Faser über MC220L.",
+    "en": "8 ports, 4× PoE+ (62 W), no SFP. Cheapest Omada entry; fibre via MC220L."
+  },
+  "useCases": {
+    "de": "Nebengebäude mit bis zu vier PoE-Geräten, Omada-Umfeld.",
+    "en": "Outbuilding with up to four PoE devices, Omada setup."
+  },
+  "caveats": {
+    "de": "Nicht für mehr als vier PoE-Ports — nur die Hälfte liefert Strom.",
+    "en": "Not for more than four PoE ports — only half of them power."
+  },
+  "links": {
+    "vendor": "https://www.tp-link.com/de/business-networking/omada-sdn-switch/sg2008p/",
+    "amazon": "https://www.amazon.de/dp/B08GDBVJXH"
+  },
+  "img": "https://static.tp-link.com/TL-SG2008P(UN)1.0_01_normal_1594869482015x.jpg",
+  "tags": {
+    "de": ["Strom nötig", "kein SFP · Medienkonverter davor", "PoE+ 62 W", "trocken montieren"],
+    "en": ["needs power", "no SFP · media converter first", "PoE+ 62 W", "mount dry"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "1G",
+      "poe": "at"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "8 Ports, 4× PoE+, günstig",
+      "en": "8 ports, 4× PoE+, cheap"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 62
+  }
+}

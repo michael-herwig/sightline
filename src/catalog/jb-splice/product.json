@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "splice",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "any",
+  "status": "current",
+  "order": 100,
+  "name": {
+    "de": "Spleißbox IP68 (LWL)",
+    "en": "Splice box IP68 (fibre)"
+  },
+  "price": 180,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Nur nötig, wenn eine Faser wirklich getrennt werden muss. Der Normalfall am Abzweig ist Durchziehen — zwei Ziele heißt zwei Kabel im Stammrohr, nicht ein geteiltes.",
+    "en": "Only needed when a fibre really has to be cut. The normal case at a branch is pulling through — two destinations mean two cables in the trunk conduit, not one split one."
+  },
+  "useCases": {
+    "de": "Nur wenn eine vorhandene Faser wirklich getrennt und neu aufgelegt werden muss.",
+    "en": "Only when an existing fibre really has to be cut and re-terminated."
+  },
+  "caveats": {
+    "de": "Nicht für einen normalen Abzweig — dort zieht man das zweite Kabel einfach durch.",
+    "en": "Not for a normal branch — there you simply pull the second cable through."
+  },
+  "links": {
+    "vendor": "https://www.reichelt.com/de/en/shop/product/fiber_optic_splice_closure_48_cores_dome-shaped-394676",
+    "amazon": "https://www.amazon.de/dp/B0C4TN3NGX"
+  },
+  "img": "https://cdn-reichelt.de/bilder/web/artikel_ws/E910%2FDIGITUS_DN-941091_01.jpg?type=Product&",
+  "tags": {
+    "de": ["Erdarbeit", "kein Strom", "Fachbetrieb"],
+    "en": ["earthwork", "no power", "needs a specialist"]
+  },
+  "mount": {
+    "de": "im Schacht, Erdeinbau",
+    "en": "inside the shaft, buried"
+  },
+  "powerIn": "none",
+  "specs": {
+    "ip": "IP68",
+    "ports": 2,
+    "power": false,
+    "dig": true,
+    "use": {
+      "de": "nur wenn eine Faser wirklich getrennt wird",
+      "en": "only when a fibre really gets cut"
+    }
+  }
+}

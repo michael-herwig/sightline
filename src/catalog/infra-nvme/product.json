@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema.json",
+  "id": "nvme",
+  "kind": "infra",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 70,
+  "name": {
+    "de": "M.2-Tray + 2 TB NVMe",
+    "en": "M.2 tray + 2 TB NVMe"
+  },
+  "price": 130,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Einschub mit NVMe-SSD für das UCG Fiber. Ohne ihn hat das Gateway keinen Platz für Aufnahmen.",
+    "en": "Tray with an NVMe SSD for the UCG Fiber. Without it the gateway has nowhere to record."
+  },
+  "useCases": {
+    "de": "Pflicht, sobald das UCG Fiber aufzeichnen soll.",
+    "en": "Mandatory as soon as the UCG Fiber is meant to record."
+  },
+  "caveats": {
+    "de": "Nicht nötig, wenn ein UNVR mit Festplatten die Aufnahme übernimmt.",
+    "en": "Not needed when a UNVR with drives does the recording."
+  },
+  "links": {
+    "vendor": "accessories-network/products/uacc-ssd-tray",
+    "amazon": "https://www.amazon.de/dp/B0DTMH4X6J",
+    "amazonSimilar": true
+  },
+  "img": "https://cdn.ecomm.ui.com/products/e6ef75f9-b133-46d6-8f52-d8a929bd793c/5f2e437c-b62c-4365-91ce-81c1c7351ef1.png",
+  "specs": {
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "Aufnahmespeicher im UCG-Fiber",
+      "en": "Recording storage inside the UCG Fiber"
+    }
+  }
+}

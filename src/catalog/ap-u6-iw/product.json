@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema.json",
+  "id": "u6-iw",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 90,
+  "name": {
+    "de": "U6 In-Wall",
+    "en": "U6 In-Wall"
+  },
+  "price": 160,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Unterputz in der Netzwerkdose, mit 4-Port-Switch. Ein Zimmer.",
+    "en": "In-wall in the network outlet, with a 4-port switch. One room."
+  },
+  "useCases": {
+    "de": "Ein Zimmer mit Netzwerkdose, das nebenbei vier Kabelports braucht.",
+    "en": "A room with a network outlet that also needs four wired ports."
+  },
+  "caveats": {
+    "de": "Nicht als Flächen-AP — die Antenne sitzt in der Wand.",
+    "en": "Not as an area AP — the antenna sits in the wall."
+  },
+  "links": {
+    "vendor": "wifi-wall/products/u6-iw",
+    "amazon": "https://www.amazon.de/dp/B09TYD6HX1"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/9e487835-2aa9-4813-b210-732744a2884a/cac2e05e-2e46-4d47-84b2-7e3bb7d7ca1a.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 4,
+      "speed": "1G"
+    }
+  ],
+  "poeIn": "af/at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 12,
+    "out": false,
+    "wifi": "WiFi 6 · 4×4",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema.json",
+  "id": "doorbell-lite",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 170,
+  "name": {
+    "de": "Doorbell Lite",
+    "en": "Doorbell Lite"
+  },
+  "price": 96,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Günstigster PoE-Türklingel-Einstieg ohne Chime im Set. Voll wetterfest (IPX5), an der Haustür.",
+    "en": "Cheapest PoE doorbell entry point, no chime included. Fully weatherproof (IPX5), for the front door."
+  },
+  "useCases": {
+    "de": "Günstigster Einstieg an der Haustür, voll wetterfest.",
+    "en": "The cheapest way onto the front door, fully weatherproof."
+  },
+  "caveats": {
+    "de": "Nicht wo ein Gong gebraucht wird — der Chime liegt nicht bei.",
+    "en": "Not where a chime is needed — none is included."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-doorbell-lite",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/cc3293dc-3fe5-48a6-87c1-ea1ea940f33c/d0ccc0e4-64a3-4d4a-85f6-341cd76310ea.png",
+  "tags": {
+    "de": ["Türklingel", "PoE", "günstig"],
+    "en": ["doorbell", "PoE", "budget"]
+  },
+  "poeIn": "af",
+  "specs": {
+    "res": "5 MP",
+    "ir": 5,
+    "fov": 96,
+    "poe": "PoE (802.3af)",
+    "ip": "IPX5",
+    "out": true
+  }
+}

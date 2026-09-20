@@ -1,0 +1,74 @@
+{
+  "$schema": "../schema.json",
+  "id": "omada-sg3210xhp-m2",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 190,
+  "name": {
+    "de": "TP-Link SG3210XHP-M2 (Switch)",
+    "en": "TP-Link SG3210XHP-M2 (switch)"
+  },
+  "price": 378,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "8× 2,5-GbE-PoE+ mit 240 W und 2× 10G-SFP+. Für 4K-Kameras in Menge und WiFi-7-APs am Faserende.",
+    "en": "8× 2.5 GbE PoE+ with 240 W and 2× 10G SFP+. For lots of 4K cameras and Wi-Fi 7 APs at the fibre end."
+  },
+  "useCases": {
+    "de": "Großes Nebengebäude mit acht Kameras und WiFi-7-AP, 10G-Faser.",
+    "en": "Large outbuilding with eight cameras and a Wi-Fi 7 AP, 10G fibre."
+  },
+  "caveats": {
+    "de": "Nicht für drei Kameras — der Preis lohnt erst mit vielen Ports in Betrieb.",
+    "en": "Not for three cameras — the price only pays off with many ports in use."
+  },
+  "links": {
+    "vendor": "https://www.omadanetworks.com/de/business-networking/omada-switch-access-pro/sg3210xhp-m2/",
+    "amazon": "https://www.amazon.de/dp/B092VFS6K3"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/SG3210XHP-M2_UN_3.0_overview_01_normal_20250126032648i.jpg",
+  "tags": {
+    "de": ["Strom nötig", "Glasfaser → LAN", "PoE+ 240 W", "trocken montieren"],
+    "en": ["needs power", "fibre → LAN", "PoE+ 240 W", "mount dry"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "2.5G",
+      "poe": "at"
+    },
+    {
+      "type": "sfp+",
+      "dir": "both",
+      "n": 2,
+      "speed": "10G"
+    },
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "8× 2,5G PoE+ (240 W) + 2× SFP+",
+      "en": "8× 2.5G PoE+ (240 W) + 2× SFP+"
+    },
+    "sfp": true,
+    "sfpPorts": 2,
+    "poe": 240
+  }
+}

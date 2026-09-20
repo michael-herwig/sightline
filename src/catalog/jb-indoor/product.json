@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema.json",
+  "id": "indoor",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "any",
+  "status": "current",
+  "order": 80,
+  "name": {
+    "de": "Innen, Wand oder Regal",
+    "en": "Indoors, wall or shelf"
+  },
+  "price": 0,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Kein Gehäuse — das Gerät sitzt im Gebäude, an der Wand oder im Netzwerkschrank.",
+    "en": "No housing — the device sits inside the building, on a wall or in the network rack."
+  },
+  "tags": {
+    "de": ["keine Erdarbeit", "trocken", "jederzeit zugänglich"],
+    "en": ["no earthwork", "dry", "reachable any time"]
+  },
+  "mount": {
+    "de": "Wand, Regal oder Netzwerkschrank",
+    "en": "Wall, shelf or network rack"
+  },
+  "specs": {
+    "ip": "IP20",
+    "ports": 0,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "Technik im Gebäude, kein Gehäuse nötig",
+      "en": "gear inside the building, no housing needed"
+    }
+  }
+}

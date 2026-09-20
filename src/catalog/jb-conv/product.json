@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema.json",
+  "id": "conv",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 130,
+  "name": {
+    "de": "Medienkonverter SM → RJ45",
+    "en": "Media converter SM → RJ45"
+  },
+  "price": 60,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Für ein einzelnes Gerät am Glasfaserende — eine Kamera, ein AP. Billiger als ein Switch, aber nur ein Port und PoE muss extra kommen.",
+    "en": "For a single device at the end of a fibre — one camera, one AP. Cheaper than a switch, but only one port and PoE has to come separately."
+  },
+  "useCases": {
+    "de": "Genau ein Gerät am Faserende, etwa ein einzelner AP am Mast.",
+    "en": "Exactly one device at the end of a fibre, a single AP on a pole say."
+  },
+  "caveats": {
+    "de": "Nicht wenn dort später mehr als ein Gerät hängen soll.",
+    "en": "Not when more than one device will hang there later."
+  },
+  "links": {
+    "vendor": "https://www.reichelt.com/de/en/shop/product/media_converter_gigabit_ethernet_rj45_sfp-370781",
+    "amazon": "https://www.amazon.de/dp/B005F0HMHY"
+  },
+  "img": "https://cdn-reichelt.de/bilder/web/artikel_ws/E910%2FDIGITUS_DN-82130_001.jpg?type=Product&",
+  "tags": {
+    "de": ["Strom nötig", "Glasfaser → LAN", "nur 1 Gerät"],
+    "en": ["needs power", "fibre → LAN", "1 device only"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 1,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "Glasfaser rein, genau ein Netzwerkport raus",
+      "en": "fibre in, exactly one network port out"
+    },
+    "sfp": true,
+    "sfpPorts": 1,
+    "poe": 0
+  }
+}

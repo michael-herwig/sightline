@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-outdoor",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 50,
+  "name": {
+    "de": "U7 Outdoor",
+    "en": "U7 Outdoor"
+  },
+  "price": 199,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 7, IP67, Wandmontage außen. Hof, Wiese, Stallvorplatz.",
+    "en": "Wi-Fi 7, IP67, outdoor wall mount. Yard, paddock, stable forecourt."
+  },
+  "useCases": {
+    "de": "Hof, Weide, Stallvorplatz — IP67 und rundum.",
+    "en": "Yard, paddock, stable forecourt — IP67 and all round."
+  },
+  "caveats": {
+    "de": "Nicht wenn eine Seite gezielt weit abgedeckt werden soll.",
+    "en": "Not when one side needs to be covered far and on purpose."
+  },
+  "links": {
+    "vendor": "wifi-outdoor/products/u7-outdoor",
+    "amazon": "https://www.amazon.de/dp/B0DGBHNMSL"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/62cc30b7-9559-480f-9668-b9edf40c0772/f2010c22-ff34-48e5-81f4-e7dad275d3c0.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G/2.5G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 45,
+    "v": 45
+  },
+  "specs": {
+    "radius": 35,
+    "out": true,
+    "wifi": "WiFi 7 · 2×2",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP67"
+  }
+}

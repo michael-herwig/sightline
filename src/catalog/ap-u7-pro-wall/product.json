@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-pro-wall",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 110,
+  "name": {
+    "de": "U7 Pro Wall",
+    "en": "U7 Pro Wall"
+  },
+  "price": 185,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 7 an der Wand statt Decke, 2,5 GbE. Einzelne Räume.",
+    "en": "Wi-Fi 7 on the wall instead of the ceiling, 2.5 GbE. Single rooms."
+  },
+  "useCases": {
+    "de": "Wo keine Deckenmontage geht, aber WiFi 7 gewünscht ist.",
+    "en": "Where ceiling mounting is impossible but Wi-Fi 7 is wanted."
+  },
+  "caveats": {
+    "de": "Nicht draußen; für ein ganzes Haus lieber Pro an der Decke.",
+    "en": "Not outdoors; for a whole house use a Pro on the ceiling."
+  },
+  "links": {
+    "vendor": "all-wifi/products/u7-pro-wall",
+    "amazon": "https://www.amazon.de/dp/B0FCYNZ7PR"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/7dacb4f6-b703-4154-9264-784f2eb0dbda/f1cb65a5-c557-4e02-bcbb-090502a95b84.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G/2.5G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 15,
+    "out": false,
+    "wifi": "WiFi 7 · 2×2 · 6 GHz",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

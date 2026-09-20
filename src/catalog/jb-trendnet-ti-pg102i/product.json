@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema.json",
+  "id": "trendnet-ti-pg102i",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "trendnet",
+  "status": "current",
+  "order": 340,
+  "name": {
+    "de": "TRENDnet TI-PG102i (DIN-Schienen-Switch, PoE+, groß)",
+    "en": "TRENDnet TI-PG102i (DIN-rail switch, PoE+, large)"
+  },
+  "price": 389,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Größere Hutschienen-Ausführung: 8× Gigabit-PoE+ (240 W gesamt) plus 2× SFP, gleiche Industrie-Bauform wie der TI-PG541i. Für einen Schaltschrank mit vielen PoE-Geräten.",
+    "en": "Larger DIN-rail version: 8× gigabit PoE+ (240 W total) plus 2× SFP, same industrial form factor as the TI-PG541i. For a cabinet with many PoE devices."
+  },
+  "useCases": {
+    "de": "Acht PoE-Geräte aus einem Schaltschrank, mit Reserve im Budget.",
+    "en": "Eight PoE devices from one cabinet, with headroom in the budget."
+  },
+  "caveats": {
+    "de": "Nicht für vier Kameras — dafür reicht der TI-PG541i.",
+    "en": "Not for four cameras — the TI-PG541i covers that."
+  },
+  "links": {
+    "vendor": "https://www.trendnet.com/products/PoE/PoE-Switch/TI-PG102i"
+  },
+  "img": "https://www.trendnet.com/images/products/photos/TI-PG102i_v1-4/TI-PG102i_V1.4R_d01_2.webp",
+  "tags": {
+    "de": ["Strom nötig", "Hutschiene", "240 W PoE", "2× SFP"],
+    "en": ["needs power", "DIN rail", "240 W PoE", "2× SFP"]
+  },
+  "mount": {
+    "de": "auf der Hutschiene im Schaltschrank",
+    "en": "on the DIN rail in a cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "1G",
+      "poe": "at"
+    },
+    {
+      "type": "sfp",
+      "dir": "both",
+      "n": 2
+    }
+  ],
+  "specs": {
+    "ip": "IP30",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "viele PoE-Geräte aus einem Schaltschrank versorgen",
+      "en": "feed many PoE devices from one cabinet"
+    },
+    "sfp": true,
+    "sfpPorts": 2,
+    "poe": 240
+  }
+}

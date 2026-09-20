@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-pro-bullet",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 60,
+  "name": {
+    "de": "G6 Pro Bullet",
+    "en": "G6 Pro Bullet"
+  },
+  "price": 429,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Großer Sensor, deutlich besser bei Nacht, 40 m IR. Für den Punkt, an dem du ein Gesicht brauchst (Tor, Zufahrt).",
+    "en": "Large sensor, much better at night, 40 m IR. For the one spot where you need a face (gate, driveway)."
+  },
+  "useCases": {
+    "de": "Weite Strecken und Kennzeichen — größerer Sensor, mehr Reichweite bei Nacht.",
+    "en": "Long distances and number plates — bigger sensor, more reach at night."
+  },
+  "caveats": {
+    "de": "Nicht für kurze Wege, dort tut es die G6 Bullet zum halben Preis.",
+    "en": "Not for short paths, the G6 Bullet does that at half the price."
+  },
+  "links": {
+    "vendor": "physical-security-bullet/products/uvc-g6-pro-bullet",
+    "amazon": "https://www.amazon.de/dp/B0G1PLGDJ5"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/c48d3ada-c223-4a2b-98f3-2bb55c3b1a11/69792922-3944-41ab-a386-2059b23a6b1b.png",
+  "tags": {
+    "de": ["4K", "Pro", "IR 40 m"],
+    "en": ["4K", "pro", "IR 40 m"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "poeIn": "at",
+  "specs": {
+    "res": "4K · 1/1.2\" · 2,36× Zoom",
+    "ir": 40,
+    "fov": 83,
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP66",
+    "out": true
+  }
+}

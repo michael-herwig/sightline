@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema.json",
+  "id": "tplink-poe170s",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 230,
+  "name": {
+    "de": "TP-Link POE170S (PoE-Injektor)",
+    "en": "TP-Link POE170S (PoE injector)"
+  },
+  "price": 35,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Speist ein einzelnes Gerät mit bis zu 60 W (802.3af/at/bt) aus einem gewöhnlichen Netzwerkport. Zwei Buchsen, aber nur eine davon geht weiter — ab zwei Geräten ist ein PoE-Switch richtig.",
+    "en": "Feeds a single device with up to 60 W (802.3af/at/bt) from an ordinary network port. Two sockets, but only one of them leads on — from two devices on, a PoE switch is the right answer."
+  },
+  "useCases": {
+    "de": "Genau ein PoE-Gerät an einem Switch, der selbst kein PoE hat.",
+    "en": "Exactly one PoE device on a switch that has no PoE of its own."
+  },
+  "caveats": {
+    "de": "Nicht für mehrere Geräte — dafür lieber gleich einen PoE-Switch.",
+    "en": "Not for several devices — a PoE switch is the better fix then."
+  },
+  "links": {
+    "vendor": "https://www.tp-link.com/de/business-networking/omada-accessory-power-poe/poe170s/"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/POE170S(UN)2.20_large_20231130092227z.jpg",
+  "tags": {
+    "de": ["Strom nötig", "802.3af/at/bt", "60 W", "nur 1 Gerät"],
+    "en": ["needs power", "802.3af/at/bt", "60 W", "1 device only"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "poe": "bt"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 2,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "ein einzelnes PoE-Gerät an einem Switch ohne PoE",
+      "en": "a single PoE device on a switch without PoE"
+    },
+    "sfp": false,
+    "sfpPorts": 0,
+    "poe": 60,
+    "poePorts": 1
+  }
+}

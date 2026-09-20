@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema.json",
+  "id": "mikrotik-cap-ax",
+  "kind": "ap",
+  "vendor": "mikrotik",
+  "status": "current",
+  "order": 160,
+  "name": {
+    "de": "MikroTik cAP ax",
+    "en": "MikroTik cAP ax"
+  },
+  "price": 105,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Decken-AP mit PoE-Durchschleife für ein zweites Gerät. RouterOS.",
+    "en": "Ceiling AP with PoE pass-through for a second device. RouterOS."
+  },
+  "useCases": {
+    "de": "Wer RouterOS kennt und am AP noch eine Kamera durchschleifen will.",
+    "en": "For RouterOS users who want to pass PoE through to a camera at the AP."
+  },
+  "caveats": {
+    "de": "Nicht für Einsteiger — die Oberfläche ist Technikerkost.",
+    "en": "Not for beginners — the interface is for technicians."
+  },
+  "links": {
+    "vendor": "https://mikrotik.com/product/cap_ax",
+    "amazon": "https://www.amazon.de/dp/B0C2K94R5D"
+  },
+  "img": "https://cdn.mikrotik.com/web-assets/rb_images/2247_lg.webp",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "poeIn": "af/at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 15,
+    "out": false,
+    "wifi": "WiFi 6 · 2×2",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

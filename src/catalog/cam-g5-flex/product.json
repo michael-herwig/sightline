@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema.json",
+  "id": "g5-flex",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 130,
+  "name": {
+    "de": "G5 Flex",
+    "en": "G5 Flex"
+  },
+  "price": 124,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Kompakt und vielseitig montierbar (Tisch, Wand, Decke). Nur unter Dach wetterfest (IPX4), 2K reicht für Übersicht.",
+    "en": "Compact, mounts almost anywhere (desk, wall, ceiling). Weatherproof only when covered (IPX4), 2K is fine for overview."
+  },
+  "useCases": {
+    "de": "Innen oder unter Dach, wo die Kamera stehen, hängen oder kleben soll.",
+    "en": "Indoors or under cover, where the camera has to stand, hang or stick wherever it fits."
+  },
+  "caveats": {
+    "de": "Nicht frei der Witterung ausgesetzt — IPX4 heißt überdacht.",
+    "en": "Not exposed to the weather — IPX4 means covered."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-g5-flex",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/af685346-47c7-41cf-a3c8-71ab26608dcd/c8249de8-79af-4b9b-8566-fdaedf6917b9.png",
+  "tags": {
+    "de": ["2K", "innen", "kompakt"],
+    "en": ["2K", "indoor", "compact"]
+  },
+  "poeIn": "af",
+  "specs": {
+    "res": "2K · 4 MP (5 MP Sensor)",
+    "ir": 6,
+    "fov": 102,
+    "poe": "PoE (802.3af)",
+    "ip": "IPX4",
+    "out": false
+  }
+}

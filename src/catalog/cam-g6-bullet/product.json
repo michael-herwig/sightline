@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-bullet",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 10,
+  "name": {
+    "de": "G6 Bullet",
+    "en": "G6 Bullet"
+  },
+  "price": 179,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Standard für außen. Bestes Preis/Leistung, 30 m Nachtsicht, AI-Erkennung.",
+    "en": "The outdoor default. Best value, 30 m night vision, AI detection."
+  },
+  "useCases": {
+    "de": "Der Standardfall außen: Zufahrt, Hofseite, Stallwand. 30 m Nachtsicht decken die meisten Wege ab.",
+    "en": "The outdoor default: driveway, yard side, stable wall. 30 m of night vision covers most paths."
+  },
+  "caveats": {
+    "de": "Nicht in engen Innenräumen — sie trägt zu weit und sieht zu schmal.",
+    "en": "Not for tight indoor rooms — it reaches too far and sees too narrow."
+  },
+  "links": {
+    "vendor": "physical-security-bullet/products/uvc-g6-bullet",
+    "amazon": "https://www.amazon.de/dp/B0FRB6F3B3"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/5dc40311-0e08-4eaa-b901-472cc707b436/4dee8c08-78b7-418f-ab85-01329267c062.png",
+  "tags": {
+    "de": ["4K", "außen", "IR 30 m"],
+    "en": ["4K", "outdoor", "IR 30 m"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · 1/1.8\"",
+    "ir": 30,
+    "fov": 106,
+    "poe": "PoE (802.3af)",
+    "ip": "IP66",
+    "out": true
+  }
+}

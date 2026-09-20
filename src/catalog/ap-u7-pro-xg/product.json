@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-pro-xg",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 40,
+  "name": {
+    "de": "U7 Pro XG",
+    "en": "U7 Pro XG"
+  },
+  "price": 193,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Nicht angefragt, aber bemerkenswert: U7 Pro mit 10-GbE-Port statt 2,5 GbE, sonst technisch nah am U7 Pro. Für Backhaul-Engpässe.",
+    "en": "Not requested, but notable: a U7 Pro with a 10 GbE port instead of 2.5 GbE, otherwise close to the U7 Pro. For backhaul bottlenecks."
+  },
+  "useCases": {
+    "de": "Wenn der Uplink des AP der Engpass ist und der Switch 10 GbE kann.",
+    "en": "When the AP's uplink is the bottleneck and the switch does 10 GbE."
+  },
+  "caveats": {
+    "de": "Nicht ohne 10-GbE-Switch — dann ist der U7 Pro günstiger und gleich schnell.",
+    "en": "Not without a 10 GbE switch — the U7 Pro is then cheaper and just as fast."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/u7-pro-xg",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/a433b9e5-4dd1-4784-adf8-9d12bcba4c87/6e27f358-5455-48cc-91be-89d457b5e70f.png",
+  "tags": {
+    "de": ["WiFi 7", "10 GbE"],
+    "en": ["Wi-Fi 7", "10 GbE"]
+  },
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 18,
+    "out": false,
+    "wifi": "WiFi 7 · 6 GHz · 10 GbE Uplink",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

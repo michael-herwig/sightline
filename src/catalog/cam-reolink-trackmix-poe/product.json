@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-trackmix-poe",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 220,
+  "name": {
+    "de": "Reolink TrackMix PoE",
+    "en": "Reolink TrackMix PoE"
+  },
+  "price": 144,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Weitwinkel und Tele gleichzeitig, verfolgt Objekte automatisch. Für Zufahrten mit Bewegung auf Distanz.",
+    "en": "Wide and tele at once, tracks objects automatically. For driveways with movement at distance."
+  },
+  "useCases": {
+    "de": "Einfahrt mit langem Weg: Übersicht und Tele zugleich, folgt dem Auto.",
+    "en": "Driveway with a long approach: overview and tele at once, follows the car."
+  },
+  "caveats": {
+    "de": "Nicht an engen Stellen — das Tele bringt dort nichts.",
+    "en": "Not in tight spots — the tele adds nothing there."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/reolink-trackmix-poe/",
+    "amazon": "https://www.amazon.de/dp/B0B4KCDD1F"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2025/04/290627131745908033.9896.jpg.webp",
+  "tags": {
+    "de": ["4K", "Tracking", "IR 30 m", "ONVIF"],
+    "en": ["4K", "tracking", "IR 30 m", "ONVIF"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · Weitwinkel + Tele",
+    "ir": 30,
+    "fov": 104,
+    "poe": "PoE (802.3af)",
+    "ip": "IP65",
+    "out": true,
+    "zoom": "6× hybrid"
+  }
+}

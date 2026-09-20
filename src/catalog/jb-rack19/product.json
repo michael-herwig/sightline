@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema.json",
+  "id": "rack19",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "digitus",
+  "status": "current",
+  "order": 90,
+  "name": {
+    "de": "DIGITUS DN-19 09-U-EC-SW (Wandgehäuse 19″, 9 HE)",
+    "en": "DIGITUS DN-19 09-U-EC-SW (19-inch wall rack, 9U)"
+  },
+  "price": 125,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Neun Höheneinheiten für Switch, Patchfeld und Router, abschließbar. Für die Zentrale im Haus; ein einzelnes Gerät hängt genauso gut an einem Brett.",
+    "en": "Nine rack units for switch, patch panel and router, lockable. For the hub inside the house; a single device does just as well on a plain shelf."
+  },
+  "useCases": {
+    "de": "Die Zentrale im Haus, wenn Switch, Patchfeld und Router zusammen verkabelt stehen sollen.",
+    "en": "The hub inside the house, when switch, patch panel and router should be wired together."
+  },
+  "caveats": {
+    "de": "Nicht draußen — IP20; für ein einzelnes Gerät reicht ein Brett an der Wand.",
+    "en": "Not outdoors — IP20; a single device is fine on a plain wall shelf."
+  },
+  "links": {
+    "vendor": "https://www.reichelt.com/de/en/shop/product/19_wall-mounted_housing_9u_450mm_depth_black-370703"
+  },
+  "img": "https://cdn-reichelt.de/bilder/web/artikel_ws/E910%2FDIGITUS_DN-19_09-U-EC-SW_001.jpg?type=Product&",
+  "tags": {
+    "de": ["keine Erdarbeit", "trocken", "abschließbar"],
+    "en": ["no earthwork", "dry", "lockable"]
+  },
+  "mount": {
+    "de": "Wandmontage, Glastür",
+    "en": "Wall mount, glass door"
+  },
+  "specs": {
+    "ip": "IP20",
+    "ports": 9,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "Switch, Patchfeld und Router zusammen im Haus",
+      "en": "switch, patch panel and router together in the house"
+    }
+  }
+}

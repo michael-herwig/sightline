@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "u7-pro-outdoor",
+  "kind": "ap",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 60,
+  "name": {
+    "de": "U7 Pro Outdoor",
+    "en": "U7 Pro Outdoor"
+  },
+  "price": 250,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 7, IP67, Richtantenne. Wenn eine Seite gezielt weit abgedeckt werden soll.",
+    "en": "Wi-Fi 7, IP67, directional. When one side needs to be covered far and on purpose."
+  },
+  "useCases": {
+    "de": "Wenn eine Richtung weit reichen muss, etwa über die Wiese.",
+    "en": "When one direction has to reach far, across the meadow say."
+  },
+  "caveats": {
+    "de": "Nicht als Rundum-AP mitten im Hof.",
+    "en": "Not as an all-round AP in the middle of the yard."
+  },
+  "links": {
+    "vendor": "wifi-outdoor/products/u7-pro-outdoor",
+    "amazon": "https://www.amazon.de/dp/B0F9JT2GQ2"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/5b68693b-679c-4a17-867a-bf9fab51dc23/d5bec576-cbd7-4de2-a688-e4323147afcb.png",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G/2.5G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 90,
+    "v": 45
+  },
+  "specs": {
+    "radius": 45,
+    "out": true,
+    "wifi": "WiFi 7 · 6 GHz",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP67"
+  }
+}

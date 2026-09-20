@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema.json",
+  "id": "tplink-mc220l",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 200,
+  "name": {
+    "de": "TP-Link MC220L (Medienkonverter)",
+    "en": "TP-Link MC220L (media converter)"
+  },
+  "price": 15,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Reiner Konverter: SFP rein, 1× Gigabit-Kupfer raus. Das billigste Faserende vor einem Switch ohne SFP.",
+    "en": "Plain converter: SFP in, 1× gigabit copper out. The cheapest fibre end ahead of a switch without SFP."
+  },
+  "useCases": {
+    "de": "Vor jedem Switch ohne SFP-Port, oder für genau ein Gerät mit eigenem Netzteil.",
+    "en": "Ahead of any switch without an SFP port, or for exactly one device with its own power supply."
+  },
+  "caveats": {
+    "de": "Nicht direkt an eine PoE-Kamera — er liefert keinen Strom.",
+    "en": "Not straight into a PoE camera — it supplies no power."
+  },
+  "links": {
+    "vendor": "https://www.omadanetworks.com/de/business-networking/omada-accessory-media-converter/mc220l/",
+    "amazon": "https://www.amazon.de/dp/B08GMCDV9P"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/MC420L_normal_20250207082113q.jpg",
+  "tags": {
+    "de": ["Strom nötig", "Glasfaser → LAN", "kein PoE"],
+    "en": ["needs power", "fibre → LAN", "no PoE"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 1,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "Faser → 1× Kupfer, kein PoE",
+      "en": "fibre → 1× copper, no PoE"
+    },
+    "sfp": true,
+    "sfpPorts": 1,
+    "poe": 0
+  }
+}

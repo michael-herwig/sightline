@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema.json",
+  "id": "pit",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "any",
+  "status": "current",
+  "order": 30,
+  "name": {
+    "de": "Kabelschacht befahrbar, Kl. B125",
+    "en": "Drivable cable pit, class B125"
+  },
+  "price": 379,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Faserverbundkunststoff statt PP, Deckel Klasse B125 (12,5 t): der einzige Schacht hier, der unter einer Autoeinfahrt liegen darf. Im Rasen wäre er zehnmal so teuer wie nötig.",
+    "en": "Fibre-composite plastic instead of PP, lid class B125 (12.5 t): the only shaft here allowed under a car driveway. In a lawn it costs ten times what is needed."
+  },
+  "useCases": {
+    "de": "Ein Abzweig, der unter einer befahrenen Zufahrt liegen muss.",
+    "en": "A branch that has to sit under a driveway that gets driven over."
+  },
+  "caveats": {
+    "de": "Nicht im Rasen oder Beet — dort reicht der einfache Kabelschacht.",
+    "en": "Not in a lawn or flower bed — the plain cable shaft does that."
+  },
+  "links": {
+    "vendor": "https://www.kabelschacht24.de/en/p/e-trick-quattro-kunststoffkabelschacht-290x270mm-mit-boden"
+  },
+  "img": "https://www.kabelschacht24.de/storage/images/image?remote=https%3A%2F%2Fwww.kabelschacht24.de%2FWebRoot%2FStore16%2FShops%2F61464916%2F61FA%2F9D14%2F334C%2F5A5A%2F08F6%2F0A0C%2F6D13%2F5628%2FQuattro.jpg&shop=61464916",
+  "tags": {
+    "de": ["Erdarbeit", "kein Strom", "befahrbar bis 12,5 t"],
+    "en": ["earthwork", "no power", "drivable up to 12.5 t"]
+  },
+  "mount": {
+    "de": "Erdeinbau unter befestigter Fläche",
+    "en": "Buried under a paved surface"
+  },
+  "specs": {
+    "ip": "IP54",
+    "ports": 4,
+    "power": false,
+    "dig": true,
+    "use": {
+      "de": "Abzweig unter einer Zufahrt oder Toreinfahrt",
+      "en": "branch under a driveway or gate crossing"
+    }
+  }
+}

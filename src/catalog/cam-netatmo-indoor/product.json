@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "netatmo-indoor",
+  "kind": "cam",
+  "vendor": "netatmo",
+  "status": "current",
+  "order": 310,
+  "name": {
+    "de": "Netatmo Innenkamera",
+    "en": "Netatmo Innenkamera"
+  },
+  "price": 250,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Innen: Gesichtserkennung, mechanische Blende, lokale Speicherung ohne Abo. Kein NVR — nur App.",
+    "en": "Indoor: face recognition, mechanical shutter, local storage without subscription. No NVR — app only."
+  },
+  "useCases": {
+    "de": "Flur oder Wohnraum mit Gesichtserkennung und Privatsphärenblende.",
+    "en": "Hallway or living room with face recognition and a privacy shutter."
+  },
+  "caveats": {
+    "de": "Nicht außen, nicht im NVR, keine nennenswerte Nachtsicht-Reichweite.",
+    "en": "Not outdoors, not in an NVR, no real night-vision range."
+  },
+  "links": {
+    "vendor": "https://www.netatmo.com/de-de/indoor-camera-advance-black",
+    "amazon": "https://www.amazon.de/dp/B0DVLQHLJB"
+  },
+  "img": "https://www.netatmo.com/img/d4bbd85e-7be3-41bf-96ef-5a5828c84f75",
+  "tags": {
+    "de": ["innen", "WLAN", "kein PoE", "kein NVR"],
+    "en": ["indoor", "Wi-Fi", "no PoE", "no NVR"]
+  },
+  "ports": [
+    {
+      "type": "dc",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "res": "2K HDR",
+    "ir": 0,
+    "fov": 130,
+    "poe": "kein PoE · USB-Netzteil",
+    "ip": "",
+    "out": false,
+    "wifi": true
+  }
+}

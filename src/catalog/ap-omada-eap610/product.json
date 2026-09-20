@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "omada-eap610",
+  "kind": "ap",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 120,
+  "name": {
+    "de": "TP-Link EAP610",
+    "en": "TP-Link EAP610"
+  },
+  "price": 83,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Günstiger Decken-AP innen, WiFi 6. Omada-Controller oder Standalone.",
+    "en": "Cheap indoor ceiling AP, Wi-Fi 6. Omada controller or standalone."
+  },
+  "useCases": {
+    "de": "Preiswerte Grundversorgung je Etage, wenn kein UniFi im Haus ist.",
+    "en": "Cheap baseline per floor when there is no UniFi in the house."
+  },
+  "caveats": {
+    "de": "Nicht gemischt mit UniFi-APs — zwei Controller, zwei Apps.",
+    "en": "Not mixed with UniFi APs — two controllers, two apps."
+  },
+  "links": {
+    "vendor": "https://www.omadanetworks.com/de/business-networking/omada-wifi-ceiling-mount/eap610/",
+    "amazon": "https://www.amazon.de/dp/B09XM74VQL"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/overview_01_large_20241230033757v.jpg",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "1G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 15,
+    "out": false,
+    "wifi": "WiFi 6 · 2×2",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

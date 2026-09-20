@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-e1-pro",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 270,
+  "name": {
+    "de": "Reolink E1 Pro",
+    "en": "Reolink E1 Pro"
+  },
+  "price": 60,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Kleine WLAN-Innenkamera mit Schwenk/Neige, Auto-Tracking (nur Schwenken), Privacy-Modus. Kein Zoom.",
+    "en": "Small Wi-Fi indoor camera with pan/tilt, auto-tracking (pan only), privacy mode. No zoom."
+  },
+  "useCases": {
+    "de": "Innenraum, der gelegentlich abgefahren werden soll, für kleines Geld.",
+    "en": "An indoor room to be panned across now and then, for very little money."
+  },
+  "caveats": {
+    "de": "Nicht draußen und nicht für Details — kein Zoom, kein Gehäuseschutz.",
+    "en": "Not outdoors and not for detail — no zoom, no housing protection."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/e1-pro/",
+    "amazon": null
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2024/10/E1-PRO.png",
+  "tags": {
+    "de": ["innen", "WLAN", "kein PoE"],
+    "en": ["indoor", "Wi-Fi", "no PoE"]
+  },
+  "open": {
+    "rtsp": true,
+    "onvif": true,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h264"],
+    "sub": ["h264"]
+  },
+  "specs": {
+    "res": "5 MP · 1/2.7\"",
+    "ir": 12,
+    "fov": 360,
+    "poe": {
+      "de": "kein PoE · WLAN (Wi-Fi 5)",
+      "en": "no PoE · Wi-Fi (Wi-Fi 5)"
+    },
+    "ip": "—",
+    "out": false,
+    "wifi": true
+  }
+}

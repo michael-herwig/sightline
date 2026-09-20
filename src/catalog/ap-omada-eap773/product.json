@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "omada-eap773",
+  "kind": "ap",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 130,
+  "name": {
+    "de": "TP-Link EAP773",
+    "en": "TP-Link EAP773"
+  },
+  "price": 189,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WiFi 7 Tri-Band mit 10-GbE-Port, innen. Das Omada-Flaggschiff fürs Haus.",
+    "en": "Wi-Fi 7 tri-band with a 10 GbE port, indoor. Omada's flagship for the house."
+  },
+  "useCases": {
+    "de": "Haupthaus mit Omada, wenn WiFi 7 und 6 GHz gewünscht sind.",
+    "en": "Main house on Omada when Wi-Fi 7 and 6 GHz are wanted."
+  },
+  "caveats": {
+    "de": "Nicht draußen, und der 10-GbE-Port bringt nur mit passendem Switch etwas.",
+    "en": "Not outdoors, and the 10 GbE port only helps with a matching switch."
+  },
+  "links": {
+    "vendor": "https://www.omadanetworks.com/de/business-networking/omada-wifi-ceiling-mount/eap773/",
+    "amazon": "https://www.amazon.de/dp/B0CMBZQXFH"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/3_large_20230808055953d.jpg",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "10G"
+    }
+  ],
+  "poeIn": "at",
+  "beam": {
+    "h": 360,
+    "back": 1
+  },
+  "specs": {
+    "radius": 20,
+    "out": false,
+    "wifi": "WiFi 7 · 2×2 · 6 GHz",
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP20"
+  }
+}

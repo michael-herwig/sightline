@@ -1,0 +1,75 @@
+{
+  "$schema": "../schema.json",
+  "id": "flex",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 110,
+  "name": {
+    "de": "USW Flex 2.5G PoE (Switch)",
+    "en": "USW Flex 2.5G PoE (switch)"
+  },
+  "price": 179,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Hier wird aus Glasfaser wieder Kupfer: SFP+ rein, 8× PoE++ (196 W) raus. Ein Switch je Gebäude, Kameras und APs hängen daran. Braucht Strom.",
+    "en": "This is where fibre turns back into copper: SFP+ in, 8× PoE++ (196 W) out. One switch per building, cameras and APs hang off it. Needs power."
+  },
+  "useCases": {
+    "de": "Am Faserende in jedem Gebäude: Uplink rein, Kameras und APs daran.",
+    "en": "At the end of the fibre in every building: uplink in, cameras and APs on it."
+  },
+  "caveats": {
+    "de": "Nicht draußen ohne Kasten — IP20 und er braucht Strom.",
+    "en": "Not outdoors without a cabinet — IP20 and it needs power."
+  },
+  "links": {
+    "vendor": "switching-utility-poe/products/usw-flex-2-5g-8-poe",
+    "amazon": "https://www.amazon.de/dp/B0DV6CDXKT"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/e9d97121-f363-4261-83db-5f74e093a304/dd55113e-93b2-40da-b10b-945ab4d609d0.png",
+  "tags": {
+    "de": ["Strom nötig", "Glasfaser → LAN", "PoE++", "trocken montieren"],
+    "en": ["needs power", "fibre → LAN", "PoE++", "mount dry"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in the cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "2.5G",
+      "poe": "bt"
+    },
+    {
+      "type": "rj45",
+      "dir": "both",
+      "n": 1,
+      "speed": "10G"
+    },
+    {
+      "type": "sfp+",
+      "dir": "both",
+      "n": 1,
+      "speed": "10G"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "Glasfaser rein, 8× Netzwerk mit PoE raus",
+      "en": "fibre in, 8× network with PoE out"
+    },
+    "sfp": true,
+    "sfpPorts": 1,
+    "poe": 196
+  }
+}

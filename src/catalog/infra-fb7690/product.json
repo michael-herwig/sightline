@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema.json",
+  "id": "fb7690",
+  "kind": "infra",
+  "vendor": "avm",
+  "status": "current",
+  "order": 20,
+  "name": {
+    "de": "FRITZ!Box 7690",
+    "en": "FRITZ!Box 7690"
+  },
+  "price": 280,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "DSL-Router mit WiFi 7, Telefonie und 2,5-GbE-Port. Zeichnet keine Kameras auf — wer ihn als Router nimmt, braucht für die Kameras zusätzlich einen UNVR.",
+    "en": "DSL router with Wi-Fi 7, telephony and a 2.5 GbE port. It records no cameras — whoever uses it as the router also needs a UNVR for them."
+  },
+  "useCases": {
+    "de": "DSL-Anschluss mit Telefonie, und die Kameras zeichnen auf einem UNVR auf.",
+    "en": "A DSL line with telephony, with the cameras recording on a UNVR."
+  },
+  "caveats": {
+    "de": "Nicht als Kamera-Zentrale — sie nimmt nichts auf.",
+    "en": "Not as the camera head end — it records nothing."
+  },
+  "links": {
+    "vendor": "https://fritz.com/en/products/fritz-box-7690",
+    "amazon": "https://www.amazon.de/dp/B0D63DSFJ6"
+  },
+  "img": "https://fritz.com/cdn/shop/files/fritzbox_7690_dsl_2000x2000px.webp",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 1,
+      "speed": "2.5G"
+    },
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 2,
+      "speed": "1G"
+    },
+    {
+      "type": "wan",
+      "dir": "in",
+      "n": 1,
+      "speed": "2.5G"
+    }
+  ],
+  "specs": {
+    "role": "router",
+    "ports": 3,
+    "sfp": false,
+    "poe": 0,
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "DSL bis 300 Mbit/s, WiFi 7, 2,5 GbE · kein NVR",
+      "en": "DSL up to 300 Mbit/s, Wi-Fi 7, 2.5 GbE · no NVR"
+    }
+  }
+}

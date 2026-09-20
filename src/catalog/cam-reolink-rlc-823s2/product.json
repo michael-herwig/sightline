@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-rlc-823s2",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 230,
+  "name": {
+    "de": "Reolink RLC-823S2",
+    "en": "Reolink RLC-823S2"
+  },
+  "price": 320,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Echtes PTZ: 360°, 16× Zoom, 80 m Nachtsicht. Für weite Flächen — sieht aber nur dahin, wo sie gerade guckt.",
+    "en": "True PTZ: 360°, 16× zoom, 80 m night vision. For wide areas — but only sees where it is pointing."
+  },
+  "useCases": {
+    "de": "Weite Fläche, ein Gerät, das nachschaut: Hof, Weide, Feldweg.",
+    "en": "Wide area, one device that goes and looks: yard, paddock, track."
+  },
+  "caveats": {
+    "de": "Nicht als einzige Kamera: sie sieht nur dorthin, wo sie gerade steht. Braucht PoE+.",
+    "en": "Not as the only camera: it only sees where it happens to point. Needs PoE+."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/rlc-823s2/",
+    "amazon": "https://www.amazon.de/dp/B0CQLV9QYX"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2024/01/240124211706059461.2678.png",
+  "tags": {
+    "de": ["PTZ", "16× Zoom", "IR 80 m", "ONVIF"],
+    "en": ["PTZ", "16× zoom", "IR 80 m", "ONVIF"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "at",
+  "specs": {
+    "res": "4K · 8 MP · 16× optischer Zoom",
+    "ir": 80,
+    "fov": 360,
+    "poe": "PoE+ (802.3at)",
+    "ip": "IP66",
+    "out": true,
+    "zoom": "16× optisch"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema.json",
+  "id": "irflood",
+  "kind": "infra",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 140,
+  "name": {
+    "de": "G6 180 Zusatz-IR-Modul",
+    "en": "G6 180 add-on IR module"
+  },
+  "price": 115,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Zusätzlicher IR-Strahler für die G6 180. Deren eingebaute Nachtsicht reicht nur 20 m.",
+    "en": "An extra IR illuminator for the G6 180. Its built-in night vision only reaches 20 m."
+  },
+  "useCases": {
+    "de": "Wenn eine G6 180 nachts weiter sehen soll als ihre 20 m.",
+    "en": "When a G6 180 has to see further at night than its own 20 m."
+  },
+  "caveats": {
+    "de": "Nicht bei Kameras, die ohnehin 30 m oder mehr ausleuchten.",
+    "en": "Not for cameras that already light up 30 m or more."
+  },
+  "links": {
+    "vendor": "accessories-camera/collections/camera-vision-enhancers/products/uacc-g6-180-enhancer"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/f2c1e677-1152-4918-9e77-5aae5f7d8987/2ab52b94-5c31-4ec4-9b76-c324fdb2d622.png",
+  "specs": {
+    "qty": 1,
+    "on": false,
+    "sub": {
+      "de": "verlängert die Nachtsicht der 180er",
+      "en": "extends the night vision of the 180"
+    }
+  }
+}

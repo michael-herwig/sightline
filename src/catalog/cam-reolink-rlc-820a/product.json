@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-rlc-820a",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 190,
+  "name": {
+    "de": "Reolink RLC-820A",
+    "en": "Reolink RLC-820A"
+  },
+  "price": 80,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Gleiche Technik wie die 810A im Dome-Gehäuse, für Fassade oder Dachüberstand.",
+    "en": "Same internals as the 810A in a dome housing, for facade or eaves."
+  },
+  "useCases": {
+    "de": "Unter Vordach oder Decke, unauffällig.",
+    "en": "Under eaves or a ceiling, unobtrusive."
+  },
+  "caveats": {
+    "de": "Nicht freistehend in Sonne und Regen — die Kuppel spiegelt und verschmutzt.",
+    "en": "Not freestanding in sun and rain — the dome reflects and gets dirty."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/rlc-820a/",
+    "amazon": "https://www.amazon.de/dp/B08KG289Q4"
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2025/04/210113411745198021.3897.jpg.webp",
+  "tags": {
+    "de": ["4K", "Decke", "IR 30 m", "ONVIF"],
+    "en": ["4K", "ceiling", "IR 30 m", "ONVIF"]
+  },
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "in",
+      "n": 1,
+      "speed": "100M"
+    }
+  ],
+  "poeIn": "af",
+  "specs": {
+    "res": "4K · 8 MP · 1/2.7\"",
+    "ir": 30,
+    "fov": 87,
+    "poe": "PoE (802.3af)",
+    "ip": "IP67",
+    "out": true
+  }
+}

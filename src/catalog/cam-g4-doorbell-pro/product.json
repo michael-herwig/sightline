@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema.json",
+  "id": "g4-doorbell-pro",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 160,
+  "name": {
+    "de": "G4 Doorbell Pro PoE Kit",
+    "en": "G4 Doorbell Pro PoE Kit"
+  },
+  "price": 366,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Türklingel mit PoE, inkl. PoE-Chime im Set. Zweite Kamera erkennt Pakete am Boden. Gehört an die Haustür, nicht als Innenkamera.",
+    "en": "PoE doorbell, kit includes a PoE chime. Second camera watches the ground for packages. Belongs at the front door, not indoors."
+  },
+  "useCases": {
+    "de": "Haustür mit PoE-Leitung: klingeln, sprechen, Pakete am Boden sehen.",
+    "en": "A front door with a PoE cable: ring, talk, and see parcels on the ground."
+  },
+  "caveats": {
+    "de": "Nicht als Übersichtskamera — 2 MP und ein sehr naher Blickwinkel.",
+    "en": "Not as an overview camera — 2 MP and a very close view."
+  },
+  "links": {
+    "vendor": "https://eu.store.ui.com/eu/en/products/uvc-g4-doorbell-pro",
+    "amazon": null
+  },
+  "img": "https://cdn.ecomm.ui.com/products/09c53756-12c3-4f3c-b0e7-f4268a0ad88f/5ac1509e-dae1-44a8-ad34-f2c1b0b94119.png",
+  "tags": {
+    "de": ["Türklingel", "PoE", "Paketerkennung"],
+    "en": ["doorbell", "PoE", "package detection"]
+  },
+  "poeIn": "af",
+  "specs": {
+    "res": "FHD · 2 MP (+ 8 MP Paket-Sensor)",
+    "ir": 6,
+    "fov": 138,
+    "poe": "PoE (802.3af)",
+    "ip": "IPX4",
+    "out": true
+  }
+}

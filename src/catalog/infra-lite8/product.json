@@ -1,0 +1,26 @@
+{
+  "$schema": "../schema.json",
+  "id": "lite8",
+  "kind": "infra",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 90,
+  "name": {
+    "de": "USW Lite 8 PoE",
+    "en": "USW Lite 8 PoE"
+  },
+  "price": 99,
+  "priceDate": "2026-09",
+  "links": {
+    "vendor": "switching-utility-poe/products/usw-lite-8-poe"
+  },
+  "specs": {
+    "qty": 0,
+    "on": false,
+    "hidden": true,
+    "sub": {
+      "de": "steht auf der Karte",
+      "en": "placed on the map"
+    }
+  }
+}

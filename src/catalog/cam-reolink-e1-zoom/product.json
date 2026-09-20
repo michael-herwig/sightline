@@ -1,0 +1,58 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-e1-zoom",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 280,
+  "name": {
+    "de": "Reolink E1 Zoom",
+    "en": "Reolink E1 Zoom"
+  },
+  "price": 100,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "4K-WLAN-Innenkamera mit Schwenk/Neige/Zoom, Auto-Tracking. Bestes Bild der E1-Reihe, aber innen only.",
+    "en": "4K Wi-Fi indoor camera with pan/tilt/zoom, auto-tracking. Best image in the E1 line, but indoor only."
+  },
+  "useCases": {
+    "de": "Innen, wenn Schwenken und 4K zusammenkommen sollen.",
+    "en": "Indoors, when panning and 4K have to come together."
+  },
+  "caveats": {
+    "de": "Nicht draußen und nicht ohne WLAN-Abdeckung im Raum.",
+    "en": "Not outdoors and not without Wi-Fi coverage in the room."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/e1-zoom/",
+    "amazon": null
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/assets/2019/10/e1-zoom-400.png",
+  "tags": {
+    "de": ["4K", "innen", "WLAN", "PTZ"],
+    "en": ["4K", "indoor", "Wi-Fi", "PTZ"]
+  },
+  "open": {
+    "rtsp": true,
+    "onvif": true,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h264"],
+    "sub": ["h264"]
+  },
+  "specs": {
+    "res": "4K · 8 MP · 1/2.8\"",
+    "ir": 12,
+    "fov": 360,
+    "poe": {
+      "de": "kein PoE · WLAN (Wi-Fi 6)",
+      "en": "no PoE · Wi-Fi (Wi-Fi 6)"
+    },
+    "ip": "—",
+    "out": false,
+    "wifi": true,
+    "zoom": "3× optisch"
+  }
+}

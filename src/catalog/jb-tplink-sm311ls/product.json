@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema.json",
+  "id": "tplink-sm311ls",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 260,
+  "name": {
+    "de": "TP-Link SM311LS (SFP-Modul, Singlemode)",
+    "en": "TP-Link SM311LS (SFP module, single-mode)"
+  },
+  "price": 20,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "1000Base-LX, LC-Duplex, 20 km. Es bringt keinen eigenen Schacht mit, es belegt einen — und ohne das Gegenstück am anderen Ende bleibt die Faser dunkel.",
+    "en": "1000Base-LX, LC duplex, 20 km. It brings no cage of its own, it occupies one — and without its counterpart at the far end the fibre stays dark."
+  },
+  "useCases": {
+    "de": "Ein Switch mit SFP-Schacht soll direkt an die Glasfaser, ohne Medienkonverter.",
+    "en": "A switch with an SFP cage should go straight onto the fibre, no media converter."
+  },
+  "caveats": {
+    "de": "Nicht einzeln bestellen — ohne das Gegenstück am anderen Ende bleibt die Faser dunkel.",
+    "en": "Not ordered alone — without its counterpart at the far end the fibre stays dark."
+  },
+  "links": {
+    "vendor": "https://www.tp-link.com/de/business-networking/omada-accessory-module-cable/sm311ls/"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/SM311LS_UN_5.0_2310_large_20231027065237f.png",
+  "tags": {
+    "de": ["kein Strom", "immer paarweise", "20 km Singlemode"],
+    "en": ["no power draw", "always in pairs", "20 km single-mode"]
+  },
+  "mount": {
+    "de": "steckt im SFP-Schacht des Switches",
+    "en": "plugs into the switch's SFP cage"
+  },
+  "powerIn": "none",
+  "ports": [
+    {
+      "type": "sfp",
+      "dir": "both",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 0,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "steckt in einem SFP-Schacht, verbindet über Glasfaser",
+      "en": "plugs into an SFP cage, links over fibre"
+    },
+    "sfp": true,
+    "sfpPorts": 0,
+    "poe": 0
+  }
+}

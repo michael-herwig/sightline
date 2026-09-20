@@ -1,0 +1,58 @@
+{
+  "$schema": "../schema.json",
+  "id": "reolink-e1-outdoor",
+  "kind": "cam",
+  "vendor": "reolink",
+  "status": "current",
+  "order": 260,
+  "name": {
+    "de": "Reolink E1 Outdoor",
+    "en": "Reolink E1 Outdoor"
+  },
+  "price": 120,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "WLAN-PTZ mit Auto-Tracking und Farb-Spotlight für Nachtsicht in Farbe. Kein PoE, braucht Steckdose/Netzteil.",
+    "en": "Wi-Fi PTZ with auto-tracking and a colour spotlight for night vision. No PoE, needs mains power."
+  },
+  "useCases": {
+    "de": "Gartenhaus oder Hofecke mit Steckdose, wo geschwenkt und verfolgt werden soll.",
+    "en": "A shed or yard corner with a socket, where the camera should pan and track."
+  },
+  "caveats": {
+    "de": "Nicht im PoE-Konzept — sie braucht WLAN und ein Netzteil.",
+    "en": "Not part of the PoE plan — it needs Wi-Fi and a power supply."
+  },
+  "links": {
+    "vendor": "https://reolink.com/product/e1-outdoor/",
+    "amazon": null
+  },
+  "img": "https://home-cdn.reolink.us/wp-content/uploads/2021/03/050715191614928519.1298.png",
+  "tags": {
+    "de": ["WLAN", "PTZ", "Auto-Tracking", "kein PoE"],
+    "en": ["Wi-Fi", "PTZ", "auto-tracking", "no PoE"]
+  },
+  "open": {
+    "rtsp": true,
+    "onvif": false,
+    "api": "documented",
+    "cloud": "optional"
+  },
+  "codecs": {
+    "main": ["h264"],
+    "sub": ["h264"]
+  },
+  "specs": {
+    "res": "5 MP · 1/2.7\"",
+    "ir": 12,
+    "fov": 360,
+    "poe": {
+      "de": "kein PoE · WLAN (Wi-Fi 5)",
+      "en": "no PoE · Wi-Fi (Wi-Fi 5)"
+    },
+    "ip": "IP65",
+    "out": true,
+    "wifi": true,
+    "zoom": "3× optisch"
+  }
+}

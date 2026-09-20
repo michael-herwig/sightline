@@ -1,7 +1,14 @@
 // The shapes the planner works with, derived from docs/DATA-MODEL.md.
+//
+// Openness, Codecs and Beam are the file format's own types — defined once in
+// src/catalog/schema.ts and re-exported here so the planner has one import.
 // Catalogue entries are deliberately wide: a camera has no `poe` budget and a
 // housing has no `powerIn`, so the optional fields say "may be there", and the
 // invariants that actually hold are checked in tests/unit/catalogs.test.ts.
+
+import type { Beam, Codecs, Openness } from "../catalog/schema";
+
+export type { Beam, Codecs, Openness };
 
 /** A UI text. Catalogue texts are bilingual and go through tx(). */
 export type Txt = string | { de: string; en: string };
@@ -17,7 +24,14 @@ export type Lang = "de" | "en";
 
 // ---------------------------------------------------------------- catalogues
 
-/** Shared by every catalogue entry: what the shop links and the card need. */
+/**
+ * Shared by every catalogue entry: what the shop links and the card need.
+ *
+ * This is the shape the planner works with. It is assembled in
+ * `src/catalog/index.ts` from a `product.json` — see `src/catalog/schema.ts` for
+ * the file format, which nests the kind-specific fields under `specs` and the
+ * shop links under `links`.
+ */
 export interface Product {
   name: Txt;
   price?: number;
@@ -28,6 +42,16 @@ export interface Product {
   vendor?: string;
   note?: Txt;
   tags?: Tags;
+  /** Anything but `current` is hidden from the pickers; old plans still resolve it. */
+  status?: "current" | "deprecated" | "eol";
+  /** What replaces it, when it is no longer current. */
+  successor?: string;
+  /** Cameras: how far it can be driven without the vendor's console. */
+  open?: Openness;
+  /** Cameras: video codecs per stream, lower-case tokens. */
+  codecs?: Codecs;
+  /** Access points: radiation pattern, `h: 360` is omnidirectional. */
+  beam?: Beam;
 }
 
 /** CAMS[model] — a camera. `fov` 360 means PTZ and is drawn as a circle. */

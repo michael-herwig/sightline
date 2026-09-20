@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema.json",
+  "id": "cab",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "any",
+  "status": "current",
+  "order": 50,
+  "name": {
+    "de": "Verteilerkasten außen",
+    "en": "Outdoor distribution cabinet"
+  },
+  "price": 120,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Über Grund, mit Platz für Patchfeld, Switch oder Überspannungsschutz. Wenn am Abzweig auch Technik sitzen soll.",
+    "en": "Above ground, with room for a patch panel, switch or surge protection. For when the branch point also holds equipment."
+  },
+  "useCases": {
+    "de": "Abzweig über Grund, wenn dort auch Technik oder Überspannungsschutz sitzen soll.",
+    "en": "A branch above ground, when gear or surge protection goes there too."
+  },
+  "caveats": {
+    "de": "Nicht mitten auf der Wiese — er braucht Wand oder Sockel.",
+    "en": "Not in the middle of a meadow — it needs a wall or a pedestal."
+  },
+  "links": {
+    "vendor": "https://www.elektroland24.de/elektroinstallation/verteilerschraenke/verteilerkasten-aufputz/sicherungskasten-spelsberg/spelsberg-aki-12-kleinverteiler-ip65-12te-witterungsbestaendig.html",
+    "amazon": "https://www.amazon.de/dp/B011OCUFWA"
+  },
+  "img": "https://www.elektroland24.de/media/f9/3a/0f/1671001746/66f6242119e48d8cbd0fb78d1bf56cbca37b7a6a.jpg",
+  "tags": {
+    "de": ["keine Erdarbeit", "kein Strom", "Platz für Switch"],
+    "en": ["no earthwork", "no power", "room for a switch"]
+  },
+  "mount": {
+    "de": "Wand- oder Sockelmontage",
+    "en": "Wall or pedestal mount"
+  },
+  "specs": {
+    "ip": "IP65",
+    "ports": 8,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "Abzweig über Grund, mit Platz für Technik",
+      "en": "branch above ground, with room for gear"
+    }
+  }
+}

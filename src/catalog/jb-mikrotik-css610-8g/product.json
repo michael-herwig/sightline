@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema.json",
+  "id": "mikrotik-css610-8g",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "mikrotik",
+  "status": "current",
+  "order": 280,
+  "name": {
+    "de": "MikroTik CSS610-8G-2S+IN (Switch, ohne PoE)",
+    "en": "MikroTik CSS610-8G-2S+IN (switch, no PoE)"
+  },
+  "price": 119,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Nicht-PoE-Geschwister des CSS610-8P-2S+IN: 8× Gigabit-Kupfer plus 2× SFP+, RouterOS. Günstiger als der CRS305 (4× SFP+), wenn zwei Fasern reichen und kein PoE gebraucht wird.",
+    "en": "The non-PoE sibling of the CSS610-8P-2S+IN: 8× gigabit copper plus 2× SFP+, RouterOS. Cheaper than the CRS305 (4× SFP+) when two fibres are enough and no PoE is needed."
+  },
+  "useCases": {
+    "de": "Zwei Fasern laufen an einem Punkt zusammen und die Geräte dahinter haben eigene Netzteile.",
+    "en": "Two fibres meet at one point and the devices behind it have their own power supplies."
+  },
+  "caveats": {
+    "de": "Nicht für Kameras oder APs — er liefert kein PoE.",
+    "en": "Not for cameras or APs — it hands out no PoE."
+  },
+  "links": {
+    "vendor": "https://mikrotik.com/product/css610_8g_2s_in"
+  },
+  "img": "https://cdn.mikrotik.com/web-assets/rb_images/1351_tm.webp",
+  "tags": {
+    "de": ["Strom nötig", "kein PoE", "2× SFP+"],
+    "en": ["needs power", "no PoE", "2× SFP+"]
+  },
+  "mount": {
+    "de": "innen oder im Verteilerkasten",
+    "en": "indoors or in a cabinet"
+  },
+  "powerIn": "mains",
+  "ports": [
+    {
+      "type": "rj45",
+      "dir": "out",
+      "n": 8,
+      "speed": "1G"
+    },
+    {
+      "type": "sfp+",
+      "dir": "both",
+      "n": 2,
+      "speed": "10G"
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 8,
+    "power": true,
+    "dig": false,
+    "use": {
+      "de": "zwei Fasern an einem Punkt annehmen und auf Kupfer verteilen",
+      "en": "take two fibres at one point and fan them out to copper"
+    },
+    "sfp": true,
+    "sfpPorts": 2,
+    "poe": 0,
+    "poePorts": 0
+  }
+}

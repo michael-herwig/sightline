@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema.json",
+  "id": "tplink-sm321a",
+  "kind": "jb",
+  "form": "device",
+  "vendor": "tplink",
+  "status": "current",
+  "order": 350,
+  "name": {
+    "de": "TP-Link SM321A (SFP-Modul, BiDi, Singlemode)",
+    "en": "TP-Link SM321A (SFP module, BiDi, single-mode)"
+  },
+  "price": 24,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "1000Base-BX WDM, 20 km, braucht nur eine Faser statt zwei — steckt zusammen mit dem Gegenstück SM321B an den beiden Enden. Spart eine Ader auf langen oder engen Leerrohrstrecken.",
+    "en": "1000Base-BX WDM, 20 km, needs only one fibre strand instead of two — pairs with its counterpart SM321B at the two ends. Saves a strand on long or tight conduit runs."
+  },
+  "useCases": {
+    "de": "Das Leerrohr gibt nur eine Faser her und beide Enden bekommen ein Modul.",
+    "en": "The conduit yields only one fibre strand and both ends get a module."
+  },
+  "caveats": {
+    "de": "Nicht ohne das Gegenstück SM321B am anderen Ende — allein bleibt die Strecke dunkel.",
+    "en": "Not without its SM321B counterpart at the far end — alone the run stays dark."
+  },
+  "links": {
+    "vendor": "https://www.tp-link.com/de/business-networking/omada-accessory-module-cable/sm321a/"
+  },
+  "img": "https://static.tp-link.com/upload/image-line/SM321A_UN_3.30_2310_large_20231030022430j.png",
+  "tags": {
+    "de": ["kein Strom", "nur mit SM321B", "eine Faser", "20 km"],
+    "en": ["no power draw", "only with the SM321B", "one strand", "20 km"]
+  },
+  "mount": {
+    "de": "steckt im SFP-Schacht des Switches",
+    "en": "plugs into the switch's SFP cage"
+  },
+  "powerIn": "none",
+  "ports": [
+    {
+      "type": "sfp",
+      "dir": "both",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "ip": "IP20",
+    "ports": 0,
+    "power": false,
+    "dig": false,
+    "use": {
+      "de": "eine Strecke über eine einzige Faser statt über zwei",
+      "en": "run a link over a single fibre instead of two"
+    },
+    "sfp": true,
+    "sfpPorts": 0,
+    "poe": 0
+  }
+}

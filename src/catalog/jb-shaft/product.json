@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "id": "shaft",
+  "kind": "jb",
+  "form": "housing",
+  "vendor": "any",
+  "status": "current",
+  "order": 10,
+  "name": {
+    "de": "Kabelschacht DN 300",
+    "en": "Cable shaft DN 300"
+  },
+  "price": 40,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Der Standard am Abzweig: Rohre enden im Schacht, Kabel laufen durch, nichts wird gespleißt. Nachträglich zugänglich.",
+    "en": "The default at a branch point: conduits end in the shaft, cables run through, nothing is spliced. Reachable later."
+  },
+  "useCases": {
+    "de": "Der Normalfall, wo Rohre zusammenlaufen und man später noch drankommen will.",
+    "en": "The normal case where conduits meet and you want access later."
+  },
+  "caveats": {
+    "de": "Nicht wo der Deckel stört oder kein Bagger hinkommt.",
+    "en": "Not where the lid is in the way or no digger can reach."
+  },
+  "links": {
+    "vendor": "https://www.kabelschacht24.de/p/e-trick-pp-kunststoffkabelschacht-k30-300x300x300-begehbare-abdeckung",
+    "amazon": "https://www.amazon.de/dp/B0FP2GYZ8T",
+    "amazonSimilar": true
+  },
+  "img": "https://www.kabelschacht24.de/storage/images/image?remote=https%3A%2F%2Fwww.kabelschacht24.de%2FWebRoot%2FStore16%2FShops%2F61464916%2F4790%2F70A5%2F3434%2F447B%2FEACD%2FC0A8%2F28BA%2FD775%2FPPK30.jpg&shop=61464916",
+  "tags": {
+    "de": ["Erdarbeit", "kein Strom", "später zugänglich"],
+    "en": ["earthwork", "no power", "reachable later"]
+  },
+  "mount": {
+    "de": "Erdeinbau, Deckel begehbar",
+    "en": "Buried, walk-on lid"
+  },
+  "specs": {
+    "ip": "IP54",
+    "ports": 6,
+    "power": false,
+    "dig": true,
+    "use": {
+      "de": "Rohre treffen sich, Kabel laufen durch",
+      "en": "conduits meet, cables run through"
+    }
+  }
+}

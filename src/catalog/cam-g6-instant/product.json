@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema.json",
+  "id": "g6-instant",
+  "kind": "cam",
+  "vendor": "ubiquiti",
+  "status": "current",
+  "order": 150,
+  "name": {
+    "de": "G6 Instant (WLAN)",
+    "en": "G6 Instant (WLAN)"
+  },
+  "price": 159,
+  "priceDate": "2026-09",
+  "description": {
+    "de": "Ohne Kabel, dafür abhängig vom WLAN und nur 6 m IR. Nur für Stellen, an die wirklich kein Kabel kommt.",
+    "en": "No cable, but it depends on Wi-Fi and has only 6 m IR. Only for spots no cable can reach."
+  },
+  "useCases": {
+    "de": "Nur da, wo wirklich kein Kabel hinkommt.",
+    "en": "Only where a cable genuinely cannot reach."
+  },
+  "caveats": {
+    "de": "Nicht im Dauerbetrieb draußen: WLAN-abhängig, 6 m IR, eigenes Netzteil nötig.",
+    "en": "Not for permanent outdoor duty: Wi-Fi dependent, 6 m IR, needs its own power supply."
+  },
+  "links": {
+    "vendor": "physical-security-instant/products/uvc-g6-ins",
+    "amazon": "https://www.amazon.de/dp/B0FD8BQF36"
+  },
+  "img": "https://cdn.ecomm.ui.com/products/16382cd9-95ca-4c26-ae58-3f2cf02c8b75/ac0e2657-769a-4921-ab11-c4eaa9584c13.png",
+  "tags": {
+    "de": ["WLAN", "kein PoE", "IR 6 m"],
+    "en": ["Wi-Fi", "no PoE", "IR 6 m"]
+  },
+  "ports": [
+    {
+      "type": "dc",
+      "dir": "in",
+      "n": 1
+    }
+  ],
+  "specs": {
+    "res": "4K · 8 MP",
+    "ir": 6,
+    "fov": 106,
+    "poe": {
+      "de": "USB-C Netzteil, WLAN",
+      "en": "USB-C power supply, Wi-Fi"
+    },
+    "ip": "IP65",
+    "out": false,
+    "wifi": true
+  }
+}
