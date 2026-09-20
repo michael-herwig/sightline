@@ -185,8 +185,17 @@ conduit there, the same as Enter. A long press does the same on a touch device; 
 keys, Home/End and Enter operate the menu, Esc closes it.
 
 A selected camera gets a dashed ring with a handle on it: dragging the handle rotates the
-viewing direction, Shift snaps it to 15° steps. The slider next to it stays valid and
-follows along while dragging. Cameras with 360° view have no handle.
+viewing direction, Shift snaps it to 15° steps. A **directional access point** gets the
+same handle — its two rings become a lobe pointing forward and a small one pointing back
+(`beam` in the product file, `h`/`hFar` the opening per band, `back` the rear share).
+Cameras with 360° view and omni access points have no handle.
+
+The **heading dial** in the selection panel writes the same `rot` as the handle: a compass
+with N/E/S/W and 15° ticks, the element's own field of view drawn as a wedge, drag around
+the ring, wheel for 1° and Shift+wheel for 15°, arrow keys the same, plus a degree field
+next to it that wraps at 0 and 359. It is `role="slider"` with `aria-valuenow` and
+`aria-valuetext`, and the panel never rebuilds while it is being turned — only the two
+transforms and the number change.
 
 ## Naming, saving, sharing a plan
 
@@ -244,10 +253,14 @@ pages. As soon as something on the map is selected, that takes priority.
 **Browse without placing anything.** Every catalog card carries a small **ⓘ** top right
 next to the price: it opens the same data sheet and adds nothing — clicking the card
 itself still places or adds as before. Whoever rests the pointer on a card, a device or
-cable row, or a select field gets a **hover card** after 350 ms: image, name, price, one
-line of key figures and two sentences. It disappears on moving away, scrolling, clicking
-and with `Esc`, stays within the window, and doesn't appear at all on touch devices —
-there the ⓘ leads to the same content. A node, not state: none of it lives in `state`,
+cable row, or a select field gets a **hover card** after 150 ms: image, name, price, one
+line of key figures and two sentences. The same card appears over a **marker on the map**
+and over the members of a group in the right-click menu; there the element's label and its
+connection status sit on top of the product part. For 500 ms after one closes, the next
+one opens with no delay at all, so moving between rows, cards and markers switches
+instead of restarting. It disappears on moving away, scrolling, clicking and with `Esc`,
+stays out of the way while dragging or drawing, stays within the window, and doesn't
+appear at all on touch devices — there the ⓘ leads to the same content. A node, not state: none of it lives in `state`,
 the share link or the export.
 
 The **select fields** are grouped by task (`<optgroup>`, `cat.grp.*`): devices under

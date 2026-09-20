@@ -44,7 +44,7 @@ export const planner: PlannerText = {
   "hint.drawN": "{n} point(s), {m} m. Keep clicking, double-click or Enter finishes, Esc discards.",
   "sel.head": "Selected: {label}",
   "f.model": "Model",
-  "f.rot": "Direction",
+  "f.rot": "Heading",
   "f.label": "Tag",
   "f.note": "Note",
   "f.note.ph": "e.g. driveway, stable aisle",
@@ -154,7 +154,8 @@ export const planner: PlannerText = {
   "help.tool.select": "Select: click to pick, drag to move.",
   "help.tool.cam":
     "Place a camera. The cone shows the field of view and night reach; the handle on the ring turns it.",
-  "help.tool.ap": "Place an access point. Inner filled: reliable zone, outer dashed: free field.",
+  "help.tool.ap":
+    "Place an access point. Inner filled: reliable zone, outer dashed: free field. Directional models radiate a lobe to the front and a small one to the back instead, and turn like a camera.",
   "help.tool.jb":
     "Place a junction point: first the housing (shaft, box, cabinet, indoors), then drop the devices into it.",
   "help.tool.hub": "Place a house connection. That is where the network enters the building.",
@@ -479,6 +480,16 @@ export const planner: PlannerText = {
   "product.deprecated": "Deprecated — not for new plans.",
   "product.eol": "End of life — no longer available.",
   "product.successor": "Successor: {name}.",
+
+  // ---------- Port model (09/2026) ----------
+  "f.rot.n": "N",
+  "f.rot.e": "E",
+  "f.rot.s": "S",
+  "f.rot.w": "W",
+  "help.tip.dial":
+    "The compass dial in the selection panel sets the heading: drag the ring, wheel for 1° (Shift 15°), arrow keys the same, or type the degrees next to it.",
+  "help.tip.hover":
+    "Pointing at an element on the map brings up the same short card as in the catalogue, with its name and connection status on top.",
 };
 
 // ---------- Website: landing page, 404, shared chrome ----------
@@ -542,9 +553,9 @@ export const help: HelpText = {
   "tool.select.long":
     "Click to pick, drag to move, Del to remove. Dragging empty space pans the map, the wheel zooms.",
   "tool.cam.long":
-    "Pick a model in the catalogue, then click the map. The cone shows the field of view and the night reach. A selected camera gets a ring with a handle — drag it to turn, Shift snaps to 15° steps.",
+    "Pick a model in the catalogue, then click the map. The cone shows the field of view and the night reach. A selected camera gets a ring with a handle — drag it to turn, Shift snaps to 15° steps. The <strong>compass dial</strong> in the selection panel does the same: drag the ring, wheel for 1° (Shift 15°), arrow keys the same, or type the degrees next to it; the wedge inside shows the model's own field of view.",
   "tool.ap.long":
-    "Like the camera, but with two rings instead of a cone: outer dashed is the free-field range per manufacturer, inner filled the reliable zone (half, two thirds outdoors). Rough figures, not measurements.",
+    "Like the camera, but with two rings instead of a cone: outer dashed is the free-field range per manufacturer, inner filled the reliable zone (half, two thirds outdoors). Rough figures, not measurements. <strong>Directional models</strong> (U7 Outdoor, U7 Pro Outdoor) do not radiate all round: instead of the rings they carry a lobe to the front — as wide as the 2.4 GHz band opens on the outside, as narrow as the 5 GHz band inside — and a small one to the back; they have the same rotation handle and the same compass dial as a camera.",
   "tool.jb.long":
     "A junction point is a place: pick the housing first (shaft, gel-filled box, cabinet, or “indoors” for gear inside the building), then drop the devices into it (switch, media converter, splice box). Clicking a device in the catalogue puts it into the point that is currently selected; with nothing selected, the next click on the map creates a new point with it. A point without devices is fine — cables just meet there. Price, PoE budget and ports of a point are the sum of its devices.",
   "tool.hub.long":
@@ -585,7 +596,7 @@ export const help: HelpText = {
   "info.long":
     "The <em>Selection</em> panel shows only what you do there: input fields, lists and the connection finding. The <strong>data sheet</strong> sits behind the <strong>ⓘ</strong> — next to the model, housing or router selector, on every device and cable row and next to every <em>add</em> selector. The dialog always shows the same: name, specs, unit price, <em>Good for</em> / <em>Not for</em>, the full text and — where there is something to buy — image, product page and dealer search. In the dealer list <em>Amazon</em> goes straight to the checked article when the catalogue knows one.",
   "browse.long":
-    "Browsing without placing anything: every <strong>catalogue card</strong> carries an <strong>ⓘ</strong> on the right — it opens the data sheet and adds nothing, while clicking the card itself still places or adds as before. Resting the pointer on a card, a device or cable row or a selector brings up a <strong>short card</strong> after a moment: image, name, price, one line of key figures and two sentences on what the part is for. It goes away when you leave, when you scroll and on <kbd>Esc</kbd>; on a touch device it does not appear at all and the ⓘ leads to the same content. The <strong>selectors</strong> are grouped by job: devices under <em>Switch with PoE</em>, <em>Switch/converter without PoE</em>, <em>Power feed</em> and <em>Accessories (no power)</em>, housings under <em>Buried</em>, <em>Outdoors on a wall</em> and <em>Indoors</em>, routers by vendor. Behind the name sit price and key figure, for instance <em>8× PoE · 52 W</em>. Above the lists, <strong>chips</strong> narrow them down; on cameras <em>Open standards</em> asks whether the camera can be recorded without the vendor's console (RTSP and ONVIF), and <em>Show deprecated</em> brings back products that are no longer current — a plan already using one keeps it either way. A camera's data sheet carries two rows for this, <em>Openness</em> and <em>Codecs</em>; a grey <em>—</em> means nobody has verified it.",
+    "Browsing without placing anything: every <strong>catalogue card</strong> carries an <strong>ⓘ</strong> on the right — it opens the data sheet and adds nothing, while clicking the card itself still places or adds as before. Resting the pointer on a card, a device or cable row or a selector brings up a <strong>short card</strong> after a moment: image, name, price, one line of key figures and two sentences on what the part is for. It goes away when you leave, when you scroll and on <kbd>Esc</kbd>; on a touch device it does not appear at all and the ⓘ leads to the same content. The same card appears on the map itself — over an element it leads with that element's name and connection status — and over the members of a group in the right-click menu. The <strong>selectors</strong> are grouped by job: devices under <em>Switch with PoE</em>, <em>Switch/converter without PoE</em>, <em>Power feed</em> and <em>Accessories (no power)</em>, housings under <em>Buried</em>, <em>Outdoors on a wall</em> and <em>Indoors</em>, routers by vendor. Behind the name sit price and key figure, for instance <em>8× PoE · 52 W</em>. Above the lists, <strong>chips</strong> narrow them down; on cameras <em>Open standards</em> asks whether the camera can be recorded without the vendor's console (RTSP and ONVIF), and <em>Show deprecated</em> brings back products that are no longer current — a plan already using one keeps it either way. A camera's data sheet carries two rows for this, <em>Openness</em> and <em>Codecs</em>; a grey <em>—</em> means nobody has verified it.",
   "gear.long":
     "Router, recorder, storage and small parts are not on the map — they live in the <em>Build</em> panel under <em>Head end</em>. A click on a model counts one more; quantity, explanation and product links then sit in the selection panel, and the bin takes the item out again. They show up in the element list, the bill of materials and the totals like any other part. Using a FRITZ!Box as the router means the cameras also need a UNVR — the FRITZ!Box records nothing.",
   "plans.long":

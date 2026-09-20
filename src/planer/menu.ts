@@ -31,6 +31,8 @@ interface Entry {
   run: () => void;
   /** Draws a rule above this entry. */
   sep?: boolean;
+  /** `"<kind>:<key>"` — the entry then shows the hover card (see hover.ts). */
+  hover?: string;
 }
 
 const LONG_PRESS = 500; // ms until a touch counts as a right-click
@@ -67,7 +69,7 @@ function openAt(cx: number, cy: number, list: Entry[]) {
     .map(
       (e, i) =>
         (e.sep ? "<hr>" : "") +
-        `<button type="button" role="menuitem" tabindex="-1" data-i="${i}">${esc(e.label)}</button>`,
+        `<button type="button" role="menuitem" tabindex="-1" data-i="${i}"${e.hover ? ` data-hover="${esc(e.hover)}"` : ""}>${esc(e.label)}</button>`,
     )
     .join("");
   m.hidden = false;
@@ -236,6 +238,8 @@ function clusterEntries(grp: Item[]): Entry[] {
     ...grp.map((it, i) => ({
       label: it.label,
       sep: i === 0,
+      // A group hides what is inside it — the card says which element this row is.
+      hover: "item:" + it.id,
       run: () => {
         select({ kind: "item", id: it.id });
         centreAt(it.x, it.y, 40 * PX_PER_M);

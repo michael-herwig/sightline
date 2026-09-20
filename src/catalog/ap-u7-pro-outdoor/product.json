@@ -39,7 +39,9 @@
   "poeIn": "at",
   "beam": {
     "h": 90,
-    "v": 45
+    "hFar": 90,
+    "v": 45,
+    "back": 0.35
   },
   "specs": {
     "radius": 45,

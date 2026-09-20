@@ -51,7 +51,7 @@ export const planner = {
     "{n} Punkt(e), {m} m. Weiter klicken, Doppelklick oder Enter schließt ab, Esc verwirft.",
   "sel.head": "Ausgewählt: {label}",
   "f.model": "Modell",
-  "f.rot": "Blickrichtung",
+  "f.rot": "Ausrichtung",
   "f.label": "Kürzel",
   "f.note": "Notiz",
   "f.note.ph": "z. B. Zufahrt, Stallgasse",
@@ -162,7 +162,7 @@ export const planner = {
   "help.tool.cam":
     "Kamera setzen. Der Kegel zeigt Blickwinkel und Nachtsicht; der Griff am Ring dreht sie.",
   "help.tool.ap":
-    "Access Point setzen. Innen gefüllt: verlässliche Zone, außen gestrichelt: Freifeld.",
+    "Access Point setzen. Innen gefüllt: verlässliche Zone, außen gestrichelt: Freifeld. Gerichtete Modelle strahlen stattdessen eine Keule nach vorn und eine kleine nach hinten und lassen sich drehen wie eine Kamera.",
   "help.tool.jb":
     "Abzweigpunkt setzen: erst das Gehäuse (Schacht, Dose, Kasten, innen), dann die Geräte hineinlegen.",
   "help.tool.hub": "Hausanschluss setzen. Dort kommt das Netz ins Gebäude.",
@@ -490,6 +490,16 @@ export const planner = {
   "product.deprecated": "Veraltet — nicht mehr für neue Pläne.",
   "product.eol": "Abgekündigt — nicht mehr lieferbar.",
   "product.successor": "Nachfolger: {name}.",
+
+  // ---------- Portmodell (09/2026) ----------
+  "f.rot.n": "N",
+  "f.rot.e": "O",
+  "f.rot.s": "S",
+  "f.rot.w": "W",
+  "help.tip.dial":
+    "Die Ausrichtung stellt das Kompassrad im Auswahl-Panel: am Ring ziehen, Mausrad 1° (mit Shift 15°), Pfeiltasten dasselbe, oder die Gradzahl daneben eintippen.",
+  "help.tip.hover":
+    "Auf ein Element auf der Karte zeigen bringt dieselbe Kurzkarte wie im Katalog — mit Name und Anschlussbefund obendrauf.",
 };
 
 // ---------- Website: landing page, 404, shared chrome ----------
@@ -555,9 +565,9 @@ export const help = {
   "tool.select.long":
     "Klick wählt, Ziehen verschiebt, Entf entfernt. Ziehen auf freier Fläche verschiebt die Karte, das Mausrad zoomt.",
   "tool.cam.long":
-    "Modell im Katalog wählen, dann auf die Karte klicken. Der Kegel zeigt Blickwinkel und Nachtsichtweite. Eine ausgewählte Kamera bekommt einen Ring mit Griff — ziehen dreht sie, Shift rastet in 15°-Schritten.",
+    "Modell im Katalog wählen, dann auf die Karte klicken. Der Kegel zeigt Blickwinkel und Nachtsichtweite. Eine ausgewählte Kamera bekommt einen Ring mit Griff — ziehen dreht sie, Shift rastet in 15°-Schritten. Dasselbe macht das <strong>Kompassrad</strong> im Auswahl-Panel: am Ring ziehen, Mausrad 1° (mit Shift 15°), Pfeiltasten dasselbe, oder die Gradzahl daneben eintippen; der Keil darin zeigt den Blickwinkel des Modells.",
   "tool.ap.long":
-    "Wie die Kamera, nur mit zwei Ringen statt Kegel: außen gestrichelt das Freifeld nach Hersteller, innen gefüllt die verlässliche Zone (Hälfte, draußen zwei Drittel). Beides grobe Werte, keine Messung.",
+    "Wie die Kamera, nur mit zwei Ringen statt Kegel: außen gestrichelt das Freifeld nach Hersteller, innen gefüllt die verlässliche Zone (Hälfte, draußen zwei Drittel). Beides grobe Werte, keine Messung. <strong>Gerichtete Modelle</strong> (U7 Outdoor, U7 Pro Outdoor) strahlen nicht rundum: statt der Ringe stehen dort eine Keule nach vorn — außen so breit, wie das 2,4-GHz-Band öffnet, innen so schmal wie das 5-GHz-Band — und eine kleine nach hinten; sie haben denselben Drehgriff und dasselbe Kompassrad wie eine Kamera.",
   "tool.jb.long":
     "Ein Abzweigpunkt ist ein Ort: erst das Gehäuse wählen (Schacht, Gel-Dose, Verteilerkasten oder „Innen“ für Technik im Gebäude), dann die Geräte hineinlegen (Switch, Medienkonverter, Spleißbox). Ein Klick auf ein Gerät im Katalog legt es in den gerade ausgewählten Punkt; ist keiner ausgewählt, setzt der nächste Kartenklick einen neuen Punkt damit. Ein Punkt ohne Geräte ist in Ordnung — dort laufen nur Kabel zusammen. Preis, PoE-Budget und Ports eines Punktes sind die Summe seiner Geräte.",
   "tool.hub.long":
@@ -598,7 +608,7 @@ export const help = {
   "info.long":
     "Das Panel <em>Auswahl</em> zeigt nur, was man dort tut: Eingabefelder, Listen und den Anschlussbefund. Das <strong>Datenblatt</strong> steckt hinter dem <strong>ⓘ</strong> — neben dem Modell-, Gehäuse- oder Router-Select, in jeder Geräte- und Kabelzeile und neben jeder <em>Ergänzen</em>-Auswahl. Der Dialog zeigt immer dasselbe: Name, Eigenschaften, Einzelpreis, <em>Passt für</em> / <em>Eher nicht</em>, den vollen Text und — wo es etwas zu kaufen gibt — Bild, Produktseite und Händlersuche. In der Händlerliste führt <em>Amazon</em> direkt zum geprüften Artikel, wenn der Katalog einen kennt.",
   "browse.long":
-    "Stöbern, ohne etwas zu setzen: Jede <strong>Katalogkarte</strong> trägt oben rechts ein kleines <strong>ⓘ</strong> — es öffnet das Datenblatt und fügt nichts hinzu, der Klick auf die Karte selbst platziert weiter wie bisher. Wer mit dem Zeiger auf einer Karte, einer Geräte- oder Kabelzeile oder einem Auswahlfeld stehen bleibt, bekommt nach einem kurzen Moment eine <strong>Kurzkarte</strong>: Bild, Name, Preis, eine Zeile Kennzahlen und zwei Sätze, wofür das Teil da ist. Sie verschwindet beim Weggehen, beim Scrollen und mit <kbd>Esc</kbd>; auf dem Touchgerät gibt es sie nicht, dort führt das ⓘ zum selben Inhalt. Die <strong>Auswahlfelder</strong> sind nach Aufgabe gruppiert: Geräte nach <em>Switch mit PoE</em>, <em>Switch/Konverter ohne PoE</em>, <em>Speisung</em> und <em>Zubehör ohne Strom</em>, Gehäuse nach <em>Erdverlegt</em>, <em>Außen an der Wand</em> und <em>Innen</em>, Router nach Hersteller. Hinter dem Namen stehen Preis und Kennzahl, etwa <em>8× PoE · 52 W</em>. Über den Listen filtern <strong>Chips</strong>; bei den Kameras fragt <em>Offene Standards</em>, ob sich die Kamera ohne die Konsole des Herstellers aufzeichnen lässt (RTSP und ONVIF), und <em>Veraltete zeigen</em> holt Produkte zurück, die nicht mehr aktuell sind — ein Plan, der eines davon benutzt, behält es ohnehin. Im Datenblatt einer Kamera stehen dafür zwei Zeilen, <em>Offenheit</em> und <em>Codecs</em>; ein graues <em>—</em> heißt, dass niemand es geprüft hat.",
+    "Stöbern, ohne etwas zu setzen: Jede <strong>Katalogkarte</strong> trägt oben rechts ein kleines <strong>ⓘ</strong> — es öffnet das Datenblatt und fügt nichts hinzu, der Klick auf die Karte selbst platziert weiter wie bisher. Wer mit dem Zeiger auf einer Karte, einer Geräte- oder Kabelzeile oder einem Auswahlfeld stehen bleibt, bekommt nach einem kurzen Moment eine <strong>Kurzkarte</strong>: Bild, Name, Preis, eine Zeile Kennzahlen und zwei Sätze, wofür das Teil da ist. Sie verschwindet beim Weggehen, beim Scrollen und mit <kbd>Esc</kbd>; auf dem Touchgerät gibt es sie nicht, dort führt das ⓘ zum selben Inhalt. Dieselbe Karte kommt auf der Karte selbst — über einem Element steht darüber sein Name und der Anschlussbefund — und über den Mitgliedern einer Gruppe im Rechtsklick-Menü. Die <strong>Auswahlfelder</strong> sind nach Aufgabe gruppiert: Geräte nach <em>Switch mit PoE</em>, <em>Switch/Konverter ohne PoE</em>, <em>Speisung</em> und <em>Zubehör ohne Strom</em>, Gehäuse nach <em>Erdverlegt</em>, <em>Außen an der Wand</em> und <em>Innen</em>, Router nach Hersteller. Hinter dem Namen stehen Preis und Kennzahl, etwa <em>8× PoE · 52 W</em>. Über den Listen filtern <strong>Chips</strong>; bei den Kameras fragt <em>Offene Standards</em>, ob sich die Kamera ohne die Konsole des Herstellers aufzeichnen lässt (RTSP und ONVIF), und <em>Veraltete zeigen</em> holt Produkte zurück, die nicht mehr aktuell sind — ein Plan, der eines davon benutzt, behält es ohnehin. Im Datenblatt einer Kamera stehen dafür zwei Zeilen, <em>Offenheit</em> und <em>Codecs</em>; ein graues <em>—</em> heißt, dass niemand es geprüft hat.",
   "gear.long":
     "Router, Rekorder, Speicher und Kleinmaterial stehen nicht auf der Karte — sie liegen im Panel <em>Bauen</em> unter <em>Zentrale</em>. Ein Klick auf ein Modell zählt ein Stück hoch; Menge, Erklärung und Produktlinks stehen danach im Auswahl-Panel, der Papierkorb nimmt den Posten wieder heraus. In Elementliste, Stückliste und Summen tauchen sie auf wie jedes andere Teil. Wer eine FRITZ!Box als Router nimmt, braucht für die Kameras zusätzlich einen UNVR — die FRITZ!Box zeichnet nichts auf.",
   "plans.long":

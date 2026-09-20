@@ -1,7 +1,6 @@
 // Pointer handling on the map: pan, drag, rotate, place, draw.
 import type { ItemKind } from "./types";
 import { renderMap, renderSide, scheduleSave, updateHint } from "./hooks";
-import { t } from "./i18n";
 import { angleAt } from "./geom";
 import { draft, drag, mode, setDrag, view } from "./store";
 import { $, mapwrap, svg } from "./dom";
@@ -12,6 +11,7 @@ import { ON_UI, toSvg } from "./view";
 import { applyBasemap, closeMapMenus } from "./tiles";
 import { applyView, fit, jumpView, refreshConduit, refreshItem, zoomAt } from "./render";
 import { aimClick, isAiming } from "./menu";
+import { syncHeading } from "./panel-sel";
 
 // Grabbing the map means you're done with the text field. Otherwise the
 // plan name stays in edit mode while the map is already being dragged.
@@ -46,11 +46,9 @@ function applyDrag(e: MoveEvt) {
     const it = drag.target.it;
     it.rot = angleAt(it.x, it.y, p.x, p.y, e.shiftKey ? 15 : 0);
     if (it.rot !== drag.orot) drag.moved = true;
-    const sl = $("f-rot");
-    if (sl) {
-      sl.value = it.rot;
-      $("f-rot-val").textContent = t("f.rot.val", { n: it.rot });
-    }
+    // The handle and the dial in the selection panel show the same heading. The
+    // handle only exists on the selected element, so this can't hit a foreign dial.
+    syncHeading(it.rot);
     refreshItem(it);
     return;
   }

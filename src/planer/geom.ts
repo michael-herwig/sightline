@@ -132,3 +132,20 @@ export function pathMid(pts: Point[]): { x: number; y: number; a: number } {
   const acc = arcLens(pts);
   return pointAtLen(pts, acc[acc.length - 1] / 2);
 }
+
+// ---------- Lobes ----------
+// A sector around a point: the camera's cone of view, and the front and rear lobe
+// of a directional access point. Angles are the map's — 0° = east, 90° = south,
+// `rot` is the middle of the sector. 360° would be a circle; the caller draws a
+// <circle> for that instead, so the opening is clamped just short of it.
+export function lobePath(cx: number, cy: number, r: number, rot: number, deg: number): string {
+  const d = Math.max(1, Math.min(359.9, deg));
+  const p = (a: number) => {
+    const rad = (a * Math.PI) / 180;
+    return `${(cx + r * Math.cos(rad)).toFixed(2)} ${(cy + r * Math.sin(rad)).toFixed(2)}`;
+  };
+  return (
+    `M ${cx.toFixed(2)} ${cy.toFixed(2)} L ${p(rot - d / 2)} ` +
+    `A ${r.toFixed(2)} ${r.toFixed(2)} 0 ${d > 180 ? 1 : 0} 1 ${p(rot + d / 2)} Z`
+  );
+}

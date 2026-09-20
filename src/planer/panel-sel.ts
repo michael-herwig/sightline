@@ -65,7 +65,8 @@ import {
 import { changed, condEdit } from "./history";
 import { deleteSelected, select } from "./modes";
 import { hoverSel } from "./hover";
-import { refreshItem } from "./render";
+import { angleAt, lobePath } from "./geom";
+import { aimable, headingOf, refreshItem, wedgeOf } from "./render";
 import { geoReverse, parcelAt, shortAddress } from "./geosearch";
 import { productBox, showGuide, showInfo, showProductInfo, specList } from "./dialogs";
 import { addGear } from "./catalog";
@@ -81,6 +82,157 @@ export const fmtW = (v: number) => {
   const s = String(+v.toFixed(1));
   return lang === "de" ? s.replace(".", ",") : s;
 };
+
+// ---------- Heading dial ----------
+// A compass instead of a slider: a camera's cone and an access point's lobe point
+// somewhere, and a bar from 0 to 359 never showed where. The dial reads like the
+// map — 0° is east, 90° south — and carries the element's own opening as a wedge.
+// Only two transforms change while it is being turned; the wedge path itself is
+// built once, with the panel.
+const DIAL_R = 44, // the ring the knob runs on
+  DIAL_W = 36; // radius of the wedge inside it
+
+const CARDINALS: [string, number][] = [
+  ["n", 270],
+  ["e", 0],
+  ["s", 90],
+  ["w", 180],
+];
+
+const polar = (r: number, deg: number) => {
+  const a = (deg * Math.PI) / 180;
+  return [(r * Math.cos(a)).toFixed(2), (r * Math.sin(a)).toFixed(2)];
+};
+
+function dialFace() {
+  let s = "";
+  for (let a = 0; a < 360; a += 15) {
+    const major = a % 90 === 0;
+    const [x1, y1] = polar(DIAL_R - (major ? 7 : 4), a),
+      [x2, y2] = polar(DIAL_R, a);
+    s += `<line class="tick${major ? " major" : ""}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"></line>`;
+  }
+  return (
+    s +
+    CARDINALS.map(([k, a]) => {
+      const [x, y] = polar(DIAL_R + 9, a);
+      return `<text class="card" x="${x}" y="${y}">${esc(t("f.rot." + k))}</text>`;
+    }).join("")
+  );
+}
+
+function headingHtml(it: Item) {
+  return `<div class="field"><label for="f-rot" id="f-rot-lbl">${esc(t("f.rot"))}</label>
+    <div class="dialrow">
+      <div class="dial" id="f-dial" role="slider" tabindex="0" aria-labelledby="f-rot-lbl"
+           aria-valuemin="0" aria-valuemax="359" aria-valuenow="0" aria-valuetext="">
+        <svg viewBox="-58 -58 116 116" aria-hidden="true" focusable="false">
+          <circle class="ring" cx="0" cy="0" r="${DIAL_R}"></circle>
+          <g id="f-dial-wedge"><path class="wedge" d="${lobePath(0, 0, DIAL_W, 0, wedgeOf(it))}"></path></g>
+          ${dialFace()}
+          <g id="f-dial-needle"><line class="needle" x1="0" y1="0" x2="${DIAL_R - 8}" y2="0"></line><circle class="knob" cx="${DIAL_R}" cy="0" r="6"></circle></g>
+        </svg>
+      </div>
+      <div class="dialval"><input type="number" id="f-rot" min="0" max="359" step="1" inputmode="numeric" value="0"><span class="val">°</span></div>
+    </div></div>`;
+}
+
+/**
+ * Pull the dial, the number and the ARIA value onto `rot`. Also called from the
+ * rotation handle on the map (drag.ts), so both stay in step — and it does nothing
+ * when the panel shows something else. The compass says which way 0° points, so
+ * only the screen reader still gets that sentence.
+ */
+export function syncHeading(rot: number) {
+  const d = $("f-dial");
+  if (!d) return;
+  d.setAttribute("aria-valuenow", String(rot));
+  d.setAttribute("aria-valuetext", t("f.rot.val", { n: rot }));
+  for (const id of ["f-dial-wedge", "f-dial-needle"]) {
+    const n = $(id);
+    if (n) n.setAttribute("transform", `rotate(${rot})`);
+  }
+  setVal("f-rot", rot);
+}
+
+function wireHeading(it: Item) {
+  const dial = $("f-dial");
+  if (!dial) return;
+  // Turning with the wheel or the arrow keys would otherwise leave one undo step per
+  // notch. The drag and the number field commit straight away.
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const later = () => {
+    clearTimeout(timer);
+    timer = setTimeout(changed, 350);
+  };
+  const commit = () => {
+    clearTimeout(timer);
+    changed();
+  };
+  const put = (v: number) => {
+    it.rot = ((Math.round(v) % 360) + 360) % 360;
+    syncHeading(it.rot);
+    refreshItem(it);
+  };
+  const step = (d: number) => {
+    put(headingOf(it) + d);
+    later();
+  };
+
+  dial.addEventListener("pointerdown", (e: PointerEvent) => {
+    e.preventDefault();
+    dial.focus();
+    const r = dial.getBoundingClientRect(),
+      cx = r.left + r.width / 2,
+      cy = r.top + r.height / 2;
+    const to = (ev: { clientX: number; clientY: number; shiftKey: boolean }) =>
+      put(angleAt(cx, cy, ev.clientX, ev.clientY, ev.shiftKey ? 15 : 0));
+    to(e);
+    try {
+      dial.setPointerCapture(e.pointerId);
+    } catch {}
+    const move = (ev: PointerEvent) => to(ev);
+    const up = () => {
+      dial.removeEventListener("pointermove", move);
+      dial.removeEventListener("pointerup", up);
+      dial.removeEventListener("pointercancel", up);
+      commit();
+    };
+    dial.addEventListener("pointermove", move);
+    dial.addEventListener("pointerup", up);
+    dial.addEventListener("pointercancel", up);
+  });
+
+  dial.addEventListener(
+    "wheel",
+    (e: WheelEvent) => {
+      e.preventDefault();
+      step((e.deltaY > 0 ? 1 : -1) * (e.shiftKey ? 15 : 1));
+    },
+    { passive: false },
+  );
+
+  dial.addEventListener("keydown", (e: KeyboardEvent) => {
+    const d =
+      e.key === "ArrowRight" || e.key === "ArrowUp"
+        ? 1
+        : e.key === "ArrowLeft" || e.key === "ArrowDown"
+          ? -1
+          : 0;
+    if (!d) return;
+    e.preventDefault();
+    step(d * (e.shiftKey ? 15 : 1));
+  });
+
+  // The number field wraps rather than clamping: 360 is 0, −1 is 359.
+  $("f-rot").oninput = (e: { target: HTMLInputElement }) => {
+    const v = parseInt(e.target.value, 10);
+    if (!isFinite(v)) return;
+    put(v);
+    later();
+  };
+  $("f-rot").onchange = commit;
+}
 
 // Connection status, PoE budget, and the conduits ending here — rows for <dl class="spec">.
 function linkHtml(it: Item) {
@@ -210,10 +362,7 @@ export function renderSel() {
     setText("f-head", t("sel.head", { label: it.label }));
     setVal("f-label", it.label);
     setVal("f-note", it.note || "");
-    if (it.kind === "cam") {
-      setVal("f-rot", it.rot);
-      setText("f-rot-val", t("f.rot.val", { n: it.rot! }));
-    }
+    if (aimable(it)) syncHeading(headingOf(it));
     jbGear(it).forEach((g, i) => {
       setVal("f-gear-" + i, g.n);
       setText("f-gearp-" + i, gearRowPrice(g));
@@ -648,7 +797,7 @@ function buildItemSel(root: HTMLElement, it: Item) {
     <div class="field"><label for="f-model">${esc(t(jb ? "f.housing" : "f.model"))}</label>` +
         `<div class="addcab">${pick}<button class="btn icon" id="f-modeli" title="${esc(t("info.title"))}" aria-label="${esc(t("info.title"))}">${INFO}</button></div></div>` +
         `
-    ${it.kind === "cam" ? `<div class="field"><label for="f-rot">${esc(t("f.rot"))}</label><div><input type="range" id="f-rot" min="0" max="359" value="${it.rot}"><span class="val" id="f-rot-val"></span></div></div>` : ""}
+    ${aimable(it) ? headingHtml(it) : ""}
     ${it.kind === "ap" ? `<div class="field"><label for="f-place">${esc(t("f.place"))}</label><select id="f-place">${["in", "out"].map((k) => `<option value="${k}" ${(it.place || (m.out ? "out" : "in")) === k ? "selected" : ""}>${esc(t("f.place." + k))}</option>`).join("")}</select></div>` : ""}
     ${it.kind === "ap" ? `<div class="field"><label for="f-rings">${esc(t("f.rings"))}</label><select id="f-rings">${["both", "far", "near", "none"].map((k) => `<option value="${k}" ${(it.rings || "both") === k ? "selected" : ""}>${esc(t("f.rings." + k))}</option>`).join("")}</select></div>` : ""}
     <div class="field"><label for="f-label">${esc(t("f.label"))}</label><input type="text" id="f-label" value="${esc(it.label)}" maxlength="4"></div>
@@ -686,14 +835,7 @@ function buildItemSel(root: HTMLElement, it: Item) {
       changed();
     };
   }
-  if (it.kind === "cam") {
-    $("f-rot").oninput = (e: { target: HTMLInputElement }) => {
-      it.rot = +e.target.value;
-      setText("f-rot-val", t("f.rot.val", { n: it.rot }));
-      refreshItem(it);
-    };
-    $("f-rot").onchange = () => changed();
-  }
+  if (aimable(it)) wireHeading(it);
   $("f-dup").onclick = () => duplicate(it);
   $("f-label").onchange = (e: { target: HTMLInputElement }) => {
     it.label = e.target.value.trim() || it.label;

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { PX_PER_M } from "../../src/planer/geo";
 import {
   angleAt,
+  lobePath,
   offsetPath,
   pathMid,
   pointAtLen,
@@ -154,5 +155,53 @@ describe("sectionOffsets", () => {
     expect(out).toEqual([60, 280, 720, 940]);
     // Long enough to pass the length guard, too short to clear both ends.
     expect(sectionOffsets(NO_CONDUIT, line(70), 1)).toEqual([]);
+  });
+});
+
+// Sectors: the camera cone and the lobes of a directional access point. Angles are
+// the map's — 0° is east, 90° south, `rot` sits in the middle of the sector.
+describe("lobePath", () => {
+  // "M cx cy L x1 y1 A r r 0 large 1 x2 y2 Z"
+  const parse = (d: string) => {
+    const n = d.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
+    // cx cy | x1 y1 | rx ry rot large sweep | x2 y2
+    return { cx: n[0], cy: n[1], x1: n[2], y1: n[3], r: n[4], large: n[7], x2: n[9], y2: n[10] };
+  };
+
+  it("opens symmetrically around rot, on the radius", () => {
+    const p = parse(lobePath(0, 0, 10, 0, 90));
+    expect([p.x1, p.y1]).toEqual([7.07, -7.07]);
+    expect([p.x2, p.y2]).toEqual([7.07, 7.07]);
+    expect(Math.hypot(p.x1, p.y1)).toBeCloseTo(10, 2);
+    expect(p.large).toBe(0);
+  });
+
+  it("turns with rot and starts at the centre", () => {
+    const p = parse(lobePath(100, 50, 20, 90, 60));
+    expect([p.cx, p.cy]).toEqual([100, 50]);
+    // 90° is south, so both edges lie below the centre.
+    expect(p.y1).toBeGreaterThan(50);
+    expect(p.y2).toBeGreaterThan(50);
+    expect(Math.hypot(p.x1 - 100, p.y1 - 50)).toBeCloseTo(20, 2);
+    expect(Math.hypot(p.x2 - 100, p.y2 - 50)).toBeCloseTo(20, 2);
+  });
+
+  it("sets the large-arc flag beyond a half circle", () => {
+    expect(parse(lobePath(0, 0, 10, 0, 180)).large).toBe(0);
+    expect(parse(lobePath(0, 0, 10, 0, 270)).large).toBe(1);
+  });
+
+  it("stays just short of a full circle — the caller draws a <circle> for that", () => {
+    const p = parse(lobePath(0, 0, 10, 0, 360));
+    expect(p.x1).toBeCloseTo(p.x2, 1);
+    expect(p.y1).not.toBeCloseTo(p.y2, 3);
+    expect(p.large).toBe(1);
+  });
+
+  it("the rear lobe is the front one turned by 180°", () => {
+    const front = parse(lobePath(0, 0, 10, 45, 90));
+    const back = parse(lobePath(0, 0, 10, 45 + 180, 90));
+    expect(back.x1).toBeCloseTo(-front.x1, 2);
+    expect(back.y1).toBeCloseTo(-front.y1, 2);
   });
 });

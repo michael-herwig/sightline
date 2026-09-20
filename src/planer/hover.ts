@@ -3,6 +3,8 @@ import { tx } from "./i18n";
 import { CABLES, catEntry, imgUrl } from "./catalogs";
 import { condCables } from "./conduit";
 import { optHint } from "./specs";
+import { drag, mode, state } from "./store";
+import { linkText, links } from "./links";
 import { $, esc, gCond, gMark } from "./dom";
 
 // Hover links the list and the map (see setHover() further below). renderMap() resets
@@ -13,42 +15,79 @@ export let hoverKey = "";
 // It appears after a short delay over anything carrying a data-hover="<kind>:<key>"
 // attribute: catalog cards, device and cable rows, selection fields. Image, name, price, one
 // line of stats, two sentences — datasheet, product link and buying advice stay in the ⓘ dialog.
-const HOVER_WAIT = 350,
+// 150 ms is short enough that the card feels attached to the pointer. Within half a
+// second of the last one closing there is no wait at all: moving from a row to the
+// next row, or from one marker to the next, switches the card instead of restarting it.
+const HOVER_WAIT = 150,
+  HOVER_WARM = 500,
   HOVER_CHARS = 220;
 
 let hoverTimer: ReturnType<typeof setTimeout> | undefined,
-  hoverNode: Element | null = null;
+  hoverNode: Element | null = null,
+  warmUntil = 0;
 
 function hideHover() {
   clearTimeout(hoverTimer);
   hoverNode = null;
   const n = $("hovercard");
-  if (n) n.hidden = true;
+  if (n && !n.hidden) {
+    n.hidden = true;
+    warmUntil = Date.now() + HOVER_WARM;
+  }
+}
+
+/** Dragging, placing and drawing want the map free — no card in the way. */
+const busy = () => !!drag || mode !== "select";
+
+// An element on the map is not a catalogue row: its own label and connection
+// status go on top, the card of the model it carries below. A head end has no
+// single model, so there only the head remains.
+function itemHead(id: string) {
+  const it = state.items.find((i) => i.id === id);
+  if (!it) return null;
+  const st = links().status.get(it.id);
+  return {
+    it,
+    html:
+      `<div class="hh"><span class="hn">${esc(it.label)}</span></div>` +
+      (st ? `<div class="hs ${st.g === "ok" ? "ok" : "warn"}">${esc(linkText(st))}</div>` : ""),
+  };
 }
 
 function showHover(kind: string, key: string, anchor: Element | null) {
-  const m = catEntry(kind, key),
-    n = $("hovercard");
-  if (!m || !n || !anchor || !anchor.isConnected) return;
-  // A conduit template has no text of its own — then the cable inside it speaks.
-  const lead = kind === "cond" ? condCables(m)[0] : null;
-  let note = String(
-    tx(m.note) || tx(m.use) || tx(m.sub) || (lead ? tx(CABLES[lead.type].note) : "") || "",
-  )
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  if (note.length > HOVER_CHARS) note = note.slice(0, HOVER_CHARS).replace(/\s\S*$/, "") + " …";
-  const hint = optHint(kind, key);
-  // Without a price and without a catalog image there's no product photo — then the placeholder stays off.
-  const shot = m.img || m.price ? imgUrl(kind, key, m) : "";
-  n.innerHTML =
-    (shot ? `<img src="${esc(shot)}" alt="" loading="lazy" onerror="this.remove()">` : "") +
-    `<div class="hh"><span class="hn">${esc(tx(m.name))}</span>` +
-    (m.price != null ? `<span class="hp">${m.price} €</span>` : "") +
-    `</div>` +
-    (hint ? `<div class="hk">${esc(hint)}</div>` : "") +
-    (note ? `<div class="hd">${esc(note)}</div>` : "");
+  const n = $("hovercard");
+  if (!n || !anchor || !anchor.isConnected) return;
+  const head = kind === "item" ? itemHead(key) : null;
+  if (kind === "item") {
+    if (!head) return;
+    kind = head.it.kind === "hub" ? "" : head.it.kind;
+    key = head.it.model || "";
+  }
+  const m = kind && key ? catEntry(kind, key) : null;
+  if (!m && !head) return;
+  let body = "";
+  if (m) {
+    // A conduit template has no text of its own — then the cable inside it speaks.
+    const lead = kind === "cond" ? condCables(m)[0] : null;
+    let note = String(
+      tx(m.note) || tx(m.use) || tx(m.sub) || (lead ? tx(CABLES[lead.type].note) : "") || "",
+    )
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (note.length > HOVER_CHARS) note = note.slice(0, HOVER_CHARS).replace(/\s\S*$/, "") + " …";
+    const hint = optHint(kind, key);
+    // Without a price and without a catalog image there's no product photo — then the placeholder stays off.
+    const shot = m.img || m.price ? imgUrl(kind, key, m) : "";
+    body =
+      (shot ? `<img src="${esc(shot)}" alt="" loading="lazy" onerror="this.remove()">` : "") +
+      `<div class="hh"><span class="hn">${esc(tx(m.name))}</span>` +
+      (m.price != null ? `<span class="hp">${m.price} €</span>` : "") +
+      `</div>` +
+      (hint ? `<div class="hk">${esc(hint)}</div>` : "") +
+      (note ? `<div class="hd">${esc(note)}</div>` : "");
+  }
+  n.innerHTML = (head ? head.html : "") + body;
   n.hidden = false;
   // Next to the trigger, but kept inside the viewport: to the right, otherwise to the left.
   const a = anchor.getBoundingClientRect(),
@@ -126,11 +165,12 @@ export function wireHover() {
       const a = t && t.closest && t.closest("[data-hover]");
       if (a === hoverNode) return;
       hideHover();
-      if (!a || coarse()) return;
+      if (!a || coarse() || busy()) return;
       hoverNode = a;
       const v = a.getAttribute("data-hover")!, // guaranteed by the [data-hover] selector above
         i = v.indexOf(":");
-      hoverTimer = setTimeout(() => showHover(v.slice(0, i), v.slice(i + 1), a), HOVER_WAIT);
+      const wait = Date.now() < warmUntil ? 0 : HOVER_WAIT;
+      hoverTimer = setTimeout(() => showHover(v.slice(0, i), v.slice(i + 1), a), wait);
     };
     // mouseenter doesn't bubble, but still reaches the document in the capture phase.
     document.addEventListener("mouseover", over);

@@ -2,7 +2,7 @@
 import { GEO, HOME, PX_PER_M } from "./geo";
 import { APS, CABLES, CABLE_ORDER, CAMS } from "./catalogs";
 import { condColor, condDucts, condName, ductCables, isCableRun } from "./conduit";
-import { CSEC_R, dOf, offsetPath, pointAtLen, polyLength, sectionOffsets } from "./geom";
+import { CSEC_R, dOf, lobePath, offsetPath, pointAtLen, polyLength, sectionOffsets } from "./geom";
 import { LOOK, draft, mode, sel, setDrag, setView, state, view } from "./store";
 import { jbPower } from "./gear";
 import { invalidateLinks, links } from "./links";
@@ -40,7 +40,35 @@ import {
   setClusters,
 } from "./clusters";
 import { applyBasemap, basemapLater } from "./tiles";
-import type { Conduit, Duct, Item, Point, View } from "./types";
+import type { Beam, Conduit, Duct, Item, Point, View } from "./types";
+
+// ---------- Heading ----------
+// An access point radiates either all round or into one direction. `h: 360` — or
+// no beam at all in the data sheet — is an omni; anything narrower has a front,
+// and then the element can be turned like a camera.
+export function beamOf(it: Item): Beam | null {
+  if (it.kind !== "ap") return null;
+  const m = APS[it.model!];
+  return m && m.beam && m.beam.h < 360 ? m.beam : null;
+}
+
+/** How wide the rear lobe is as a share of the front one, when the vendor is silent. */
+const BACK_DEFAULT = 0.35;
+
+// Access points from before the directional models carry no `rot`. 90° (south) is
+// where a freshly placed element starts, so an old plan keeps looking the same.
+export const headingOf = (it: Item): number => it.rot ?? 90;
+
+/** What has a front worth turning: a camera with a real cone, a directional AP. */
+export const aimable = (it: Item): boolean =>
+  (it.kind === "cam" && !!CAMS[it.model!] && CAMS[it.model!].fov < 360) || !!beamOf(it);
+
+/** The opening the selection panel draws its wedge from. */
+export const wedgeOf = (it: Item): number => {
+  const b = beamOf(it);
+  if (b) return b.hFar ?? b.h;
+  return it.kind === "cam" && CAMS[it.model!] ? CAMS[it.model!].fov : 360;
+};
 
 // Zooming doesn't redraw: only the transforms of existing nodes get updated.
 // Tiles, cones, and ranges stay untouched in the process.
@@ -162,10 +190,7 @@ function drawCover(it: Item) {
       r = m.ir * PX_PER_M;
     if (m.fov >= 360)
       return el("circle", { class: "cone", "data-id": it.id, cx: it.x, cy: it.y, r }, gCover);
-    const a1 = ((it.rot! - m.fov / 2) * Math.PI) / 180,
-      a2 = ((it.rot! + m.fov / 2) * Math.PI) / 180;
-    const large = m.fov > 180 ? 1 : 0;
-    const d = `M ${it.x} ${it.y} L ${it.x + r * Math.cos(a1)} ${it.y + r * Math.sin(a1)} A ${r} ${r} 0 ${large} 1 ${it.x + r * Math.cos(a2)} ${it.y + r * Math.sin(a2)} Z`;
+    const d = lobePath(it.x, it.y, r, headingOf(it), m.fov);
     return el("path", { class: "cone", "data-id": it.id, d }, gCover);
   }
   if (it.kind === "ap") {
@@ -176,16 +201,26 @@ function drawCover(it: Item) {
       r = m.radius * PX_PER_M;
     const g = el("g", { class: "apcover", "data-id": it.id }, gCover),
       show = it.rings || "both";
-    if (show === "both" || show === "far")
-      el("circle", { class: "apcircle far", cx: it.x, cy: it.y, r }, g);
-    // Placement decides the reliable zone: indoors walls cut it in half, outdoors about two thirds remains.
-    const outdoors = (it.place || (m.out ? "out" : "in")) === "out";
-    if (show === "both" || show === "near")
-      el(
-        "circle",
-        { class: "apcircle near", cx: it.x, cy: it.y, r: r * (outdoors ? 0.66 : 0.5) },
+    // A directional model doesn't get a circle but a lobe pointing where the element
+    // points, plus the small rear lobe that still leaks out behind it. The outer ring
+    // is the lower band, which opens wider than the one the reliable zone is drawn from.
+    const b = beamOf(it),
+      rot = headingOf(it);
+    const ring = (cls: string, rad: number) => {
+      if (!b) return el("circle", { class: "apcircle " + cls, cx: it.x, cy: it.y, r: rad }, g);
+      const deg = cls === "far" ? (b.hFar ?? b.h) : b.h;
+      el("path", { class: "apcircle " + cls, d: lobePath(it.x, it.y, rad, rot, deg) }, g);
+      const back = rad * (b.back ?? BACK_DEFAULT);
+      return el(
+        "path",
+        { class: "apcircle back " + cls, d: lobePath(it.x, it.y, back, rot + 180, deg) },
         g,
       );
+    };
+    if (show === "both" || show === "far") ring("far", r);
+    // Placement decides the reliable zone: indoors walls cut it in half, outdoors about two thirds remains.
+    const outdoors = (it.place || (m.out ? "out" : "in")) === "out";
+    if (show === "both" || show === "near") ring("near", r * (outdoors ? 0.66 : 0.5));
     return g;
   }
   return null;
@@ -504,6 +539,8 @@ function drawMarker(it: Item) {
           (jbPower(it) ? " active" : "") +
           (sel && sel.kind === "item" && sel.id === it.id ? " selected" : ""),
         "data-id": it.id,
+        // Same card as a catalogue row, with the element's label and status on top.
+        "data-hover": "item:" + it.id,
       },
       gMark,
     ),
@@ -511,8 +548,10 @@ function drawMarker(it: Item) {
     it.y,
   );
   const r = it.kind === "hub" ? 15 : 12;
-  if (it.kind === "cam") {
-    const a = (it.rot! * Math.PI) / 180;
+  // The tick says where the front is — a camera always has one, an access point
+  // only when it is directional.
+  if (it.kind === "cam" || beamOf(it)) {
+    const a = (headingOf(it) * Math.PI) / 180;
     el(
       "line",
       { class: "dir", x1: 0, y1: 0, x2: (r + 8) * Math.cos(a), y2: (r + 8) * Math.sin(a) },
@@ -539,15 +578,9 @@ function drawMarker(it: Item) {
     el("circle", { class: "alert " + st.g, r: rr }, g);
   }
   el("text", { x: 0, y: 0 }, g).textContent = it.label;
-  if (
-    it.kind === "cam" &&
-    sel &&
-    sel.kind === "item" &&
-    sel.id === it.id &&
-    CAMS[it.model!].fov < 360
-  ) {
+  if (sel && sel.kind === "item" && sel.id === it.id && aimable(it)) {
     const rr = r + 14,
-      a = (it.rot! * Math.PI) / 180,
+      a = (headingOf(it) * Math.PI) / 180,
       hx = rr * Math.cos(a),
       hy = rr * Math.sin(a);
     el("circle", { class: "rotring", r: rr }, g);
