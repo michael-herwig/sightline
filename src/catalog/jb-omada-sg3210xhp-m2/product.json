@@ -41,7 +41,7 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 8,
       "speed": "2.5G",
       "poe": "at"
@@ -51,24 +51,16 @@
       "dir": "both",
       "n": 2,
       "speed": "10G"
-    },
-    {
-      "type": "rj45",
-      "dir": "in",
-      "n": 1
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 8,
     "power": true,
     "dig": false,
     "use": {
       "de": "8× 2,5G PoE+ (240 W) + 2× SFP+",
       "en": "8× 2.5G PoE+ (240 W) + 2× SFP+"
     },
-    "sfp": true,
-    "sfpPorts": 2,
     "poe": 240
   }
 }

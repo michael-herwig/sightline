@@ -40,7 +40,7 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 8,
       "speed": "1G",
       "poe": "at"
@@ -53,15 +53,12 @@
   ],
   "specs": {
     "ip": "IP30",
-    "ports": 8,
     "power": true,
     "dig": false,
     "use": {
       "de": "viele PoE-Geräte aus einem Schaltschrank versorgen",
       "en": "feed many PoE devices from one cabinet"
     },
-    "sfp": true,
-    "sfpPorts": 2,
     "poe": 240
   }
 }

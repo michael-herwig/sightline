@@ -54,15 +54,12 @@
   "poeIn": "af/at",
   "specs": {
     "ip": "IP20",
-    "ports": 1,
     "power": true,
     "dig": false,
     "use": {
       "de": "vier Glasfaserstrecken an einem Punkt bündeln",
       "en": "bundle four fibre runs at one point"
     },
-    "sfp": true,
-    "sfpPorts": 4,
     "poe": 0
   }
 }

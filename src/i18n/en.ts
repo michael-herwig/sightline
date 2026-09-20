@@ -406,6 +406,7 @@ export const planner: PlannerText = {
   "link.type.cat": "Cat6A",
   "link.ports": "Ports",
   "link.ports.v": "{n} of {ports} in use",
+  "link.poeclass": "{src} only supplies {have} — the device needs {need}",
   "hub.router": "Router",
   "hub.router.none": "none — cables only, no device",
   "hub.adv.norouter":

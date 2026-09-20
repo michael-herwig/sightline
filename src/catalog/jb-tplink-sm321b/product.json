@@ -41,20 +41,17 @@
     {
       "type": "sfp",
       "dir": "both",
-      "n": 1
+      "n": 0
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 0,
     "power": false,
     "dig": false,
     "use": {
       "de": "das Gegenstück am anderen Ende derselben Faser",
       "en": "the far end of the same single fibre"
     },
-    "sfp": true,
-    "sfpPorts": 0,
     "poe": 0
   }
 }

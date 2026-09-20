@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { legacyPlan, linkPlan, powerPlan } from "../e2e/fixtures";
+import { JUNCTIONS } from "../../src/planer/catalogs";
 import { invalidateLinks, links } from "../../src/planer/links";
 import { migrateConduit, migrateJb } from "../../src/planer/migrate";
 import { defaultState, setState, state } from "../../src/planer/store";
@@ -94,8 +95,10 @@ describe("Topology (linkPlan)", () => {
     expect(gear("S1")).toMatchObject({
       watts: 30.8,
       used: 3,
+      // Nine, not eight: the USW Flex has eight PoE ports plus the 10G port it
+      // can be fed through — the connector list counts them all.
+      ports: 9,
       poe: 196,
-      ports: 8,
       over: false,
       portsOver: false,
     });
@@ -141,7 +144,9 @@ describe("Topology (linkPlan)", () => {
   it("hub: router, ports, PoE budget and SFP balance", () => {
     expect(st("H1")).toMatchObject({ g: "warn", key: "link.hub.ok", vars: { n: 0 } });
     expect(st("H1").more).toEqual([{ key: "link.sfpcount", vars: { n: 5, ports: 1 } }]);
-    expect(gear("H1")).toMatchObject({ watts: 15.4, used: 1, poe: 30, ports: 5 });
+    // Four LAN ports: the UCG's fifth RJ45 is its 10G WAN uplink, and of the two
+    // SFP+ cages one is WAN as well — neither is a place to hang a camera.
+    expect(gear("H1")).toMatchObject({ watts: 15.4, used: 1, poe: 30, ports: 4 });
     expect(st("KH")).toMatchObject({ g: "ok", key: "link.ok", vars: { src: "H1" } });
   });
 
@@ -151,6 +156,45 @@ describe("Topology (linkPlan)", () => {
     invalidateLinks();
     expect(st("H1")).toMatchObject({ g: "err", key: "link.nosfp" });
     expect(st("KH")).toMatchObject({ key: "link.nopoe", vars: { src: "H1" } });
+  });
+
+  it("wan: the router's WAN sockets are no place for a camera", () => {
+    S().infra.ucg = { on: false, qty: 1 };
+    // Four LAN ports, a WAN Ethernet port and a WAN SFP cage: only the four count,
+    // and the fibre at the hub still finds no cage.
+    S().infra.fb5590 = { on: true, qty: 1 };
+    invalidateLinks();
+    expect(gear("H1")).toMatchObject({ ports: 4 });
+    expect(st("H1")).toMatchObject({ g: "err", key: "link.nosfp" });
+  });
+
+  it("poeclass: a PoE+ camera on 802.3af ports is a warning", () => {
+    // No switch in the catalogue is af-only, so for this one case the port list
+    // says it is — the check reads the class off the ports, nothing else.
+    const sw: any = JUNCTIONS.flex;
+    const keep = sw.portList;
+    try {
+      sw.portList = keep.map((p: any) => (p.poe ? { ...p, poe: "af" } : p));
+      byLabel("K1").model = "g6-180"; // PoE+ (802.3at)
+      invalidateLinks();
+      expect(st("K1")).toMatchObject({
+        g: "warn",
+        key: "link.poeclass",
+        vars: { src: "S1", need: "PoE+ (802.3at)", have: "PoE (802.3af)" },
+      });
+      // The camera next to it needs plain PoE and stays quiet.
+      expect(keys(st("KL"))).toEqual(["link.long"]);
+    } finally {
+      sw.portList = keep;
+    }
+  });
+
+  it("ports: an injector has one jack for the uplink and one for the camera", () => {
+    byLabel("S1").gear = [{ model: "u-poe-plus-plus", n: 1 }];
+    invalidateLinks();
+    // Two cameras on a single PoE jack — and the fibre finds no cage either.
+    expect(gear("S1")).toMatchObject({ used: 2, ports: 2, portsOver: true });
+    expect(st("S1")).toMatchObject({ g: "err", key: "link.nosfp" });
   });
 
   it("norouter: without a router the hub is only a cable point", () => {
@@ -215,7 +259,8 @@ describe("Passing fiber on and power at the point (powerPlan)", () => {
   });
 
   it("a PoE-fed switch loads the feeder's budget and ports", () => {
-    expect(gear("F2")).toMatchObject({ watts: 15, used: 5, poe: 196, ports: 8, over: false });
+    // ports: 9 — eight PoE ports plus the 10G port, as on S1 above.
+    expect(gear("F2")).toMatchObject({ watts: 15, used: 5, poe: 196, ports: 9, over: false });
     expect(gear("F2").devices.map((d: any) => d.label)).toEqual(["M1", "M2", "M3", "P1", "A1"]);
   });
 });

@@ -41,20 +41,17 @@
     {
       "type": "sfp",
       "dir": "both",
-      "n": 1
+      "n": 0
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 0,
     "power": false,
     "dig": false,
     "use": {
       "de": "steckt in einem SFP-Schacht, verbindet über Glasfaser",
       "en": "plugs into an SFP cage, links over fibre"
     },
-    "sfp": true,
-    "sfpPorts": 0,
     "poe": 0
   }
 }

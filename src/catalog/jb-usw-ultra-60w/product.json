@@ -41,7 +41,7 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 7,
       "speed": "1G",
       "poe": "at"
@@ -55,15 +55,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 8,
     "power": true,
     "dig": false,
     "use": {
       "de": "8× PoE+, kompakt, lüfterlos",
       "en": "8× PoE+, compact, fanless"
     },
-    "sfp": false,
-    "sfpPorts": 0,
     "poe": 52
   }
 }

@@ -102,14 +102,12 @@ A file has two layers:
 | Level | What it is | Fields |
 |---|---|---|
 | top | product metadata and **vendor facts as printed** | `id`, `kind`, `form` (jb: `housing`\|`device`), `vendor`, `status`, `successor?`, `order`, `name`, `price`, `priceDate`, `description`, `useCases`, `caveats`, `links {vendor?, amazon?, amazonSimilar?}`, `img?`, `tags?`, `mount?`, `powerIn?`, `ports?`, `poeIn?`, `beam?`, `open?`, `codecs?` |
-| `specs` | **the planner's reading** — what the code computes on | camera `res, ir, fov, poe, ip, out, wifi?, zoom?` · AP `radius, out, wifi, poe, ip` · junction `ip, ports, power?, dig?, use?, sfp?, sfpPorts?, poe?, poePorts?, extend?, poeDraw?` · head end `role?, ports?, sfp?, poe?, qty, on, hidden?, sub?` |
+| `specs` | **the planner's reading** — what the code computes on | camera `res, ir, fov, poe, ip, out, wifi?, zoom?` · AP `radius, out, wifi, poe, ip` · junction `ip, ports (housing only), power?, dig?, use?, poe?, extend?, poeDraw?` · head end `role?, poe?, qty, on, hidden?, sub?` |
 
-The split matters. `ports` at the top is the connector list off the data sheet; `specs.ports`
-is what the planner treats as usable ports, and the two disagree on purpose — `sfp` on a
-router means usable **on the LAN side** (every FRITZ!Box SFP cage is the WAN port, hence
-`false`), `poePorts` is what a PoE injector passes on, and on a housing `specs.ports` counts
-conduit openings rather than RJ45. **Nothing is derived**; `tests/unit/catalog.test.ts` keeps
-`specs.ports` between the device's downstream ports and its total instead.
+The split is about what a connector can say. Watts, "is this an active device" and the reach
+of a PoE extender are in `specs`; everything you could count on the back of the box comes out
+of `ports` — see **Ports** below. On a housing `specs.ports` counts conduit openings rather
+than RJ45, which is why that one field survives there.
 
 `order` sorts inside a kind, in steps of ten so something fits in between. `status` other
 than `"current"` hides the product from every picker (the "show deprecated" chip brings it
@@ -125,6 +123,46 @@ cloud?: "optional"|"required" }`, `codecs` is `{ main: ["h265", …], sub?: [...
 
 Adding, repricing or deprecating a product: the `catalog-update` skill.
 
+## Ports
+
+`ports` is the connector list as the data sheet prints it, and it is **the truth**: every
+port count in the planner is read off it, nothing is curated a second time.
+
+```jsonc
+"ports": [
+  { "type": "rj45", "dir": "both", "n": 7, "speed": "1G", "poe": "at" },
+  { "type": "rj45", "dir": "in",   "n": 1, "speed": "1G" }
+]
+```
+
+| Field | Meaning |
+|---|---|
+| `type` | `rj45` · `sfp` · `sfp+` · `dc` · `wan`. A `wan` port is where the internet arrives and never counts as LAN — a FRITZ!Box SFP cage is exactly that, and so is one of the UCG's two SFP+ |
+| `dir` | about the cable, not the data: `in` takes an uplink or a feed (a camera's socket, a switch's PoE-in port, an injector's data jack), `out` only ever goes downstream (an injector's PoE jack), `both` is an ordinary switch port |
+| `n` | how many. An SFP module has an SFP interface but brings no cage, so it carries `n: 0` |
+| `speed` | as printed (`"1G/2.5G"`), display only |
+| `poe` | the class this port **hands out**: `af` \| `at` \| `bt` \| `af/at` |
+| `poeIn` (top level) | the class the device itself **accepts**; `af/at` means plain PoE is enough |
+
+`src/catalog/index.ts` turns the list into numbers — `rj45Cap()` → `{ down, up, total }`
+(`down` = `out`+`both`, `up` = `in`+`both`, `wan` excluded), `sfpCages()`, `hasSfp()`,
+`poeFeeds()`, `poeOut()` — and the loader derives `ports`, `sfp`, `sfpPorts` and `poePorts`
+on the catalogue entry from them, because panels still read those. Curating one of them in
+`specs` is what made the numbers drift; `tests/unit/catalog.test.ts` now rejects it.
+
+What `links()` does with it:
+
+- an **uplink** into a device occupies one `in|both` port of its medium — fibre an SFP cage,
+  copper an RJ45;
+- a **downlink** occupies an `out|both` RJ45, so an injector's single PoE jack feeds one
+  device no matter how many sockets the box has;
+- `portsOver` is true as soon as one of the three runs out: downlinks against `down`, the
+  point's own uplink against `up`, everything together against `total`;
+- incoming fibres against the cages is the older `link.sfpcount`, no cage at all `link.nosfp`;
+- the PoE **class** is checked as well: a camera that needs `at` on ports that hand out `af`
+  is `link.poeclass` (a warning). A source whose data sheet publishes no class stays silent —
+  unknown is not the same as `af`.
+
 ## Catalogues
 
 What is not a product stays in `src/planer/catalogs.ts`, which re-exports the four above.
@@ -139,13 +177,14 @@ with `note` coming from `description` and `url` / `amazon` out of `links`.
   On the map a circular sector is drawn with radius `ir * PX_PER_M` and opening `fov` around `rot`.
   Models whose `res` contains "4K" count as 4K for the NVR warning.
 - `APS[model]` → `{ name, price, note, radius (m, rough free-field range), out, beam? }`
-- `JUNCTIONS[model]` → `{ name, price, ip, ports, mount, note, power?, sfp?, poe?, url? }` – **one** map
+- `JUNCTIONS[model]` → `{ name, price, ip, mount, note, power?, poe?, url?, portList?, ports?, sfp?, sfpPorts?, poePorts? }` – **one** map
   for two roles. `isHousing(key)` = passive and not `splice` → a housing or location (shaft, gel-filled
   box, cabinet, `indoor` = no housing, 0 €). `isDevice(key)` = everything else → a device that gets
   dropped into a point (switches, media converters, splice box).
-  `power: true` means: needs mains power. That's why switches sit on the map instead of as a row in `INFRA`.
-  Only entries with `power` carry `sfp: true|false` (fibre plugs straight in) and `poe: <W>`
-  (PoE budget, `0` = supplies no power). Both rows in `SPECS.jb` are gated by `when: m => !!m.power`.
+  `power: true` means: an active device. That's why switches sit on the map instead of as a row in `INFRA`.
+  `poe: <W>` is the PoE budget (`0` = supplies no power); `portList` is the connector list and
+  `ports`/`sfp`/`sfpPorts`/`poePorts` are derived from it (see **Ports**).
+  Both rows in `SPECS.jb` are gated by `when: m => !!m.power`.
 - `PIPES[pipe]` → `{ name, m (€/m) }`
 - `CABLES[type]` → `{ name, m (€/m), fixed (€ per cable, e.g. an SFP pair), color, note, max? (m) }`
 - `CONDUITS[key]` → template for the catalogue button: `{ name, kind, ducts: [{ pipe?, cables: [{type, n}] }] }`.
@@ -268,16 +307,18 @@ An item with `kind: "jb"` is **a place**: `model` is the housing (`shaft`, `box`
 `indoor`), `gear: [{ model, n }]` are the devices inside it. Empty `gear` is a purely logical
 point — cables just meet there, and that's not an error.
 
-These aggregates, and `gearPorts()` below, live in `src/planer/gear.ts`.
+These aggregates live in `src/planer/gear.ts` and read the connector lists (see **Ports**),
+never a hand-counted number.
 
 | Aggregate | Rule |
 |---|---|
 | `jbPrice(it)` | price of the housing + Σ `price · n` of the devices |
 | `jbPower(it)` | any device with `power` |
-| `jbSfp(it)` | any device with `sfp` |
+| `jbSfp(it)` | `sfpPorts(it) > 0` — fibre only lands where a cage takes it |
 | `jbPoe(it)` | Σ `poe · n` across all devices |
-| `jbPorts(it)` | Σ `gearPorts · n` of the **switches** (`gearPorts > 1`), if one is present — otherwise Σ of the converters. A converter ahead of a switch adds no downstream port, its port feeds in internally |
-| `sfpPorts(it)` | Σ `sfpPorts · n` — the count sits on the device, not derived from the port count. Without one given: `sfp ? 1 : 0` |
+| `jbCap(it)` | `{ down, up, total }` RJ45 of the **distributing** devices (`down > 1`) if one is present — otherwise of the single-port ones. A converter ahead of a switch adds no downstream port, its port feeds in internally. `jbPorts(it)` is its `total` |
+| `sfpPorts(it)` | Σ cages · n from the port lists. A module occupies a cage instead of bringing one (`n: 0`), so a switch without a cage stays without one |
+| `poeGives(it)` | the strongest PoE class the devices hand out, `null` if none publishes one |
 | `jbExtend(it)` | Σ `extend · n` — a PoE extender raises the copper limit of the run it sits on |
 | `jbMains(it)` | the first device with `powerIn: "mains"` — the need for an outlet on site |
 | `jbDraw(it)` | Σ `poeDraw · n` of the devices with `powerIn: "poe"` (15 W if not given) — load on the feeder ahead of it |
@@ -288,8 +329,8 @@ protector). `power` is unaffected by that and still means "active device" — a 
 switch is both (`power: true, powerIn: "poe"`). Housings carry no `powerIn`; `task check`
 verifies both.
 
-`gearPorts(m)` is `m.poePorts ?? m.ports`: a PoE injector has two jacks, but only one of them
-carries on downstream. Housing and device are told apart by `kind: "housing" | "device"` on the
+A PoE injector has two jacks, but only one of them carries on downstream — that falls out of
+`dir` in its port list, not out of a field. Housing and device are told apart by `kind: "housing" | "device"` on the
 catalogue entry — **never** by `power`: a splice box, surge protector, SFP module and PoE extender
 need no power and are still devices.
 
@@ -421,9 +462,10 @@ Result: `{ status, src, gear, touch }`.
   That way a switch on another switch's copper counts there as a connected device
   (0 W), and its own port for the uplink counts against it.
 - `gear` per active `jb` and per `hub`: `devices`, `watts`, `used` (ports in use), `over`, `portsOver`.
-  `poe` and `ports` come from `jbPoe()` / `jbPorts()`, i.e. from the devices at the point — for the `hub`
-  from `hubPoe()` / `hubPorts()`, i.e. router **plus** devices.
-  Fibre occupies no RJ45 port; a cable between two switches counts exactly once at each end.
+  `poe` comes from `jbPoe()` / `hubPoe()`, `ports` from `jbCap()` / `hubCap()`, i.e. from the
+  connector lists of the devices at the point — for the `hub` router **plus** devices.
+  `portsOver` weighs downlinks, the point's own uplink and the sum against `down`/`up`/`total`
+  (see **Ports**). Fibre occupies no RJ45 port; a cable between two switches counts exactly once at each end.
 - `touch` the conduits per element.
 
 ### Head end (`hub`): router and devices
@@ -431,11 +473,11 @@ Result: `{ status, src, gear, touch }`.
 The house connection used to be a jack-of-all-trades — a copper *and* fibre source, PoE "not
 checked". Now it holds what you actually install:
 
-- **Router**: an entry from `INFRA` with `role: "router"`, plus `ports` (LAN RJ45), `sfp`
-  (usable **on the LAN side**, not the WAN port) and `poe` (PoE output in W).
-  `ucg`: 4 ports, `sfp: true` (one SFP+ can be switched to LAN), `poe: 30`.
-  FRITZ!Box: `sfp: false` (there the SFP cage is WAN), `poe: 0`; `fb7690` 4, `fb5690`/`fb5590` 5,
-  `fb5530` 3, `fb6690` 4 ports. **One router per plan** — `pickRouter()` (`src/planer/panel-sel.ts`)
+- **Router**: an entry from `INFRA` with `role: "router"`, a `poe` budget in W and its
+  connector list. LAN ports and LAN-side cages fall out of it, because a `wan` port never
+  counts: `ucg` 4 LAN ports and one of two SFP+ cages, `poe: 30`; every FRITZ!Box has its SFP
+  cage on the WAN side and `poe: 0` — `fb5690` 5 LAN ports, `fb5590`/`fb6690` 4, `fb7690` 3,
+  `fb5530` 2. **One router per plan** — `pickRouter()` (`src/planer/panel-sel.ts`)
   switches off the others.
 - **Devices**: `hub.gear` just like for `jb`, the same `JUNCTIONS` entries and the same helpers.
 
@@ -445,10 +487,10 @@ The aggregates below, and `gearPrice()`, live in `src/planer/gear.ts`.
 |---|---|
 | `hubRouter()` | the first `INFRA` entry planned with `role: "router"`, otherwise `null` |
 | `hubPower(it)` | a router present **or** a powered device in `hub.gear` → a copper source |
-| `hubSfp(it)` | a router with `sfp` **or** a device with `sfp` → accepts fibre |
+| `hubSfp(it)` | `hubSfpPorts(it) > 0` → a cage takes the fibre |
 | `hubPoe(it)` | router `poe` + Σ `poe` of the devices |
-| `hubPorts(it)` | router `ports` + `jbPorts()` of the devices |
-| `hubSfpPorts(it)` | 1 for a router with `sfp` (only one SFP+ becomes LAN) + `sfpPorts()` of the devices |
+| `hubCap(it)` | router RJ45 (`wan` excluded) + `jbCap()` of the devices; `hubPorts(it)` is its `total` |
+| `hubSfpPorts(it)` | the router's LAN-side cages + `sfpPorts()` of the devices |
 
 `isCopperSource(hub)` (`links.ts`) is therefore `hubPower()`, `takesFiber(hub)` (`links.ts`) is
 `hubSfp()` — a fibre edge
@@ -469,6 +511,7 @@ connected to" and only then "does that supply anything":
 | `link.dead` | a cable reaches points, but none of them is a source (`{pt}` = the point reached) |
 | `link.deadup` | a source was found, but it itself has no uplink to the head end |
 | `link.nopoe` | the source supplies 0 W of PoE (only a converter, or a head end with no PoE output) |
+| `link.poeclass` | the source's ports hand out a weaker class than the device needs (`{need}`, `{have}`); silent where no class is published |
 | `link.long` | past `CABLES.cat.max` in one unbroken run |
 | `link.norouter` | head end without a router |
 | `link.hub.ok` | head end with a router: `{router} · {n} devices` |

@@ -40,7 +40,7 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 4,
       "speed": "1G",
       "poe": "at"
@@ -54,15 +54,12 @@
   ],
   "specs": {
     "ip": "IP54",
-    "ports": 5,
     "power": true,
     "dig": false,
     "use": {
       "de": "5 Ports mit PoE, wetterfest, ohne Kasten",
       "en": "5 ports with PoE, weatherproof, no box"
     },
-    "sfp": false,
-    "sfpPorts": 0,
     "poe": 46
   }
 }

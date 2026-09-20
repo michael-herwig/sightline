@@ -110,7 +110,8 @@ test.describe("Topology", () => {
     await expect(linkText(page)).toContainText("Glasfaser");
     // K1 and KL each draw 15.4 W, the cascaded switch nothing.
     await expect(linkText(page)).toContainText("30,8 von 196 W");
-    await expect(linkText(page)).toContainText("3 von 8 belegt");
+    // Nine ports: eight PoE plus the 10G port the USW Flex can be fed through.
+    await expect(linkText(page)).toContainText("3 von 9 belegt");
     await expect(linkText(page)).toContainText("K1");
     await expect(linkText(page)).toContainText("S7");
     await expect(page.locator("#pane-sel")).toContainText("USW Flex");
@@ -170,7 +171,8 @@ test.describe("Topology", () => {
     await expect(page.locator("#f-gears .cabrow")).toHaveCount(0);
     await expect(linkText(page)).toContainText("UniFi Cloud Gateway Fiber");
     await expect(linkText(page)).toContainText("15,4 von 30 W");
-    await expect(linkText(page)).toContainText("1 von 5 belegt");
+    // Four LAN ports — the UCG's fifth RJ45 is its WAN uplink.
+    await expect(linkText(page)).toContainText("1 von 4 belegt");
     await expect(linkText(page)).toContainText("5 Faserkabel auf 1 SFP");
     await expect(ring(page, "h1", "warn")).toHaveCount(1);
     await pick(page, "l-cams", "KH");
@@ -314,7 +316,8 @@ test.describe("Passing fiber on and power at the point", () => {
   test("a PoE-fed switch loads the feeder's budget and ports", async ({ page }) => {
     await pick(page, "l-jbs", "F2");
     await expect(linkText(page)).toContainText("15 von 196 W");
-    await expect(linkText(page)).toContainText("5 von 8 belegt");
+    // Nine, as on S1 above: the 10G port counts too.
+    await expect(linkText(page)).toContainText("5 von 9 belegt");
   });
 
   test("recommendation at the shaft: PoE-fed counterpart instead of a power supply", async ({

@@ -9,9 +9,9 @@
 // The planner keeps its old shapes: CAMS, APS, JUNCTIONS and INFRA come out of
 // here looking the way `src/planer/catalogs.ts` used to define them, so no caller
 // had to change. What is new sits alongside on the same object (`status`, `open`,
-// `codecs`, `beam`), and the full record is in `PRODUCTS`.
+// `codecs`, `beam`, `portList`, `poeIn`), and the full record is in `PRODUCTS`.
 import type { Ap, Cam, InfraItem, Junction, Model } from "../planer/types";
-import type { Product } from "./schema";
+import type { Port, Product } from "./schema";
 
 export type { Beam, Codecs, Links, Openness, Port, Product, Specs } from "./schema";
 
@@ -36,6 +36,66 @@ export const PRODUCTS: Product[] = Object.entries(files)
 
 export const productOf = (kind: string, id: string): Product | undefined =>
   PRODUCTS.find((p) => p.kind === kind && p.id === id);
+
+// ------------------------------------------------------------------- ports
+// The connector list is the truth. Everything the planner counts — free ports,
+// SFP cages, what an injector passes on, which PoE class arrives at a camera —
+// is read off it here, so there is one place where a data sheet turns into a
+// number instead of a curated field that quietly drifts away from the device.
+
+/** What a device can do with a cable. `wan` is not in it: no LAN hangs off it. */
+export interface PortCap {
+  /** Ports a downlink can leave through (`out` or `both`). */
+  down: number;
+  /** Ports an uplink can land in (`in` or `both`). */
+  up: number;
+  /** Every RJ45 it has — one cable occupies one of them, whichever way it runs. */
+  total: number;
+}
+
+const sum = (ps: Port[]): number => ps.reduce((a, p) => a + p.n, 0);
+const lan = (ports?: Port[]): Port[] => (ports || []).filter((p) => p.type === "rj45");
+const cages = (ports?: Port[]): Port[] =>
+  (ports || []).filter((p) => p.type === "sfp" || p.type === "sfp+");
+
+export const rj45Cap = (ports?: Port[]): PortCap => ({
+  down: sum(lan(ports).filter((p) => p.dir !== "in")),
+  up: sum(lan(ports).filter((p) => p.dir !== "out")),
+  total: sum(lan(ports)),
+});
+
+/** SFP cages the device brings along — a module plugs into one, so it has `n: 0`. */
+export const sfpCages = (ports?: Port[]): number => sum(cages(ports));
+
+/** Does it speak fibre at all? A module does, without offering a cage of its own. */
+export const hasSfp = (ports?: Port[]): boolean => cages(ports).length > 0;
+
+/** What an injector passes on: PoE that only ever leaves, never a switch port. */
+export const poeFeeds = (ports?: Port[]): number =>
+  sum(lan(ports).filter((p) => p.dir === "out" && p.poe));
+
+/** PoE classes, weakest first. */
+export type PoeClass = "af" | "at" | "bt";
+
+export const POE_RANK: Record<PoeClass, number> = { af: 1, at: 2, bt: 3 };
+
+/** Standard notation — the same in both languages, hence no i18n key. */
+export const POE_LABEL: Record<PoeClass, string> = {
+  af: "PoE (802.3af)",
+  at: "PoE+ (802.3at)",
+  bt: "PoE++ (802.3bt)",
+};
+
+/** A port that negotiates `af/at` hands out `at`; anything unknown is null. */
+export const poeClass = (v?: string | null): PoeClass | null =>
+  v === "af/at" ? "at" : v === "af" || v === "at" || v === "bt" ? v : null;
+
+/** The strongest class the device hands out; null when no data sheet says. */
+export const poeOut = (ports?: Port[]): PoeClass | null =>
+  (ports || []).reduce<PoeClass | null>((a, p) => {
+    const c = poeClass(p.poe);
+    return c && (!a || POE_RANK[c] > POE_RANK[a]) ? c : a;
+  }, null);
 
 // Leaving a key out is not the same as setting it to undefined: the tests ask
 // `"powerIn" in m`, and `optHint()` branches on `m.sfpPorts != null`.
@@ -65,6 +125,18 @@ function legacy(p: Product): Model {
   put(m, "open", p.open);
   put(m, "codecs", p.codecs);
   put(m, "beam", p.beam);
+  put(m, "poeIn", p.poeIn);
+  put(m, "portList", p.ports);
+  // The port list is the truth: the numbers the panels still read are derived
+  // from it here, never curated a second time. A housing has no list — there
+  // `specs.ports` counts conduit openings and is left alone.
+  if (p.ports && (p.kind === "jb" || p.kind === "infra")) {
+    m.ports = rj45Cap(p.ports).total;
+    m.sfp = hasSfp(p.ports);
+    m.sfpPorts = sfpCages(p.ports);
+    const feeds = poeFeeds(p.ports);
+    if (feeds) m.poePorts = feeds;
+  }
   // A junction's `kind` is housing vs. device — the catalogue kind is the folder.
   if (p.kind === "jb") put(m, "kind", p.form);
   if (p.kind === "infra") put(m, "id", p.id);

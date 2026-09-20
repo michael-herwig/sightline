@@ -41,7 +41,7 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 8,
       "speed": "2.5G",
       "poe": "bt"
@@ -61,15 +61,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 8,
     "power": true,
     "dig": false,
     "use": {
       "de": "Glasfaser rein, 8× Netzwerk mit PoE raus",
       "en": "fibre in, 8× network with PoE out"
     },
-    "sfp": true,
-    "sfpPorts": 1,
     "poe": 196
   }
 }

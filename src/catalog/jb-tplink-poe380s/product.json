@@ -52,16 +52,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 2,
     "power": true,
     "dig": false,
     "use": {
       "de": "ein PoE++-Gerät mit voller Leistung speisen",
       "en": "feed one PoE++ device at full power"
     },
-    "sfp": false,
-    "sfpPorts": 0,
-    "poe": 90,
-    "poePorts": 1
+    "poe": 90
   }
 }

@@ -52,16 +52,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 1,
     "power": true,
     "dig": false,
     "use": {
       "de": "ein einzelnes Gerät mit bis zu 90 W speisen",
       "en": "feed a single device with up to 90 W"
     },
-    "sfp": false,
-    "sfpPorts": 0,
-    "poe": 90,
-    "poePorts": 1
+    "poe": 90
   }
 }

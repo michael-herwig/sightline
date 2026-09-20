@@ -40,23 +40,19 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 5,
       "speed": "1G"
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 5,
     "power": true,
     "dig": false,
     "use": {
       "de": "Netzwerkports dort verteilen, wo keine Steckdose ist",
       "en": "fan out network ports where there is no outlet"
     },
-    "sfp": false,
-    "sfpPorts": 0,
-    "poe": 0,
-    "poePorts": 0
+    "poe": 0
   }
 }

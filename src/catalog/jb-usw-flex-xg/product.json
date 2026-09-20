@@ -40,29 +40,25 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 1,
       "speed": "1G"
     },
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 4,
       "speed": "10G"
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 5,
     "power": true,
     "dig": false,
     "use": {
       "de": "10G-Ports ohne Steckdose, etwa am Rekorder",
       "en": "10G ports with no outlet, at the recorder say"
     },
-    "sfp": false,
-    "sfpPorts": 0,
-    "poe": 0,
-    "poePorts": 0
+    "poe": 0
   }
 }

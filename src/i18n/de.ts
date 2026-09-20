@@ -417,6 +417,7 @@ export const planner = {
   "link.type.cat": "Cat6A",
   "link.ports": "Ports",
   "link.ports.v": "{n} von {ports} belegt",
+  "link.poeclass": "{src} liefert nur {have} — das Gerät braucht {need}",
   "hub.router": "Router",
   "hub.router.none": "keiner — nur Kabel, kein Gerät",
   "hub.adv.norouter":

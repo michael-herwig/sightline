@@ -41,27 +41,24 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 1,
       "speed": "1G"
     },
     {
       "type": "sfp",
-      "dir": "in",
+      "dir": "both",
       "n": 1
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 1,
     "power": true,
     "dig": false,
     "use": {
       "de": "Faser → 1× Kupfer, kein PoE",
       "en": "fibre → 1× copper, no PoE"
     },
-    "sfp": true,
-    "sfpPorts": 1,
     "poe": 0
   }
 }

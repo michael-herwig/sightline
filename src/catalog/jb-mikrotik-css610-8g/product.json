@@ -40,7 +40,7 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 8,
       "speed": "1G"
     },
@@ -53,16 +53,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 8,
     "power": true,
     "dig": false,
     "use": {
       "de": "zwei Fasern an einem Punkt annehmen und auf Kupfer verteilen",
       "en": "take two fibres at one point and fan them out to copper"
     },
-    "sfp": true,
-    "sfpPorts": 2,
-    "poe": 0,
-    "poePorts": 0
+    "poe": 0
   }
 }

@@ -131,7 +131,8 @@ describe("the loader rebuilds the shapes the planner expects", () => {
     expect(JUNCTIONS["tplink-poe170s"]).toMatchObject({ ports: 2, sfpPorts: 0, poePorts: 1 });
     expect(JUNCTIONS["usw-ultra-60w"]).toMatchObject({ ports: 8, poe: 52, sfp: false });
     expect(JUNCTIONS.shaft).toMatchObject({ kind: "housing", ports: 6, price: 40 });
-    expect(INFRA.find((i) => i.id === "ucg")).toMatchObject({ ports: 5, sfp: true, poe: 30 });
+    // Four LAN ports: the fifth RJ45 and one of the two SFP+ cages are WAN.
+    expect(INFRA.find((i) => i.id === "ucg")).toMatchObject({ ports: 4, sfp: true, poe: 30 });
     // A FRITZ!Box has an SFP cage, but it is the WAN port — LAN-side there is none.
     expect(INFRA.find((i) => i.id === "fb5590")).toMatchObject({ sfp: false });
   });
@@ -155,36 +156,52 @@ describe("the loader rebuilds the shapes the planner expects", () => {
   });
 });
 
-describe("the vendor port list and the planner's port count stay in step", () => {
-  // Nothing is derived from `ports`: the planner's numbers are curated (LAN-side
-  // SFP, injector throughput, conduit openings on a housing). What has to hold is
-  // that a curated number is backed by real connectors — at least the downstream
-  // ports, at most everything the data sheet lists.
-  const rj45 = (p: Product) => (p.ports || []).filter((x) => x.type === "rj45" || x.type === "wan");
+describe("the port list is the truth", () => {
+  // Nothing about connectors is curated any more: the loader reads the numbers
+  // off `ports`, so a data sheet and the planner cannot drift apart.
+  const rj45 = (p: Product) => (p.ports || []).filter((x) => x.type === "rj45");
   const sum = (v: { n: number }[]) => v.reduce((a, x) => a + x.n, 0);
+  const catalogued = (p: Product) =>
+    p.kind === "jb" ? JUNCTIONS[p.id] : INFRA.find((i) => i.id === p.id)!;
+  const withPorts = all.filter((p) => p.ports && (p.kind === "jb" || p.kind === "infra"));
 
-  it("the port count sits between the downstream ports and the total", () => {
-    const bad = all
-      .filter((p) => p.ports && p.specs.ports !== undefined)
-      .filter((p) => {
-        const out = sum(rj45(p).filter((x) => x.dir === "out"));
-        return p.specs.ports! < out || p.specs.ports! > sum(rj45(p));
-      })
+  it("no file counts its ports a second time under `specs`", () => {
+    const keys = ["ports", "sfp", "sfpPorts", "poePorts"] as const;
+    const curated = all
+      .filter((p) => p.ports && keys.some((k) => k in (p.specs as Record<string, unknown>)))
       .map((p) => p.id);
-    expect(bad).toEqual([]);
+    expect(curated).toEqual([]);
+    // A housing has no connector list — there `ports` is conduit openings.
+    expect(JUNCTIONS.shaft.ports).toBe(6);
   });
 
-  it("SFP cages match the data sheet — except the modules that occupy one", () => {
-    // An SFP module does not bring a cage along, it fills one. Hence 0, on purpose.
-    const modules = ["tplink-sm311ls", "tplink-sm321a", "tplink-sm321b"];
-    const bad = all
-      .filter((p) => p.ports && p.specs.sfpPorts !== undefined && !modules.includes(p.id))
-      .filter(
-        (p) => p.specs.sfpPorts !== sum((p.ports || []).filter((x) => x.type.startsWith("sfp"))),
-      )
-      .map((p) => p.id);
+  it("the planner counts exactly the connectors the data sheet lists", () => {
+    const bad = withPorts
+      .filter((p) => catalogued(p).ports !== sum(rj45(p)))
+      .map((p) => `${p.id}: ${catalogued(p).ports} ≠ ${sum(rj45(p))}`);
     expect(bad).toEqual([]);
-    expect(modules.filter((k) => JUNCTIONS[k].sfpPorts !== 0)).toEqual([]);
+    expect(withPorts.length).toBeGreaterThan(20);
+  });
+
+  it("a WAN port is not a LAN port", () => {
+    // Both FRITZ!Boxes and the UCG publish an SFP cage — on the WAN side.
+    expect(INFRA.find((i) => i.id === "fb5590")).toMatchObject({ ports: 4, sfp: false });
+    expect(INFRA.find((i) => i.id === "fb5530")).toMatchObject({ ports: 2, sfp: false });
+    expect(INFRA.find((i) => i.id === "ucg")).toMatchObject({ ports: 4, sfpPorts: 1 });
+  });
+
+  it("an SFP module fills a cage instead of bringing one", () => {
+    for (const k of ["tplink-sm311ls", "tplink-sm321a", "tplink-sm321b"])
+      expect(JUNCTIONS[k], k).toMatchObject({ sfp: true, sfpPorts: 0 });
+    expect(JUNCTIONS.flex).toMatchObject({ sfp: true, sfpPorts: 1 });
+  });
+
+  it("only an injector passes PoE on one way", () => {
+    const feeds = withPorts
+      .filter((p) => p.kind === "jb" && JUNCTIONS[p.id].poePorts)
+      .map((p) => p.id);
+    expect(feeds.sort()).toEqual(["tplink-poe170s", "tplink-poe380s", "u-poe-plus-plus"]);
+    expect(JUNCTIONS["tplink-poe170s"]).toMatchObject({ ports: 2, poePorts: 1 });
   });
 });
 

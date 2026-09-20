@@ -42,15 +42,13 @@
       "speed": "1G"
     },
     {
-      "type": "sfp",
+      "type": "wan",
       "dir": "in",
       "n": 1
     }
   ],
   "specs": {
     "role": "router",
-    "ports": 5,
-    "sfp": false,
     "poe": 0,
     "qty": 1,
     "on": false,

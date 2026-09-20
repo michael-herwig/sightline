@@ -6,9 +6,9 @@
 // housing has no `powerIn`, so the optional fields say "may be there", and the
 // invariants that actually hold are checked in tests/unit/catalogs.test.ts.
 
-import type { Beam, Codecs, Openness } from "../catalog/schema";
+import type { Beam, Codecs, Openness, Port } from "../catalog/schema";
 
-export type { Beam, Codecs, Openness };
+export type { Beam, Codecs, Openness, Port };
 
 /** A UI text. Catalogue texts are bilingual and go through tx(). */
 export type Txt = string | { de: string; en: string };
@@ -52,6 +52,13 @@ export interface Product {
   codecs?: Codecs;
   /** Access points: radiation pattern, `h: 360` is omnidirectional. */
   beam?: Beam;
+  /**
+   * The connectors as the data sheet lists them — the truth behind every port
+   * count. `gear.ts` reads it; the numbers below are derived from it.
+   */
+  portList?: Port[];
+  /** The PoE class the device itself accepts. `af/at` means PoE is enough. */
+  poeIn?: "af" | "at" | "bt" | "af/at";
 }
 
 /** CAMS[model] — a camera. `fov` 360 means PTZ and is drawn as a circle. */
@@ -94,13 +101,13 @@ export interface Junction extends Product {
   poe?: number;
   /** Load on the feeder for a `powerIn: "poe"` device, 15 W when absent. */
   poeDraw?: number;
-  /** Fibre plugs straight in. */
+  /** Derived from `portList`: it speaks fibre. A module does, with no cage of its own. */
   sfp?: boolean;
-  /** SFP cages, read off the data sheet rather than from the port count. */
+  /** Derived from `portList`: SFP cages it brings. */
   sfpPorts?: number;
-  /** RJ45 ports. */
+  /** Derived from `portList` on a device; on a housing the conduit openings. */
   ports?: number;
-  /** An injector has two jacks but only one downstream port. */
+  /** Derived from `portList`: PoE that only ever leaves — an injector's one jack. */
   poePorts?: number;
   /** A PoE extender raises the copper limit of its run, in m. */
   extend?: number;
@@ -120,8 +127,9 @@ export interface InfraItem extends Product {
   sub?: Txt;
   /** Exactly one router per plan carries the LAN ports, SFP and PoE. */
   role?: string;
+  /** Derived from `portList`, WAN ports excluded. */
   ports?: number;
-  /** Usable on the LAN side — on a FRITZ!Box the SFP cage is the WAN port. */
+  /** Derived: a cage usable on the LAN side — a FRITZ!Box SFP is typed `wan`. */
   sfp?: boolean;
   poe?: number;
   /** Switches sit on the map as elements, so they stay out of the gear tab. */

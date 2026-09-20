@@ -12,12 +12,15 @@
 //   * the top level is what every product has — who makes it, what it costs,
 //     what it is for, where to buy it, and the vendor facts (`ports`, `beam`,
 //     `open`, `codecs`) as the data sheet states them.
-//   * `specs` holds the numbers the planner computes with. They are curated, not
-//     copied: `sfp` on a router means "usable on the LAN side" (a FRITZ!Box SFP
-//     cage is the WAN port, so `false` despite the port list), `poePorts` counts
-//     what an injector passes on, and on a housing `ports` counts conduits, not
-//     RJ45. That is why nothing here is derived from `ports` — see
-//     tests/unit/catalog.test.ts, which pins the two against each other.
+//   * `specs` holds what no connector can say: the PoE budget in watts, whether
+//     the thing is an active device, how far a PoE extender reaches, and on a
+//     housing how many conduits it takes.
+//
+// **The port list is the truth.** Port counts, SFP cages and what an injector
+// passes on are derived from `ports` in `src/catalog/index.ts` — never curated
+// a second time under `specs`, or the two drift apart. A FRITZ!Box SFP cage is
+// the WAN port, so it is typed `wan` and no fibre lands there; the same goes for
+// the UCG's WAN uplinks.
 
 /** A bilingual text. Both languages are mandatory — `tx()` picks one. */
 export interface Txt {
@@ -31,11 +34,20 @@ export interface Tags {
   en: string[];
 }
 
-/** One connector as the data sheet lists it. `dir: "in"` is an uplink or a feed. */
+/**
+ * One connector as the data sheet lists it — and the only place that says what a
+ * device can be wired to.
+ *
+ * `dir` is about the cable, not the data: `in` takes an uplink or a feed (a
+ * camera's socket, a switch's PoE-in port, an injector's data jack), `out` only
+ * ever goes downstream (an injector's PoE jack), `both` is an ordinary switch
+ * port that an uplink or a camera can land on alike. `wan` is where the internet
+ * arrives and never counts as a LAN port.
+ */
 export interface Port {
   type: "rj45" | "sfp" | "sfp+" | "dc" | "wan";
   dir: "in" | "out" | "both";
-  /** How many of this kind. */
+  /** How many of this kind. An SFP module has an interface but brings no cage: `0`. */
   n: number;
   /** "1G", "2.5G", "10G", "100M", "1G/2.5G" — as printed, not normalised. */
   speed?: string;
@@ -45,8 +57,13 @@ export interface Port {
 
 /** Radiation pattern of an access point. `h: 360` is omnidirectional. */
 export interface Beam {
-  /** Horizontal opening in degrees. */
+  /** Horizontal opening in degrees, on the band the reliable zone is drawn from (5 GHz). */
   h: number;
+  /**
+   * Horizontal opening of the wider, lower band (2.4 GHz), which is what the outer
+   * free-field ring shows. Absent means the same as `h`.
+   */
+  hFar?: number;
   /** Vertical opening in degrees, where the vendor publishes one. */
   v?: number;
   /** Rear lobe as a fraction of the main lobe, 0…1. An omni is 1. */
@@ -111,7 +128,10 @@ export interface Specs {
   radius?: number;
   place?: "in" | "out";
   // --- junction
-  /** Network ports on a device — conduit openings on a housing. */
+  /**
+   * Conduit openings on a housing (and fibre entries on a splice closure).
+   * A device's network ports are **not** here: they come out of `ports`.
+   */
   ports?: number;
   /** Active device: it needs a place of its own, not necessarily mains power. */
   power?: boolean;
@@ -119,12 +139,6 @@ export interface Specs {
   dig?: boolean;
   /** One line on the card: what the part is for. */
   use?: Txt;
-  /** Fibre plugs straight in — on a router this means LAN-side. */
-  sfp?: boolean;
-  /** SFP cages, read off the data sheet rather than counted from `ports`. */
-  sfpPorts?: number;
-  /** What an injector passes on: it has two jacks and one downstream port. */
-  poePorts?: number;
   /** A PoE extender raises the copper limit of its run, in m. */
   extend?: number;
   /** Load on the feeder for a `powerIn: "poe"` device; 15 W when absent. */

@@ -41,27 +41,24 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 1,
       "speed": "1G"
     },
     {
       "type": "sfp",
-      "dir": "in",
+      "dir": "both",
       "n": 1
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 1,
     "power": true,
     "dig": false,
     "use": {
       "de": "Glasfaser rein, genau ein Netzwerkport raus",
       "en": "fibre in, exactly one network port out"
     },
-    "sfp": true,
-    "sfpPorts": 1,
     "poe": 0
   }
 }

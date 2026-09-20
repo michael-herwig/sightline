@@ -51,15 +51,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 2,
     "power": false,
     "dig": false,
     "use": {
       "de": "verlängert eine PoE-Strecke um bis zu 100 m",
       "en": "extends a PoE run by up to 100 m"
     },
-    "sfp": false,
-    "sfpPorts": 0,
     "poe": 0,
     "extend": 100
   }

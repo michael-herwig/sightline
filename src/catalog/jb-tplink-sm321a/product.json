@@ -41,20 +41,17 @@
     {
       "type": "sfp",
       "dir": "both",
-      "n": 1
+      "n": 0
     }
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 0,
     "power": false,
     "dig": false,
     "use": {
       "de": "eine Strecke über eine einzige Faser statt über zwei",
       "en": "run a link over a single fibre instead of two"
     },
-    "sfp": true,
-    "sfpPorts": 0,
     "poe": 0
   }
 }

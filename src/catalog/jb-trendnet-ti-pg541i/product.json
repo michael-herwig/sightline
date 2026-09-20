@@ -40,14 +40,14 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 4,
       "speed": "1G",
       "poe": "at"
     },
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 1,
       "speed": "1G"
     },
@@ -59,15 +59,12 @@
   ],
   "specs": {
     "ip": "IP30",
-    "ports": 5,
     "power": true,
     "dig": false,
     "use": {
       "de": "PoE-Switch für den Schaltschrank, auf der Hutschiene",
       "en": "a PoE switch for the cabinet, on a DIN rail"
     },
-    "sfp": true,
-    "sfpPorts": 1,
     "poe": 120
   }
 }

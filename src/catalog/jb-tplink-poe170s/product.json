@@ -52,16 +52,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 2,
     "power": true,
     "dig": false,
     "use": {
       "de": "ein einzelnes PoE-Gerät an einem Switch ohne PoE",
       "en": "a single PoE device on a switch without PoE"
     },
-    "sfp": false,
-    "sfpPorts": 0,
-    "poe": 60,
-    "poePorts": 1
+    "poe": 60
   }
 }

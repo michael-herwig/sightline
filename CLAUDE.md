@@ -341,8 +341,8 @@ point is the last one.
   The ⓘ sits in the action column: row `[Name] [Qty] [ⓘ] [🗑]`, the add-row
   `[Select] [ⓘ] [+]`, a select field `[Select] [ⓘ]` — never as a superscript on the text.
 - The **hub** (`hub`) is no longer a do-everything device: the router comes from `INFRA`
-  (`role: "router"`, with `ports`/`sfp`/`poe`; `sfp` means usable **on the LAN side** — on
-  every FRITZ!Box the SFP slot is the WAN port, so `false`), the devices live in `hub.gear`
+  (`role: "router"`, a `poe` budget and its port list; LAN ports and LAN-side cages fall out
+  of it, and a `wan` port never counts — on every FRITZ!Box the SFP cage is the WAN port), the devices live in `hub.gear`
   just like at a junction. One router per plan (`pickRouter()`). `isCopperSource(hub)` =
   `hubPower()`, `takesFiber(hub)` = `hubSfp()` — without an SFP slot no fiber arrives there,
   without a PoE output no camera.
@@ -374,8 +374,8 @@ point is the last one.
   15 W) via `jbDraw()`, same as a camera.
 - Housing and device are separated by `kind: "housing" | "device"` in `JUNCTIONS`, never by
   `power`: a splice box, surge protector, SFP module and PoE extender need no power and are
-  still devices. SFP slots sit as `sfpPorts` on a device, outputs as `poePorts` (injector),
-  range extension as `extend` (PoE extender).
+  still devices. SFP cages and what an injector passes on come out of the port list; range
+  extension stays `extend` (PoE extender), because no connector says how far it reaches.
 - Undo/redo works with JSON snapshots via `HIST_KEYS` (`history.ts`). Every mutation goes
   through `changed()`, which calls `histPush()` — mutating around it means it can't be
   undone. `condEdit()` sits there too: it is the mutate-and-record entry point for a conduit.
@@ -392,12 +392,15 @@ point is the last one.
   rebuilds `CAMS`, `APS`, `JUNCTIONS` and `INFRA` in their old shape. Use the
   `catalog-update` skill to add, reprice or deprecate one. `docs/DATA-MODEL.md`, section
   "Product directory", has the field list.
-- **`specs` is the planner's reading, `ports` is the data sheet.** Nothing in the loader is
-  derived from the port list, because the two genuinely disagree: `sfp` on a router means
-  usable **on the LAN side** (a FRITZ!Box SFP cage is the WAN port → `false`), `poePorts` is
-  what an injector passes on, and a housing's `ports` counts conduit openings. Deriving them
-  would flip six entries. `tests/unit/catalog.test.ts` keeps the two within bounds of each
-  other instead.
+- **The `ports` list is the truth.** Every port count comes out of the connector list in
+  `product.json` — `ports`, `sfp`, `sfpPorts` and `poePorts` on a catalogue entry are derived
+  in `src/catalog/index.ts` (`rj45Cap`, `sfpCages`, `poeFeeds`), never written into `specs`,
+  where they used to drift away from the device. `dir` is about the cable: `in` takes an
+  uplink, `out` only goes downstream (an injector's PoE jack), `both` is a switch port. A
+  `wan` port is never a LAN port — that is how a FRITZ!Box SFP cage and the UCG's WAN uplinks
+  stay out of the count. An SFP module fills a cage instead of bringing one (`n: 0`). `specs`
+  keeps only what no connector can say: watts, `power`, `extend`, and conduit openings on a
+  housing. `tests/unit/catalog.test.ts` rejects a curated port number.
 - **An unverified field is absent, never guessed.** A missing `open` on a camera shows a grey
   "—" and grades neutral; `open.onvif: false` shows a warning. Same for `codecs`, `beam` and
   every port count.

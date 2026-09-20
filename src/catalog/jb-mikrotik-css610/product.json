@@ -41,7 +41,7 @@
   "ports": [
     {
       "type": "rj45",
-      "dir": "out",
+      "dir": "both",
       "n": 8,
       "speed": "1G",
       "poe": "af/at"
@@ -55,15 +55,12 @@
   ],
   "specs": {
     "ip": "IP20",
-    "ports": 8,
     "power": true,
     "dig": false,
     "use": {
       "de": "8× PoE (140 W) + 2× SFP+, SwOS",
       "en": "8× PoE (140 W) + 2× SFP+, SwOS"
     },
-    "sfp": true,
-    "sfpPorts": 2,
     "poe": 140
   }
 }

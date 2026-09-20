@@ -5,24 +5,27 @@ import { CABLES, JUNCTIONS, modelOf } from "./catalogs";
 import { condCables } from "./conduit";
 import { state } from "./store";
 import {
+  hubCap,
   hubPoe,
-  hubPorts,
   hubPower,
   hubRouter,
   hubSfp,
   hubSfpPorts,
+  jbCap,
   jbDraw,
   jbExtend,
   jbGear,
   jbMains,
   jbPoe,
-  jbPorts,
   jbPower,
   jbSfp,
   jbSplice,
+  poeGives,
+  poeNeed,
   poeWatts,
   sfpPorts,
 } from "./gear";
+import { POE_LABEL, POE_RANK } from "../catalog/index";
 import type { CableType, Conduit, Item, LinkGear, LinkSource, LinkStatus, Links } from "./types";
 
 /** One finding on its way into a LinkStatus — as its head or in `more`. */
@@ -294,6 +297,16 @@ function computeLinks(): Links {
     // A point holding only a media converter delivers no PoE. The same
     // applies to a hub without a PoE switch and without a PoE output on the router.
     if (poeOf(r.src) === 0) probs.push({ key: "link.nopoe", vars: { src: r.src.label } });
+    // Watts are not the whole story: a PoE+ camera on an 802.3af port negotiates
+    // nothing. Only a source whose data sheet states its class can say so — an
+    // unpublished class stays silent instead of guessing "af".
+    const need = poeNeed(m),
+      gives = poeGives(r.src);
+    if (need && gives && POE_RANK[need] > POE_RANK[gives])
+      probs.push({
+        key: "link.poeclass",
+        vars: { src: r.src.label, need: POE_LABEL[need], have: POE_LABEL[gives] },
+      });
     // ponytail: the limit applies to the run device → source. A switch's uplink
     // (reachHub) doesn't collect intermediate points, so an extender has no effect there.
     if (r.len > catMax(r.seen)) probs.push({ key: "link.long", vars: { len: r.len.toFixed(0) } });
@@ -332,17 +345,20 @@ function computeLinks(): Links {
     // (fiber plugs into the SFP cage) — and only if the device before it
     // isn't already in the list, otherwise a cable would count twice.
     const feed = isHub ? null : src.get(it.id);
-    const used = devices.length + (feed && !devices.includes(feed.src) ? 1 : 0);
+    const up = feed && !devices.includes(feed.src) ? 1 : 0;
+    const used = devices.length + up;
     const poe = isHub ? hubPoe(it) : jbPoe(it),
-      ports = isHub ? hubPorts(it) : jbPorts(it);
+      cap = isHub ? hubCap(it) : jbCap(it);
     gear.set(it.id, {
       devices,
       watts,
       used,
       poe,
-      ports,
+      ports: cap.total,
       over: watts > poe,
-      portsOver: used > ports,
+      // Three ways to run out: too much hanging off it, nowhere for its own
+      // uplink to land, or simply more cables than sockets.
+      portsOver: devices.length > cap.down || up > cap.up || used > cap.total,
     });
     // Every incoming fiber wants an SFP cage. Without a single one,
     // link.nosfp applies — here it's only about the count.

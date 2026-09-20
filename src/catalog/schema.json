@@ -40,7 +40,7 @@
       "required": ["de", "en"]
     },
     "Port": {
-      "description": "One connector as the data sheet lists it. `dir: \"in\"` is an uplink or a feed.",
+      "description": "One connector as the data sheet lists it — and the only place that says what a device can be wired to. `dir` is about the cable, not the data: `in` takes an uplink or a feed (a camera's socket, a switch's PoE-in port, an injector's data jack), `out` only ever goes downstream (an injector's PoE jack), `both` is an ordinary switch port that an uplink or a camera can land on alike. `wan` is where the internet arrives and never counts as a LAN port.",
       "type": "object",
       "properties": {
         "type": {
@@ -50,7 +50,7 @@
           "enum": ["in", "out", "both"]
         },
         "n": {
-          "description": "How many of this kind.",
+          "description": "How many of this kind. An SFP module has an interface but brings no cage: `0`.",
           "type": "number"
         },
         "speed": {
@@ -70,7 +70,11 @@
       "type": "object",
       "properties": {
         "h": {
-          "description": "Horizontal opening in degrees.",
+          "description": "Horizontal opening in degrees, on the band the reliable zone is drawn from (5 GHz).",
+          "type": "number"
+        },
+        "hFar": {
+          "description": "Horizontal opening of the wider, lower band (2.4 GHz), which is what the outer free-field ring shows. Absent means the same as `h`.",
           "type": "number"
         },
         "v": {
@@ -212,7 +216,7 @@
           "enum": ["in", "out"]
         },
         "ports": {
-          "description": "Network ports on a device — conduit openings on a housing.",
+          "description": "Conduit openings on a housing (and fibre entries on a splice closure). A device's network ports are **not** here: they come out of `ports`.",
           "type": "number"
         },
         "power": {
@@ -226,18 +230,6 @@
         "use": {
           "description": "One line on the card: what the part is for.",
           "$ref": "#/$defs/Txt"
-        },
-        "sfp": {
-          "description": "Fibre plugs straight in — on a router this means LAN-side.",
-          "type": "boolean"
-        },
-        "sfpPorts": {
-          "description": "SFP cages, read off the data sheet rather than counted from `ports`.",
-          "type": "number"
-        },
-        "poePorts": {
-          "description": "What an injector passes on: it has two jacks and one downstream port.",
-          "type": "number"
         },
         "extend": {
           "description": "A PoE extender raises the copper limit of its run, in m.",
