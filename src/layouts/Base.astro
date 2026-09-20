@@ -1,8 +1,11 @@
 ---
 // Pico CSS supplies tables, buttons, forms, cards and dark mode for the
-// website. Colors still come from the planner's tokens — below they're mapped
-// onto the --pico-* variables so the landing page and the app look alike.
+// website. Colors come from src/styles/tokens.css, the single place where both
+// themes are maintained — below they're mapped onto the --pico-* variables so
+// the landing page and the app look alike.
 import '@picocss/pico/css/pico.min.css';
+import '@vscode/codicons/dist/codicon.css';
+import '../styles/tokens.css';
 
 interface Props {
   title: string;
@@ -31,7 +34,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="/vendor/codicons/codicon.css" />
 </head>
 <body>
   <slot />
@@ -39,63 +41,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hr
 </html>
 
 <style is:global>
-  /* Tokens 1:1 from the planner (public/planner/index.html) — maintain both themes. */
-  :root {
-    --ground: #f2f1ec;
-    --panel: #ffffff;
-    --panel-2: #f7f6f2;
-    --line: #dcdad2;
-    --line-2: #c9c7bf;
-    --ink: #1f2430;
-    --ink-2: #5c6270;
-    --ink-3: #8a909c;
-    --accent: #2452c9;
-    --accent-hover: #1d43a6;
-    --accent-soft: rgba(36, 82, 201, 0.12);
-    --cam: #c8322e;
-    --ap: #1f8a4c;
-    --hub: #d9861b;
-    --shadow: 0 1px 2px rgba(20, 24, 36, 0.08), 0 8px 24px rgba(20, 24, 36, 0.08);
-    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground: #15171c;
-      --panel: #1e2128;
-      --panel-2: #262a32;
-      --line: #343944;
-      --line-2: #444a57;
-      --ink: #e8e9ec;
-      --ink-2: #aab0bc;
-      --ink-3: #7c8390;
-      --accent: #6d8ff0;
-      --accent-hover: #86a3f4;
-      --accent-soft: rgba(109, 143, 240, 0.18);
-      --cam: #e35b57;
-      --ap: #3cb371;
-      --hub: #f0a33a;
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
-    }
-  }
-  :root[data-theme="dark"] {
-    --ground: #15171c;
-    --panel: #1e2128;
-    --panel-2: #262a32;
-    --line: #343944;
-    --line-2: #444a57;
-    --ink: #e8e9ec;
-    --ink-2: #aab0bc;
-    --ink-3: #7c8390;
-    --accent: #6d8ff0;
-    --accent-hover: #86a3f4;
-    --accent-soft: rgba(109, 143, 240, 0.18);
-    --cam: #e35b57;
-    --ap: #3cb371;
-    --hub: #f0a33a;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
-  }
-
   /* Map Pico onto the tokens. Applies in both themes, since the tokens themselves switch. */
   :root, :root:not([data-theme]), :root[data-theme="dark"], :root[data-theme="light"] {
     --pico-font-family: var(--sans);

@@ -1,6 +1,6 @@
 # Data model and cost logic
 
-Everything lives in `public/planner/index.html`, in the `<script>` section. No dependencies, vanilla JS, SVG overlay over `plan.png`.
+Everything lives in `src/planer/app.ts`. Vanilla JS in one module, SVG overlay over the basemap tiles.
 
 ## Constants
 

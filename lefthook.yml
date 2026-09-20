@@ -6,6 +6,9 @@ pre-commit:
       run: ocx exec -- sh tools/bin/oxc.sh oxlint {staged_files}
     oxfmt:
       glob: '*.{js,mjs,cjs,ts,mts,cts}'
-      run: ocx exec -- sh tools/bin/oxc.sh oxfmt --check {staged_files}
+      # --no-error-on-unmatched-pattern: .prettierignore keeps
+      # src/planer/app.ts out, and a commit that only touches it would
+      # otherwise leave oxfmt with nothing to do and an exit code of 2.
+      run: ocx exec -- sh tools/bin/oxc.sh oxfmt --check --no-error-on-unmatched-pattern {staged_files}
     gitleaks:
       run: ocx exec -- gitleaks protect --staged --redact --config .gitleaks.toml

@@ -14,8 +14,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # ponytail: dist/client bis Phase 3 auf output:'static' umstellt (dann dist/).
-  PAGES_ARTIFACT_PATH: dist/client
+  PAGES_ARTIFACT_PATH: dist
 
 jobs:
   build:

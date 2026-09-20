@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Planner for a camera/Wi-Fi/conduit system on a property. Project name: Sightline.
-Astro website plus a single-file planner. UI and user help are bilingual DE/EN;
+Astro website plus the planner, both in one Astro build. UI and user help are bilingual DE/EN;
 developer docs, code comments and commit messages are English.
 
 ## Read first
@@ -25,7 +25,7 @@ ocx exec -- task fmt:check # oxfmt checks without writing
 ocx exec -- task test      # vitest (unit)
 ocx exec -- task test:e2e  # playwright against /planner
 ocx exec -- task build     # dist/
-ocx exec -- task check     # lint → test → test:e2e → tools/check.mjs (server must be running, see `task serve`)
+ocx exec -- task check     # lint → test → test:e2e → tools/check.mjs (needs no running server)
 ocx exec -- task tidy      # remove Zone.Identifier cruft left by WSL
 ```
 
@@ -38,12 +38,19 @@ runs the same chain via `ocx-sh/setup-ocx`.
 
 ## Rules
 
-- `public/planner/index.html` stays **a single file with no build step**. The only third-party
-  libraries are dockview (vendored, `public/vendor/dockview/`), jsPDF (`public/vendor/jspdf/`)
-  and the Codicons font (`public/vendor/codicons/`, on request: all icons unified as
-  `<i class="codicon codicon-<name>">`, no more inline SVGs) — added on explicit request,
-  because a docking layout by hand stopped making sense. No further ones without discussion.
-  jsdom is a devDependency for `tools/check.mjs`, not for the app.
+- The planner is an Astro page: markup in `src/pages/planner.astro`, styles in
+  `src/styles/planner.css` (tokens in `src/styles/tokens.css`), the app in `src/planer/app.ts`,
+  loaded from the page via `<script>import "../planer/app.ts";</script>`. Astro bundles that
+  as a module — nothing is vendored, nothing hangs off a global. The only third-party
+  libraries are dockview (`import { createDockview } from "dockview"`, plus its stylesheet
+  from `dockview/dist/styles/dockview.css`), jsPDF (`await import("jspdf")` inside the export
+  handler, so the 400 KB only load when someone actually exports) and the Codicons font
+  (`@vscode/codicons`, on request: all icons unified as `<i class="codicon codicon-<name>">`,
+  no more inline SVGs). No further ones without discussion.
+- `src/planer/app.ts` is still the old single-file planner **verbatim**, one IIFE with
+  `// @ts-nocheck`. It's excluded from oxfmt (`.prettierignore`) and three oxlint rules are
+  off for it (`.oxlintrc.json`) — both come back as the file is split into modules and typed.
+  No new file may rely on either.
 - The SVG `viewBox` must match the element's aspect ratio (`syncAspect`), otherwise the
   browser letterboxes and the whole map jumps whenever a panel changes width.
 - Never call `renderMap()` while dragging. `applyDrag()` runs once per frame and only
@@ -82,12 +89,12 @@ runs the same chain via `ocx-sh/setup-ocx`.
   never grows back — the map stays a sliver and everything collapses into one stack. So
   `dock.layout(host.clientWidth, host.clientHeight)` runs right after `createDockview()` and
   before the first `addPanel`. The bounded `requestAnimationFrame` loop above it only makes
-  sure that measurement is real; it skips itself where there is no layout at all
-  (`document.body.clientWidth` is 0 in jsdom), so `tools/check.mjs` still boots.
+  sure that measurement is real; it skips itself where there is no layout at all,
+  so the planner still comes up in a headless environment.
 - dockview detaches inactive panels from the document. That's why `$()` falls back to
   searching the remembered panel nodes — `document.getElementById` alone isn't enough.
 - **A UI change is a help change.** Every change to tools, keys or workflows must land in
-  *three* texts: `HELP` + `help.*` keys in `public/planner/index.html` (short version in the
+  *three* texts: `HELP` + `help.*` keys in `src/planer/app.ts` (short version in the
   `?` dialog), `src/pages/help.astro` (long version) and `README.md`. Otherwise the docs
   drift away from the interface, and the user is the first to notice.
 - The website uses **Pico CSS** (`@picocss/pico`, imported in `src/layouts/Base.astro`):
@@ -103,13 +110,13 @@ runs the same chain via `ocx-sh/setup-ocx`.
   one vetted path for taking on a foreign state.
 - `.env.local` is git-ignored. Never prefix with `PUBLIC_`/`VITE_` — that ends up in the
   browser. Nothing secret under `public/`; `task check` verifies that.
-- Only `dist/client` gets published (GitHub Pages, `sightline.herwig-systems.de`,
-  `.github/workflows/deploy.yml` after green CI on `main`). There's no `/api/state` there —
-  so `serverDb()` must always fall back cleanly to `null`. Credentials only via
-  `.env.local`, never into the repo.
+- The build is `output: 'static'` and `dist/` gets published whole (GitHub Pages,
+  `sightline.herwig-systems.de`, `.github/workflows/deploy.yml` after green CI on `main`).
+  There is no server part and no API route — persistence is localStorage, share link and
+  JSON export. Credentials only via `.env.local`, never into the repo.
 - Product images do **not** live in the repo. `img:` in the catalog points at the
   manufacturer's CDN, `tools/fetch-images.mjs` (`task images`) refreshes it. 500 KB per PNG
-  × 20 would be absurd for a planner that's a single file.
+  × 20 has no business in this repo.
 - The UTM conversion (`UTM.fwd/inv`, EPSG:25832) is hand-rolled — no proj library for
   thirty lines of Transverse Mercator. `tools/check.mjs` checks it against a fixed value.
 - Nominatim is a free third-party service: debounce input (450 ms), swallow errors
@@ -168,12 +175,11 @@ runs the same chain via `ocx-sh/setup-ocx`.
   only the pixel cache for that. `migrateLegacyGeo()` fixes up old states without `geo` via
   the house node's address — no origin in the code. `HOME` is now only the start box around
   the plan center, `⌂`'s target is the content.
-- Assets inside the planner use absolute paths (`/plan.png`), because it lives under
-  `/planner`.
-- The planner is `public/planner/index.html`, so `/planner` is a directory index. The
-  built Node server and static hosts resolve that themselves; `astro dev` serves `public/`
-  by exact path only, so the `planner-index` vite plugin in `astro.config.mjs` rewrites it
-  for the dev server. Without it every test and every local visit gets the 404 page.
+- Assets inside the planner use absolute paths (`/favicon.svg`), because the page lives
+  under `/planner`.
+- `src/pages/planner.astro` builds to `dist/planner/index.html` and is served at `/planner`
+  in `astro dev`, in `astro preview` and on a static host alike. Share links (`#p=…`) keep
+  working because the path didn't change.
 - Never hardcode text into markup or template strings: static text goes through
   `data-i18n`, dynamic text through `t("key")`, catalog text as `{ de, en }` via `tx()`.
   Every new key in **both** languages.
@@ -227,8 +233,8 @@ runs the same chain via `ocx-sh/setup-ocx`.
   AP, `finishDraft()` switches it to Cat6A and says so — there's no SFP slot there.
 - **The cluster marker has its own color token.** `--cluster` stays dark in both themes;
   `--ink` flips to light gray in dark mode, and the white number was no longer readable on
-  it. Like `--cam`/`--ap`/`--jb`, a pure planner token — it doesn't live in
-  `src/layouts/Base.astro`.
+  it. Like `--cam`/`--ap`/`--jb` it lives in `src/styles/tokens.css` but only the planner
+  uses it — and unlike the rest it is deliberately not redefined in the dark blocks.
 - `jbAdvice()` suggests a switch with SFP instead of a converter plus switch at a fiber
   end (`#f-jb-advice`, like `hubAdvice()`). It only fires when **no single** device has
   both `sfp` and `poe > 0`, and only up to a `SWAP_SLACK` (€30) surcharge. **It changes
@@ -294,10 +300,10 @@ runs the same chain via `ocx-sh/setup-ocx`.
   `buildPanels()`, panes are still named `#pane-<id>`). No docking framework — that would
   be a dependency. Selection changes nothing, it only fills `#pane-sel`.
 - Everything that makes up the working state belongs in `state` — only then does it survive
-  a reload (localStorage) and travel via `/api/state`. That includes UI odds and ends like
+  a reload (localStorage) and travel in the share link. That includes UI odds and ends like
   search text, filters, panel layout, viewport.
-- `basemapLater()` only saves once `booted` is set. Otherwise a slow server load would
-  overwrite the plan with the default.
+- `basemapLater()` only saves once `booted` is set. Otherwise a slow load would overwrite
+  the plan with the default.
 - `amazon:` in the catalog is a verified `https://www.amazon.de/dp/<ASIN>` (as of 09/2026,
   `task check` verifies the shape). `amazonSimilar: true` means a substitute item instead
   of the original and only changes the link title. Verify new ASINs, don't guess.
@@ -328,15 +334,13 @@ runs the same chain via `ocx-sh/setup-ocx`.
   again.
 - Nothing location-specific in `public/` or `src/` — no addresses, no cadastral extracts,
   no sample plans.
-- Persistence must work without a server (localStorage + JSON export). `/api/state` and
-  the `claude.use("db")` branch are optional and must never block — `serverDb()` falls
-  back to `null`.
-- `data/plan.json` is the server-side state, git-ignored, written atomically. Don't
-  version it.
-- Maintain both themes (light/dark): colors only through the CSS tokens in `:root`. The
-  tokens exist twice (planner and `src/layouts/Base.astro`) — change both places.
+- Persistence runs without a server: localStorage, share link, JSON export. The
+  `claude.use("db")` branch is optional and must never block — without it `db` stays `null`.
+- Maintain both themes (light/dark): colors only through the CSS tokens in
+  `src/styles/tokens.css`. They live there **once**; `src/layouts/Base.astro` only maps them
+  onto Pico's `--pico-*`, and `src/styles/planner.css` only consumes them.
 - PDF: printing runs through `@media print` and `printSheet()`; the direct download uses
-  jsPDF (vendored, `public/vendor/jspdf/`, added on explicit request). Both consume
+  jsPDF (from npm, loaded on demand, added on explicit request). Both consume
   `sheetData()` — maintain the content once. No jsPDF extensions (autotable etc.) without
   discussion.
 - Mobile (~400 px) must stay usable: map on top, panel below.
@@ -348,12 +352,14 @@ smoke test before every commit:
 
 1. `ocx exec -- task serve`, open the page, check the console for errors
 2. place a camera / draw a conduit / check the cost tab once
-3. `ocx exec -- task check` in a second terminal — checks angle math, bonds, a full boot
-   in jsdom (language, ribbon, catalog search, basemap) and server-side storage
+3. `ocx exec -- task check` — astro check, oxlint, vitest, Playwright (it starts its own
+   dev server), then the repo assertions in `tools/check.mjs`
 4. `ocx exec -- task build` must complete
 
-`task check` actually boots the page. Whoever makes a larger change to the planner should
-add an assertion there instead of relying on a visual check.
+Playwright boots the real page; `tools/check.mjs` only reads files. Whoever makes a larger
+change to the planner adds a spec under `tests/e2e/` instead of relying on a visual check.
+`PW_BASE_URL=http://localhost:4400 pnpm exec playwright test` runs the same suite against an
+already-running server — that's how the production bundle gets checked after `astro preview`.
 
 Playwright is a devDependency (Chromium: `ocx exec -- npx playwright install chromium`).
 `tools/shot.mjs <folder>` opens the planner, expands the export dialog and drops

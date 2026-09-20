@@ -15,17 +15,10 @@ const LOCAL = new Set(["localhost", "127.0.0.1", "[::1]"]);
 /**
  * Everything that doesn't come from the dev server gets answered here: WMS tiles and
  * product images as a 1×1 pixel, Nominatim from canned data.
- *
- * `/api/state` is rejected: the endpoint holds exactly one state for everyone, so a
- * test would overwrite the next one's. `serverDb()` has to fall back cleanly to
- * `null` anyway — the deploy is static. This block checks exactly that too.
  */
 export async function stubOffsite(context: BrowserContext): Promise<void> {
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url());
-    // 204: `serverDb()` sees a reachable endpoint, `get()` returns nothing, and
-    // `set()` writes nothing. A 404 would show up as a console error in the log.
-    if (url.pathname === "/api/state") return route.fulfill({ status: 204, body: "" });
     if (LOCAL.has(url.hostname)) return route.continue();
     const cors = { "access-control-allow-origin": "*", "cache-control": "no-store" };
     if (url.hostname.endsWith("nominatim.openstreetmap.org")) {

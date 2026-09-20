@@ -30,7 +30,7 @@ tasks:
       - node_modules/.modules.yaml
 
   serve:
-    desc: Start the dev server — website on /, planner on /planner, storage on /api/state
+    desc: Start the dev server — website on /, planner on /planner
     deps: [setup]
     cmds:
       - '{{.PNPM}} exec astro dev --host'
@@ -45,7 +45,7 @@ tasks:
     desc: Serve the production build locally
     deps: [build]
     cmds:
-      - ocx exec -- node ./dist/server/entry.mjs
+      - '{{.PNPM}} exec astro preview'
 
   lint:
     desc: Astro type check and oxlint
@@ -78,10 +78,10 @@ tasks:
 
   check:
     desc: >-
-      Full check chain: lint, vitest, playwright, then tools/check.mjs (angle math,
-      bonds, boot in jsdom, server-side store). The last step needs a running
-      server — start `task serve` in a second terminal first. Playwright brings
-      its own dev server along via webServer in playwright.config.ts.
+      Full check chain: lint (astro check + oxlint), vitest, playwright, then
+      tools/check.mjs (repo assertions on the planner source). Needs no running
+      server: Playwright brings its own along via webServer in
+      playwright.config.ts, and tools/check.mjs only reads files.
     deps: [setup]
     cmds:
       - task: lint

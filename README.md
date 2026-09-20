@@ -16,8 +16,8 @@ ocx exec -- task serve     # → http://localhost:4321
 | Path | Content |
 |---|---|
 | `/` | website (Astro, `src/pages/index.astro`) — this is where refinement happens |
-| `/planner` | the planner, unchanged, a single file |
-| `/api/state` | server-side storage, GET loads, POST writes |
+| `/planner` | the planner (`src/pages/planner.astro` + `src/planer/app.ts`) |
+| `/help` | the long-form guide |
 
 Top right shows the **active language** (click to switch). The **basemap** sits as a
 layers button under the zoom buttons on the right side of the map.
@@ -68,13 +68,12 @@ version with a link to the guide. Whoever changes the UI keeps both texts in syn
 
 ## Publishing (GitHub Pages, static)
 
-`dist/client/` **is** the finished static build — around 1 MB. `dist/server/` only
-contains `/api/state`; without that endpoint the planner falls back to localStorage, the
-share link and the JSON export still work. On GitHub Pages that route simply doesn't
-exist.
+`dist/` **is** the finished static build — around 2 MB, every page prerendered. There is
+no server part and no endpoint: the planner saves to localStorage, and the share link and
+the JSON export carry a plan anywhere.
 
 A push to `main` triggers `.github/workflows/deploy.yml` after green CI: it builds,
-uploads `dist/client` as a Pages artifact, and publishes at
+uploads `dist` as a Pages artifact, and publishes at
 `https://sightline.herwig-systems.de` (`public/CNAME`, DNS already points at GitHub
 Pages). No manual deploy task anymore — repo settings under *Settings → Pages*: Source
 *GitHub Actions*, custom domain `sightline.herwig-systems.de`, *Enforce HTTPS* on.
@@ -83,43 +82,42 @@ Pages). No manual deploy task anymore — repo settings under *Settings → Page
 
 Three tiers, each optional:
 
-1. **localStorage** — on every change, immediately. Works without a server too. What's
+1. **localStorage** — on every change, immediately. What's
    saved isn't just the plan but the whole working state: language, panel order and
    collapsed state, sidebar width, basemap and overlay, viewport and zoom, search text and
    filters, appearance (gear icon). A reload looks just like before.
-2. **`/api/state`** — 900 ms after the last change, lands in `data/plan.json`
-   (git-ignored, written atomically). This is the "last working state": it survives a
-   browser switch and cleared site data.
+2. **Share link** (`#p=…`) — the whole plan packed into the URL, no account, no server.
 3. **JSON export** in the *Elements* tab, for copies and variants.
 
-On startup, the server state wins over the local one. If no server is reachable, it stays
-on localStorage and the status line says "saved locally only".
-
-Verify: run `task serve`, then in a second terminal `ocx exec -- task check` (lint,
-vitest, playwright, then angle- and server-storage checks).
+Verify: `ocx exec -- task check` (astro check, oxlint, vitest, Playwright, then the repo
+assertions in `tools/check.mjs`). Nothing there needs a server running beforehand —
+Playwright starts its own.
 
 ## Structure
 
 ```
 src/
   pages/index.astro         the website
-  pages/api/state.ts        server-side storage (prerender = false)
-  layouts/Base.astro        design tokens, identical to the planner
-public/
-  planner/index.html        the whole app (CSS + markup + JS in one file), served at /planner
-  plan.png                  map background, 1302×1011 px, cadastral extract at 150 dpi
-  products/                 optional product images, naming scheme in the README there
+  pages/help.astro          the long-form guide
+  pages/planner.astro       the planner page: markup, served at /planner
+  planer/app.ts             the whole app, one module for now
+  styles/tokens.css         design tokens, both themes, used by planner and website
+  styles/planner.css        the planner's styles
+  layouts/Base.astro        website layout, maps the tokens onto Pico's --pico-*
 docs/
   DATA-MODEL.md             the planner's data model, cost formula, catalog maintenance
+tests/
+  e2e/                      Playwright against /planner, / and /help
+  unit/                     vitest
 tools/
-  check.mjs                 checks: angles, bonds, boot in jsdom, server storage
-Taskfile.yml                serve / build / preview / check / tidy / clean
-ocx.toml                    toolchain: pnpm, task
+  check.mjs                 repo assertions on the planner source (no server, no browser)
+Taskfile.yml                serve / build / preview / lint / test / check / tidy / clean
+ocx.toml                    toolchain: pnpm, task, oxlint, oxfmt, lefthook, gitleaks, node
 ```
 
 ## Scale
 
-`PX_PER_M` in `public/planner/index.html` is set to **5.957 px per meter** — the sheet constant
+`PX_PER_M` in `src/planer/app.ts` is set to **5.957 px per meter** — the sheet constant
 of the start box (`HOME`). The number is deliberately left unchanged in the code —
 changing it shifts every cable length and cost; that's a decision, not an incidental fix.
 
@@ -188,8 +186,8 @@ in the address.
 
 ## Layout
 
-The interface sits on [dockview](https://github.com/dockview/dockview) (MIT, vendored
-under `public/vendor/dockview/`). Five panels — **Map, Selection, Build, Elements,
+The interface sits on [dockview](https://github.com/dockview/dockview) (MIT, from npm).
+Five panels — **Map, Selection, Build, Elements,
 Cost** — can be placed side by side, stacked, detached and resized; each scrolls
 independently. The layout is part of the saved state.
 

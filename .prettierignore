@@ -1,0 +1,8 @@
+# oxfmt reads this file (and .gitignore) by default.
+#
+# src/planer/app.ts came over from the old single-file planner verbatim, one
+# 5000-line IIFE. Reformatting it now would bury the move in a diff nobody can
+# review, and tools/check.mjs reads the file as text — its assertions hang off
+# the current line shapes. The file gets formatted piece by piece as it is split
+# into modules (step 3.2); delete this entry once it is gone.
+src/planer/app.ts

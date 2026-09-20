@@ -1,16 +1,16 @@
 // Fetches the product image URLs from the UniFi store and writes them as
-// `img:` into the catalogues in public/planner/index.html.
+// `img:` into the catalogues in src/planer/app.ts.
 //
 // Why just the URL and not the file: the CDN serves PNGs around 500 kB
 // and ignores size parameters. Twenty products would be ten megabytes
-// in the repo — for a planner that otherwise consists of a single file.
+// in the repo, and none of it belongs there.
 // Anyone who wants the images locally puts them in public/products/ (see the
 // README there); imgUrl() then uses the local path.
 //
 // Usage:  ocx exec -- node tools/fetch-images.mjs [--dry]
 import { readFileSync, writeFileSync } from "node:fs";
 
-const FILE = new URL("../public/planner/index.html", import.meta.url);
+const FILE = new URL("../src/planer/app.ts", import.meta.url);
 const BASE = "https://eu.store.ui.com/eu/en/category/";
 const dry = process.argv.includes("--dry");
 

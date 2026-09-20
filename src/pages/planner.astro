@@ -1,0 +1,202 @@
+---
+// The planner page. Markup lives here, the app in src/planer/app.ts, the styles in
+// src/styles/. dockview and the Codicons font come from npm — nothing is vendored.
+import "dockview/dist/styles/dockview.css";
+import "@vscode/codicons/dist/codicon.css";
+import "../styles/tokens.css";
+import "../styles/planner.css";
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Leerrohr- und Kameraplaner</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+  </head>
+  <body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="pnamerow">
+        <input id="projName" class="pname" type="text" maxlength="60" data-i18n-placeholder="proj.untitled" data-i18n-title="proj.rename" placeholder="Unbenannter Plan" title="Plan benennen">
+        <details class="projmenu" id="projMenu">
+          <summary class="tool icon" data-i18n-title="plan.menu" title="Pläne"><i class="codicon codicon-chevron-down" aria-hidden="true"></i></summary>
+          <div class="projlist" id="projList"></div>
+        </details>
+      </div>
+      <input id="projSub" class="psub" type="text" maxlength="90" data-i18n-placeholder="brand.sub" data-i18n-title="proj.sub" placeholder="Maßstab 1 : 1000 · Geobasis NRW" title="Untertitel">
+    </div>
+    <div class="spacer"></div>
+    <span class="total-chip" id="totalChip">0 €</span>
+    <div class="tools acts" role="toolbar" data-i18n-aria-label="acts.label" aria-label="Plan">
+      <button class="tool icon" id="t-undo" disabled data-i18n-title="hist.undo" data-i18n-aria-label="hist.undo" title="Rückgängig (Strg+Z)" aria-label="Rückgängig (Strg+Z)"><i class="codicon codicon-discard" aria-hidden="true"></i></button>
+      <button class="tool icon" id="t-redo" disabled data-i18n-title="hist.redo" data-i18n-aria-label="hist.redo" title="Wiederholen (Strg+Y)" aria-label="Wiederholen (Strg+Y)"><i class="codicon codicon-redo" aria-hidden="true"></i></button>
+      <span class="sep"></span>
+      <button class="tool icon" id="t-open" data-i18n-title="btn.import" data-i18n-aria-label="btn.import" title="Plan laden" aria-label="Plan laden"><i class="codicon codicon-folder-opened" aria-hidden="true"></i></button>
+      <button class="tool icon" id="t-save" data-i18n-title="btn.export" data-i18n-aria-label="btn.export" title="Plan speichern" aria-label="Plan speichern"><i class="codicon codicon-save" aria-hidden="true"></i></button>
+      <button class="tool icon" id="t-share" data-i18n-title="btn.share" data-i18n-aria-label="btn.share" title="Link zum Teilen" aria-label="Link zum Teilen"><i class="codicon codicon-link" aria-hidden="true"></i></button>
+      <button class="tool icon" id="t-export" data-i18n-title="exp.title" data-i18n-aria-label="exp.title" title="Exportieren" aria-label="Exportieren"><i class="codicon codicon-export" aria-hidden="true"></i></button>
+      <input type="file" id="t-file" accept="application/json" hidden>
+    </div>
+    <details class="viewmenu" id="viewMenu">
+      <summary class="tool" data-i18n="view.menu">Ansicht</summary>
+      <div class="viewlist" id="viewList"></div>
+    </details>
+    <a class="tool icon" id="t-home" href="/" data-i18n-title="nav.home" data-i18n-aria-label="nav.home" title="Zur Startseite" aria-label="Zur Startseite"><i class="codicon codicon-home" aria-hidden="true"></i></a>
+    <button class="tool icon" id="t-help" data-i18n-title="help.title" data-i18n-aria-label="help.title" title="Hilfe" aria-label="Hilfe"><i class="codicon codicon-question" aria-hidden="true"></i></button>
+    <button class="tool" id="t-lang" data-i18n-title="lang.title" title="Sprache umschalten">DE</button>
+  </header>
+
+  <div class="main" id="dock"></div>
+
+  <!-- Explanatory text lives in the dialog, not the panel: otherwise you scroll forever. -->
+  <dialog class="modal" id="helpDlg">
+    <div class="selhead"><h2 data-i18n="help.title">Hilfe</h2><div class="hacts"><button class="btn icon" id="helpClose" data-i18n-title="info.close" title="Schließen"><i class="codicon codicon-close" aria-hidden="true"></i></button></div></div>
+    <div id="helpBody"></div>
+    <p class="note"><a id="helpDocs" href="/help" target="_blank" rel="noopener" data-i18n="help.more">Ausführliche Anleitung öffnen ↗</a></p>
+  </dialog>
+
+  <dialog class="modal imgmodal" id="imgDlg">
+    <div class="selhead">
+      <h2 id="imgHead"></h2>
+      <div class="hacts">
+        <button class="btn icon" id="imgOut" data-i18n-title="img.out" title="Kleiner"><i class="codicon codicon-zoom-out" aria-hidden="true"></i></button>
+        <button class="btn" id="imgFit" data-i18n="img.fit">Einpassen</button>
+        <button class="btn icon" id="imgIn" data-i18n-title="img.in" title="Größer"><i class="codicon codicon-zoom-in" aria-hidden="true"></i></button>
+        <button class="btn icon" id="imgClose" data-i18n-title="info.close" title="Schließen"><i class="codicon codicon-close" aria-hidden="true"></i></button>
+      </div>
+    </div>
+    <div class="imgwrap" id="imgWrap"><img id="imgBig" alt="" draggable="false"></div>
+  </dialog>
+
+  <dialog class="modal" id="expDlg">
+    <div class="selhead"><h2 data-i18n="exp.title">Exportieren</h2>
+      <div class="pill" id="exp-area" role="radiogroup"><button data-area="view" aria-pressed="true" data-i18n="exp.area.view">Ausschnitt</button><button data-area="all" aria-pressed="false" data-i18n="exp.area.all">Ganzer Plan</button></div>
+      <div class="hacts"><button class="btn icon" id="expClose" data-i18n-title="info.close" title="Schließen"><i class="codicon codicon-close" aria-hidden="true"></i></button></div></div>
+    <div class="exp">
+      <div class="exprow">
+        <div class="lead"><i class="codicon codicon-file-media" aria-hidden="true"></i><div><b data-i18n="exp.png">Bild</b><span class="hint" data-i18n="exp.png.note">doppelte Auflösung, Ebenen wie auf der Karte</span></div></div>
+        <div class="row"><button class="btn icon" id="exp-copy" data-i18n-title="exp.copy" data-i18n-aria-label="exp.copy" title="In Zwischenablage"><i class="codicon codicon-copy" aria-hidden="true"></i></button><button class="btn icon" id="exp-dl" data-i18n-title="exp.dl" data-i18n-aria-label="exp.dl" title="Als PNG speichern"><i class="codicon codicon-desktop-download" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="exprow">
+        <div class="lead"><i class="codicon codicon-file-pdf" aria-hidden="true"></i><div><b data-i18n="exp.sheet">PDF</b>
+          <div class="opts"><label class="sw"><input type="checkbox" id="exp-p-bom" checked><i></i><span data-i18n="exp.p.bom">Stückliste</span></label><label class="sw"><input type="checkbox" id="exp-p-price" checked><i></i><span data-i18n="exp.p.price">mit Preisen</span></label><label class="sw"><input type="checkbox" id="exp-p-items" checked><i></i><span data-i18n="exp.p.items">Elementliste</span></label><label class="sw"><input type="checkbox" id="exp-p-links"><i></i><span data-i18n="exp.p.links">Produktlinks</span></label></div></div></div>
+        <div class="row"><button class="btn icon" id="exp-pdfdl" data-i18n-title="exp.pdf.dl" data-i18n-aria-label="exp.pdf.dl" title="PDF herunterladen"><i class="codicon codicon-desktop-download" aria-hidden="true"></i></button><button class="btn icon" id="exp-pdf" data-i18n-title="btn.pdf" data-i18n-aria-label="btn.pdf" title="Drucken"><i class="codicon codicon-file-pdf" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="exprow">
+        <div class="lead"><i class="codicon codicon-list-flat" aria-hidden="true"></i><div><b data-i18n="cost.bom">Stückliste</b><span class="hint" data-i18n="exp.bom.note">als Text, für Mail oder Angebot</span></div></div>
+        <div class="row"><button class="btn icon" id="exp-bom" data-i18n-title="exp.bom" data-i18n-aria-label="exp.bom" title="Kopieren"><i class="codicon codicon-copy" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="exprow">
+        <div class="lead"><i class="codicon codicon-sparkle" aria-hidden="true"></i><div><b data-i18n="exp.md">Für eine KI</b><span class="hint" data-i18n="exp.md.note">ganzer Plan als Markdown</span></div></div>
+        <div class="row"><button class="btn icon" id="exp-md" data-i18n-title="exp.md.copy" data-i18n-aria-label="exp.md.copy" title="Markdown kopieren"><i class="codicon codicon-copy" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="exprow">
+        <div class="lead"><i class="codicon codicon-json" aria-hidden="true"></i><div><b data-i18n="exp.json">Plandatei</b><span class="hint" data-i18n="exp.json.note">JSON, „Laden“ holt sie zurück</span></div></div>
+        <div class="row"><button class="btn icon" id="exp-json" data-i18n-title="exp.json.btn" data-i18n-aria-label="exp.json.btn" title="Speichern"><i class="codicon codicon-save" aria-hidden="true"></i></button></div>
+      </div>
+    </div>
+    <div id="exp-out"></div>
+  </dialog>
+
+  <dialog class="modal" id="infoDlg">
+    <div class="selhead"><h2 id="infoHead"></h2><div class="hacts"><button class="btn icon" id="infoClose" data-i18n-title="info.close" title="Schließen"><i class="codicon codicon-close" aria-hidden="true"></i></button></div></div>
+    <div id="infoBody"></div>
+  </dialog>
+
+  <!-- Hover card: exactly one node, no state. showHover() fills it. -->
+  <div id="hovercard" hidden></div>
+
+  <!-- The nodes live here until dockview hangs them into its panels. -->
+  <div id="stash" hidden>
+    <div class="mapwrap mode-select" id="mapwrap">
+      <svg class="map" id="svg" viewBox="0 0 1302 1011" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="g-tiles"></g>
+        <g id="g-overlay"></g>
+        <g id="g-cover"></g>
+        <g id="g-conduits"></g>
+        <g id="g-draft" class="draft"></g>
+        <g id="g-markers"></g>
+        <g id="g-sections"></g>
+        <g id="g-labels"></g>
+        <g id="g-handles"></g>
+      </svg>
+      <div class="mapui-tl">
+      <div class="geo">
+        <input type="search" id="geoQ" autocomplete="off" data-i18n-placeholder="geo.ph" placeholder="Adresse oder Ort suchen …">
+        <div class="geolist" id="geoList" hidden></div>
+      </div>
+      </div>
+      <div class="zoom">
+        <button id="z-in" data-i18n-title="zoom.in" title="Vergrößern"><i class="codicon codicon-zoom-in" aria-hidden="true"></i></button>
+        <button id="z-out" data-i18n-title="zoom.out" title="Verkleinern"><i class="codicon codicon-zoom-out" aria-hidden="true"></i></button>
+        <button id="z-fit" data-i18n-title="zoom.fit" title="Ganzes Grundstück"><i class="codicon codicon-screen-full" aria-hidden="true"></i></button>
+        <div class="layermenu" id="layerMenu">
+          <button id="layerBtn" aria-expanded="false" data-i18n-title="layer.title" title="Kartengrundlage"><i class="codicon codicon-layers" aria-hidden="true"></i></button>
+          <div class="layerrow" id="layerRow">
+            <button data-bm="dop" role="radio" data-i18n-title="layer.dop" data-i18n-aria-label="layer.dop" aria-label="" title="Luftbild (NRW DOP)"><i class="codicon codicon-globe" aria-hidden="true"></i></button>
+            <button data-bm="alkis" role="radio" data-i18n-title="layer.alkis" data-i18n-aria-label="layer.alkis" aria-label="" title="Kataster (ALKIS NRW)"><i class="codicon codicon-map" aria-hidden="true"></i></button>
+            <button id="overlayBtn" aria-pressed="false" data-i18n-title="layer.overlay" data-i18n-aria-label="layer.overlay" aria-label="" title="Kataster darüber"><i class="codicon codicon-layers-active" aria-hidden="true"></i></button>
+            <button id="cacheClear" data-i18n-title="layer.clear" data-i18n-aria-label="layer.clear" aria-label="" title="Kacheln neu laden"><i class="codicon codicon-refresh" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        <div class="layermenu" id="viewMenu2">
+          <button id="viewBtn" aria-expanded="false" data-i18n-title="show.title" data-i18n-aria-label="show.title" aria-label="Anzeigen" title="Anzeigen"><i class="codicon codicon-eye" aria-hidden="true"></i></button>
+          <div class="layerrow" id="showRow">
+            <button data-show="cones" aria-pressed="true" data-i18n-title="show.cones" data-i18n-aria-label="show.cones" aria-label="" title="Sichtfelder der Kameras"><i class="codicon codicon-device-camera" aria-hidden="true"></i></button>
+            <button data-show="rings" aria-pressed="true" data-i18n-title="show.rings" data-i18n-aria-label="show.rings" aria-label="" title="Reichweiten der Access Points"><i class="codicon codicon-radio-tower" aria-hidden="true"></i></button>
+            <button data-show="conds" aria-pressed="true" data-i18n-title="show.conds" data-i18n-aria-label="show.conds" aria-label="" title="Kanäle"><i class="codicon codicon-pulse" aria-hidden="true"></i></button>
+            <button data-show="labels" aria-pressed="true" data-i18n-title="show.labels" data-i18n-aria-label="show.labels" aria-label="" title="Längen und Beschriftungen"><i class="codicon codicon-tag" aria-hidden="true"></i></button>
+            <button data-show="sections" aria-pressed="true" data-i18n-title="show.sections" data-i18n-aria-label="show.sections" aria-label="" title="Querschnitte"><i class="codicon codicon-target" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        <!-- Appearance: how big, how strong, how thick. No content, just visuals —
+             hence its own button under the eye icon and no entry under "Show". -->
+        <div class="layermenu" id="lookMenu">
+          <button id="lookBtn" aria-expanded="false" data-i18n-title="look.title" data-i18n-aria-label="look.title" aria-label="Darstellung" title="Darstellung"><i class="codicon codicon-settings-gear" aria-hidden="true"></i></button>
+          <div class="lookpanel" id="lookPanel">
+            <div class="lookrow"><label for="look-size" data-i18n="look.size">Symbolgröße</label><input type="range" id="look-size" data-look="size" min="0.6" max="1.6" step="0.05"><span class="val" id="look-size-v"></span></div>
+            <div class="lookrow"><label for="look-font" data-i18n="look.font">Schriftgröße</label><input type="range" id="look-font" data-look="font" min="0.7" max="1.5" step="0.05"><span class="val" id="look-font-v"></span></div>
+            <div class="lookrow"><label for="look-alpha" data-i18n="look.alpha">Flächen-Deckkraft</label><input type="range" id="look-alpha" data-look="alpha" min="0" max="1" step="0.05"><span class="val" id="look-alpha-v"></span></div>
+            <div class="lookrow"><label for="look-line" data-i18n="look.line">Kanalbreite</label><input type="range" id="look-line" data-look="line" min="0.6" max="1.6" step="0.05"><span class="val" id="look-line-v"></span></div>
+            <label class="sw lookrow wide"><input type="checkbox" id="look-cluster"><i></i><span data-i18n="look.cluster">Elemente gruppieren</span></label>
+            <div class="lookend"><button class="btn" id="look-reset" data-i18n="look.reset">Zurücksetzen</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="palette" id="palette" role="toolbar" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
+        <button class="ptool" id="t-select" aria-pressed="true" data-i18n-title="tool.select.title"><i class="codicon codicon-inspect" aria-hidden="true"></i><span class="lbl" data-i18n="tool.select">Auswählen</span><span class="k">V</span></button>
+        <button class="ptool" id="t-cam" aria-pressed="false" data-i18n-title="tool.cam.title"><i class="codicon codicon-device-camera" aria-hidden="true"></i><span class="lbl" data-i18n="tool.cam">Kamera</span><span class="k">K</span></button>
+        <button class="ptool" id="t-ap" aria-pressed="false" data-i18n-title="tool.ap.title"><i class="codicon codicon-radio-tower" aria-hidden="true"></i><span class="lbl" data-i18n="tool.ap">Access Point</span><span class="k">A</span></button>
+        <button class="ptool" id="t-jb" aria-pressed="false" data-i18n-title="tool.jb.title"><i class="codicon codicon-plug" aria-hidden="true"></i><span class="lbl" data-i18n="tool.jb">Abzweig</span><span class="k">J</span></button>
+        <button class="ptool" id="t-hub" aria-pressed="false" data-i18n-title="tool.hub.title"><i class="codicon codicon-home" aria-hidden="true"></i><span class="lbl" data-i18n="tool.hub">Haus</span><span class="k">H</span></button>
+        <button class="ptool" id="t-draw" aria-pressed="false" data-i18n-title="tool.draw.title"><i class="codicon codicon-pulse" aria-hidden="true"></i><span class="lbl" data-i18n="tool.draw">Kanal</span><span class="k">L</span></button>
+        <button class="ptool" id="t-cable" aria-pressed="false" data-i18n-title="tool.cable.title"><i class="codicon codicon-arrow-both" aria-hidden="true"></i><span class="lbl" data-i18n="tool.cable">Kabel</span><span class="k">C</span></button>
+        <button class="ptool finish" id="t-finish" hidden data-i18n-title="tool.finish.title"><i class="codicon codicon-check" aria-hidden="true"></i><span class="lbl" data-i18n="tool.finish">Fertig</span><span class="k">⏎</span></button>
+        <button class="ptool tog" id="t-labels" data-i18n-title="tool.labels" title="Namen einblenden"><i class="codicon codicon-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <div class="toast" id="toast" role="status"></div>
+      <div class="mapui-br">
+        <div class="scalebar"><span id="scalebar-t">20 m</span><i id="scalebar-i"></i></div>
+        <div class="attrib" id="attrib" hidden></div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-sel"></div>
+    <div class="pane" id="pane-build"></div>
+    <div class="pane" id="pane-list"></div>
+    <div class="pane" id="pane-cost"></div>
+  </div>
+</div>
+
+    <script>
+      import "../planer/app.ts";
+    </script>
+  </body>
+</html>
