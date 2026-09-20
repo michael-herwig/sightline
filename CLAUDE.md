@@ -48,13 +48,15 @@ point is the last one.
 | `hooks.ts` | the five late-bound calls, filled by `boot.ts` |
 | `i18n.ts` | `t()`, `tx()`, the stored language — the texts come from `src/i18n/` |
 | `geo.ts` | plan box, `GEO`, `UTM`, pixel ↔ metre, `stampGeo()` |
-| `catalogs.ts` | `CAMS`, `APS`, `JUNCTIONS`, `PIPES`, `CABLES`, `CONDUITS`, `INFRA` — prices only here |
+| `../catalog/schema.ts` | the format of a `product.json`, and the source of `schema.json` |
+| `../catalog/index.ts` | loads `src/catalog/*/product.json` and rebuilds `CAMS`, `APS`, `JUNCTIONS`, `INFRA` |
+| `catalogs.ts` | re-exports those four, plus `PIPES`, `CABLES`, `CONDUITS`, `WAN`, `SHOPS` |
 | `conduit.ts` | ducts, cables, pipe rates, `condName()` |
 | `migrate.ts` | old save shapes → current ones |
 | `geom.ts` | lengths, angles, `offsetPath()`, points along a path |
 | `store.ts` | `state` and every binding more than one module writes, with setters |
 | `gear.ts` | devices in a junction or at the head end: power, SFP, PoE, ports, price |
-| `specs.ts` | `SPECS`, facets, catalogue tabs, `WHEN`, `optHint()` |
+| `specs.ts` | `SPECS`, facets, catalogue tabs, openness and codecs, `whenOf()`, `optHint()` |
 | `help.ts` | `HELP` and the catalogue guides |
 | `links.ts` | the derived topology: `links()`, `linkText()`, `invalidateLinks()` |
 | `costs.ts` | `conduitCost()`, `costs()` |
@@ -176,9 +178,11 @@ point is the last one.
   `sightline.herwig-systems.de`, `.github/workflows/deploy.yml` after green CI on `main`).
   There is no server part and no API route — persistence is localStorage, share link and
   JSON export. Credentials only via `.env.local`, never into the repo.
-- Product images do **not** live in the repo. `img:` in the catalog points at the
-  manufacturer's CDN, `tools/fetch-images.mjs` (`task images`) refreshes it. 500 KB per PNG
-  × 20 has no business in this repo.
+- Product images do **not** live in the repo by default. `img` in a product file points at
+  the manufacturer's CDN, `tools/fetch-images.mjs` (`task images`) refreshes it. 500 KB per
+  PNG × 100 has no business in this repo. A product folder may carry an `image.webp` of at
+  most 60 KB, which the loader then prefers; converting it is a job for `cwebp` outside the
+  repo, not for a new dependency.
 - The UTM conversion (`UTM.fwd/inv`, EPSG:25832) is hand-rolled — no proj library for
   thirty lines of Transverse Mercator. `tools/check.mjs` checks it against a fixed value.
 - Nominatim is a free third-party service: debounce input (450 ms), swallow errors
@@ -382,16 +386,36 @@ point is the last one.
   search text, filters, panel layout, viewport.
 - `basemapLater()` only saves once `booted` is set. Otherwise a slow load would overwrite
   the plan with the default.
-- `amazon:` in the catalog is a verified `https://www.amazon.de/dp/<ASIN>` (as of 09/2026,
-  `task check` verifies the shape). `amazonSimilar: true` means a substitute item instead
-  of the original and only changes the link title. Verify new ASINs, don't guess.
-- Product links: `url` in the catalog is the verified path under
+- **One product, one folder.** Cameras, access points, junction housings and devices, head
+  end and accessories live in `src/catalog/<kind>-<id>/product.json`;
+  `src/catalog/schema.ts` is the format and `src/catalog/index.ts` the loader, which
+  rebuilds `CAMS`, `APS`, `JUNCTIONS` and `INFRA` in their old shape. Use the
+  `catalog-update` skill to add, reprice or deprecate one. `docs/DATA-MODEL.md`, section
+  "Product directory", has the field list.
+- **`specs` is the planner's reading, `ports` is the data sheet.** Nothing in the loader is
+  derived from the port list, because the two genuinely disagree: `sfp` on a router means
+  usable **on the LAN side** (a FRITZ!Box SFP cage is the WAN port → `false`), `poePorts` is
+  what an injector passes on, and a housing's `ports` counts conduit openings. Deriving them
+  would flip six entries. `tests/unit/catalog.test.ts` keeps the two within bounds of each
+  other instead.
+- **An unverified field is absent, never guessed.** A missing `open` on a camera shows a grey
+  "—" and grades neutral; `open.onvif: false` shows a warning. Same for `codecs`, `beam` and
+  every port count.
+- `links.amazon` in a product file is a verified `https://www.amazon.de/dp/<ASIN>` (as of
+  09/2026, `task check` verifies the shape). `amazonSimilar: true` means a substitute item
+  instead of the original and only changes the link title. Verify new ASINs, don't guess.
+- Product links: `links.vendor` is the verified path under
   `eu.store.ui.com/eu/en/category/`; third-party manufacturers (`vendor:
-  "reolink"|"netatmo"`) carry an absolute address. Without `vendor`, UniFi applies. The
-  manufacturer filters in the camera tab (`v-ui`, `v-reo`, `v-net`) hang off `vendorOf()`.
-  Verify new models with `curl -o /dev/null -w '%{http_code}'`, don't guess.
-- Change prices only in the catalogs (`CAMS`, `APS`, `CONDUITS`, `INFRA`) and keep the
-  as-of note in the cost tab (`as of 09/2026`) in sync.
+  "reolink"|"netatmo"`) carry an absolute address. The manufacturer filters in the camera tab
+  (`v-ui`, `v-reo`, `v-net`) hang off `vendorOf()`. Verify new models with
+  `curl -o /dev/null -w '%{http_code}'`, don't guess.
+- Change prices only in the product files, all of them in one pass: `priceDate` is the same
+  month everywhere (the unit test insists), and the as-of note in the cost tab
+  (`as of 09/2026`) has to follow.
+- **A deprecated product is never deleted.** `status: "deprecated" | "eol"` takes it out of
+  every picker (the "show deprecated" chip brings it back) but keeps it resolvable for plans
+  and share links that already name it, and keeps it in the model select of the element using
+  it. `successor` names what replaces it, and the data sheet says so.
 - Plans live individually under `sl-plan:<id>`, the list under `sl-plans`, the active one
   under `sl-current`. Never write a global `sl-plan` key again — that's exactly what
   overwrote the previous plan on a fresh start. `migrateLegacy()` lifts old states over.

@@ -103,6 +103,7 @@ src/
   pages/help.astro          the long-form guide
   pages/planner.astro       the planner page: markup, served at /planner
   planer/                   the app, split into flat modules (entry point boot.ts) — see CLAUDE.md for the layout
+  catalog/                  one folder per product: <kind>-<id>/product.json, plus schema.ts and the loader
   i18n/de.ts, en.ts         all texts, one file per language: planner, website, guide
   components/               SiteHeader, SiteFooter, LangToggle, AddressSearch, PlanList
   site/                     what those components run: lang, storage, address search, plan list
@@ -116,6 +117,8 @@ tests/
   unit/                     vitest
 tools/
   check.mjs                 repo assertions on the planner source (no server, no browser)
+  catalog-schema.mjs        writes src/catalog/schema.json from schema.ts
+  fetch-images.mjs          product pictures into the product files
 Taskfile.yml                serve / build / preview / lint / test / check / tidy / clean
 ocx.toml                    toolchain: pnpm, task, oxlint, oxfmt, lefthook, gitleaks, node
 ```
@@ -257,9 +260,14 @@ The **Build** panel is its own ribbon: **Cameras · Access Points · Gear · Hub
 Conduits** (`tab.cat.*`; the gear tab's title is spelled out as *Junctions & Gear*,
 `cat.jbs`), always just one category at a time, each with its own search field, an
 **ⓘ** button next to it (an explanation of the category as a dialog, not as body text in
-the panel) and its own badges (cameras: 4K, PoE class, Wi-Fi, IR, 180°/PTZ, indoor/outdoor
-· APs: outdoor-rated, indoor, 6 GHz, range · Gear: housing, devices, unpowered, switch,
-IP68). Clicking a model only selects it — the panel stays put, so does the scroll
+the panel) and its own badges (cameras: 4K, PoE class, Wi-Fi, IR, 180°/PTZ, indoor/outdoor,
+**open standards** · APs: outdoor-rated, indoor, 6 GHz, range · Gear: housing, devices,
+unpowered, switch, IP68). Every tab also carries **Show deprecated**: products that are no
+longer current are left out of the lists and the select fields, but a plan that already uses
+one keeps it. *Open standards* means the camera speaks RTSP **and** ONVIF, so it can be
+recorded without the manufacturer's own console — the data sheet spells that out in two new
+rows, **Openness** and **Codecs**, where a grey `—` means nobody has verified it and a yellow
+mark on Codecs means the main stream is H.265 and nothing else. Clicking a model only selects it — the panel stays put, so does the scroll
 position. The **Gear** tab is split into two groups: *Housings & Locations* for placing,
 *Devices* for putting into a selected point. The palette tool for this is called
 **Junction / Gear** (`tool.jb`, key J).
@@ -497,18 +505,18 @@ page** on the left and the retailer search on the right. The same row also shows
 catalog preview in the **Selection** panel while nothing is selected. There's no longer a
 dedicated Amazon button: choosing **Amazon** in the retailer list goes straight to the
 verified item if the catalog knows one, otherwise to the search. The addresses sit as
-`amazon:` in the catalogs (`https://www.amazon.de/dp/<ASIN>`, verified 09/2026 — Amazon
+`links.amazon` in a product file (`https://www.amazon.de/dp/<ASIN>`, verified 09/2026 — Amazon
 swaps ASINs out, so double-check when in doubt). If an entry has `amazonSimilar: true`,
 it's labeled **Amazon (similar)**: that's not the original item but an equivalent
 substitute. The print sheet, PDF and Markdown both list the two addresses per product. The
 magnifier bottom right opens the image in the dialog at full resolution (1500 px), with
 `+` / `−` / mouse wheel to zoom and **Fit** to go back.
 
-The image addresses sit as `img:` in the catalogs and point at the manufacturer's CDN.
+The image addresses sit as `img` in a product file and point at the manufacturer's CDN.
 `ocx exec -- task images` refreshes them (`tools/fetch-images.mjs`, reads the `og:image`
-of the product pages). Deliberately **no** files in the repo: the CDN serves PNGs around
-500 KB and ignores size parameters — twenty products would be ten megabytes. Whoever wants
-local copies places them under `public/products/` and removes the `img:`.
+of the product pages). Deliberately **no** large files in the repo: the CDN serves PNGs
+around 500 KB and ignores size parameters — a hundred products would be fifty megabytes.
+A product folder may hold an `image.webp` of at most 60 KB, which the planner then prefers.
 
 ## Products
 

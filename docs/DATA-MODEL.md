@@ -75,18 +75,70 @@ run drops all cables into one bundle, switching back to a trench wraps a `dn50` 
 If a panel is dragged into a **new** group, it gets that size back instead of a 50/50 split;
 if it lands in an existing group, the layout stays untouched.
 
+## Product directory
+
+Every product — camera, access point, junction housing or device, head end item, accessory —
+is one folder under `src/catalog/`:
+
+```
+src/catalog/
+  schema.ts                  the file format, as TypeScript types
+  schema.json                generated from it (task catalog:schema), for editor validation
+  index.ts                   the loader
+  cam-g6-bullet/product.json
+  cam-g6-bullet/image.webp   optional, ≤ 60 kB, beats the `img` URL
+  jb-usw-ultra-60w/product.json
+  …
+```
+
+The folder is `<kind>-<id>`, so `flex` can be both a junction and a head-end item without a
+collision. `index.ts` pulls them all in with `import.meta.glob("./*/product.json", { eager:
+true })` — a Vite feature, so the JSON is inlined at build time and nothing is fetched at
+runtime. It then rebuilds `CAMS`, `APS`, `JUNCTIONS` and `INFRA` in exactly the shape the
+planner has always used, which is why nothing downstream had to change.
+
+A file has two layers:
+
+| Level | What it is | Fields |
+|---|---|---|
+| top | product metadata and **vendor facts as printed** | `id`, `kind`, `form` (jb: `housing`\|`device`), `vendor`, `status`, `successor?`, `order`, `name`, `price`, `priceDate`, `description`, `useCases`, `caveats`, `links {vendor?, amazon?, amazonSimilar?}`, `img?`, `tags?`, `mount?`, `powerIn?`, `ports?`, `poeIn?`, `beam?`, `open?`, `codecs?` |
+| `specs` | **the planner's reading** — what the code computes on | camera `res, ir, fov, poe, ip, out, wifi?, zoom?` · AP `radius, out, wifi, poe, ip` · junction `ip, ports, power?, dig?, use?, sfp?, sfpPorts?, poe?, poePorts?, extend?, poeDraw?` · head end `role?, ports?, sfp?, poe?, qty, on, hidden?, sub?` |
+
+The split matters. `ports` at the top is the connector list off the data sheet; `specs.ports`
+is what the planner treats as usable ports, and the two disagree on purpose — `sfp` on a
+router means usable **on the LAN side** (every FRITZ!Box SFP cage is the WAN port, hence
+`false`), `poePorts` is what a PoE injector passes on, and on a housing `specs.ports` counts
+conduit openings rather than RJ45. **Nothing is derived**; `tests/unit/catalog.test.ts` keeps
+`specs.ports` between the device's downstream ports and its total instead.
+
+`order` sorts inside a kind, in steps of ten so something fits in between. `status` other
+than `"current"` hides the product from every picker (the "show deprecated" chip brings it
+back), keeps it resolvable for plans and share links that already name it, keeps it in the
+model select of the element using it, and puts a badge naming the `successor` on its data
+sheet. A deprecated product is never deleted.
+
+`open` and `codecs` are camera-only and drive two rows of `SPECS.cam` plus the "open
+standards" chip. A field nobody verified is **absent**, which renders as a grey "—" and
+grades neutral — `onvif: false` is the vendor saying no and grades as a warning.
+`open` is `{ rtsp?: true|false|"via-console", onvif?, api?: "none"|"community"|"documented",
+cloud?: "optional"|"required" }`, `codecs` is `{ main: ["h265", …], sub?: [...] }`.
+
+Adding, repricing or deprecating a product: the `catalog-update` skill.
+
 ## Catalogues
 
-Defined in `src/planer/catalogs.ts`.
+What is not a product stays in `src/planer/catalogs.ts`, which re-exports the four above.
+The four keep the shapes below — that is what the loader assembles a `product.json` into,
+with `note` coming from `description` and `url` / `amazon` out of `links`.
 
-- `CAMS[model]` → `{ name, price, res, ir (m), fov (°; 360 = PTZ, circular), poe, ip, out, note, tags, wifi?, vendor?, zoom? }`
+- `CAMS[model]` → `{ name, price, res, ir (m), fov (°; 360 = PTZ, circular), poe, ip, out, note, tags, wifi?, vendor?, zoom?, open?, codecs? }`
   `out: true|false` is set explicitly, not guessed from `ip` — it drives the `mount` spec row,
   the `camout`/`camin` filters and the search words "außen/aussen/outdoor" resp. "innen/indoor"
   (both languages, so "outdoor" also matches in the German UI).
   `vendor` is absent for UniFi, otherwise `reolink` / `netatmo`; then `url` is absolute instead of a store path.
   On the map a circular sector is drawn with radius `ir * PX_PER_M` and opening `fov` around `rot`.
   Models whose `res` contains "4K" count as 4K for the NVR warning.
-- `APS[model]` → `{ name, price, note, radius (m, rough free-field range), out }`
+- `APS[model]` → `{ name, price, note, radius (m, rough free-field range), out, beam? }`
 - `JUNCTIONS[model]` → `{ name, price, ip, ports, mount, note, power?, sfp?, poe?, url? }` – **one** map
   for two roles. `isHousing(key)` = passive and not `splice` → a housing or location (shaft, gel-filled
   box, cabinet, `indoor` = no housing, 0 €). `isDevice(key)` = everything else → a device that gets
@@ -109,15 +161,21 @@ Defined in `src/planer/catalogs.ts`.
   `pipeRate()` is the resulting sum in €/m. Costs, the pipe row in the panel, the preview and the name
   all go through it.
 - `WAN[type]` → `{ name, speeds: [Mbit/s] }` – the connection at the house node
-- `WHEN["<kind>:<key>"]` → `{ de: { yes, no }, en: { yes, no } }` (`src/planer/specs.ts`) – when the
-  model fits and when it doesn't. Deliberately kept next to the catalogues so the data sheets stay readable.
-- `img:` in a catalogue entry is the image URL at the manufacturer (`tools/fetch-images.mjs`)
-- `INFRA[]` → `{ id, name, sub, note, price, qty, on, vendor?, url?, hidden? }` – head end and accessories.
+- `whenOf(kind, key)` → `{ de: { yes, no }, en: { yes, no } }` (`src/planer/specs.ts`) – when the
+  model fits and when it doesn't. For a product it comes out of its own file (`useCases` /
+  `caveats`); only the conduit templates still have a `WHEN` table in `specs.ts`, since a recipe
+  is not a product.
+- `img` in a product file is the image URL at the manufacturer (`tools/fetch-images.mjs`); an
+  `image.webp` in the same folder wins over it
+- `INFRA[]` → `{ id, name, sub, note, price, qty, on, vendor?, url?, hidden? }` – head end and accessories,
+  in the `order` of their product files.
   Its own catalogue tab `gear` in the Build panel; `hidden: true` stays out of it (switches sit
   as elements on the map). No placement mode: a click sets
   `state.infra[id] = { on: true, qty: <previous> + 1 }` and selects the item.
 
-Maintaining prices: only change the catalogues. Figures as of: 09/2026, UniFi EU Store / Geizhals, typical figures for pipe/cable.
+Maintaining prices: product prices only in the product files, and in one pass — `priceDate` is
+the same month everywhere. Pipe and cable rates here. Figures as of: 09/2026, UniFi EU Store /
+Geizhals, typical figures for pipe/cable.
 
 ## Cost formula
 
