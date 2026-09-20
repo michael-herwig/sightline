@@ -417,14 +417,22 @@ function drawHandles() {
     // in open space — its marker isn't drawn after all.
     if (p.at && clusterOf(p.at)) return;
     const box = scaleAt(el("g", {}, gHand), p.x, p.y);
+    // id and index ride along on the node: the context menu resolves its target
+    // from the DOM, so it must not have to guess which point was hit.
     const v = el(
       "circle",
-      { class: "vtx" + (p.at ? " bound" : ""), r: 5, stroke: p.at ? "var(--jb)" : col },
+      {
+        class: "vtx" + (p.at ? " bound" : ""),
+        r: 5,
+        stroke: p.at ? "var(--jb)" : col,
+        "data-cid": c.id,
+        "data-idx": idx,
+      },
       box,
     );
     v.addEventListener("pointerdown", (e: PointerEvent) => {
       e.stopPropagation();
-      // Double-clicking a point removes it, right-click does the same.
+      // Double-clicking a point removes it; right-clicking opens the menu (menu.ts).
       if (isDoubleTap(e)) {
         e.preventDefault();
         setDrag(null);
@@ -432,11 +440,6 @@ function drawHandles() {
         return;
       }
       startDrag(e, { type: "vtx", c, idx });
-    });
-    v.addEventListener("contextmenu", (e: MouseEvent) => {
-      e.stopPropagation();
-      e.preventDefault();
-      dropVertex(c, idx);
     });
   });
 }
@@ -456,14 +459,14 @@ function isDoubleTap(e: MouseEvent) {
 }
 
 // Remove point: below two points it's no longer a conduit, so it stays put.
-function dropVertex(c: Conduit, idx: number) {
+export function dropVertex(c: Conduit, idx: number) {
   if (c.points.length <= 2) return;
   c.points.splice(idx, 1);
   changed();
 }
 
 // Add point: project onto the nearest segment and insert it there.
-function insertVertex(c: Conduit, p: { x: number; y: number }) {
+export function insertVertex(c: Conduit, p: { x: number; y: number }) {
   let best = 1,
     bd = Infinity,
     bp: { x: number; y: number } | null = null;
@@ -629,7 +632,7 @@ function drawCluster(grp: Item[]) {
 
 // Clicking the cluster means: I want to go in there. 15% margin, at least a 12 m edge —
 // otherwise two cameras a meter apart would immediately hit the zoom limit.
-function zoomToCluster(grp: Item[]) {
+export function zoomToCluster(grp: Item[]) {
   const xs = grp.map((i) => i.x),
     ys = grp.map((i) => i.y),
     min = 12 * GEO.pxPerM;

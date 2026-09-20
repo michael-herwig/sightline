@@ -1,8 +1,8 @@
 // Tools and selection: mode, placing, drawing, deleting, the tool bar and keys.
-import type { Item, ItemKind, Sel } from "./types";
+import type { Item, ItemKind, Point, Sel } from "./types";
 import { renderMap, renderSide, scheduleSave } from "./hooks";
 import { t } from "./i18n";
-import { APS, CAMS, CONDUITS, KIND_PREFIX } from "./catalogs";
+import { APS, CAMS, CONDUITS, KIND_PREFIX, isHousing } from "./catalogs";
 import { condCables, condName, isCableRun } from "./conduit";
 import { migrateConduit } from "./migrate";
 import { polyLength } from "./geom";
@@ -12,6 +12,7 @@ import {
   mode,
   nextLabel,
   placeAp,
+  placeJb,
   placeModel,
   sel,
   setCatTab,
@@ -44,6 +45,24 @@ export function addItem(
   select({ kind: "item", id: it.id });
   changed();
   if (!e.shiftKey) setMode("select");
+}
+
+// What a new element of each kind looks like. The palette click and the context menu
+// both come through here, otherwise the two would drift apart on the next catalogue
+// change — the defaults are the ones the catalogue has selected.
+export function placeKind(kind: ItemKind, p: Point, shift = false) {
+  const base: Partial<Item> & { kind: ItemKind } =
+    kind === "cam"
+      ? { kind, model: placeModel, rot: 90 }
+      : kind === "ap"
+        ? { kind, model: placeAp }
+        : kind === "jb"
+          ? // A device from the catalogue brings its own point — default: inside the building.
+            isHousing(placeJb)
+            ? { kind, model: placeJb, gear: [] }
+            : { kind, model: "indoor", gear: [{ model: placeJb, n: 1 }] }
+          : { kind, wan: { type: "fiber", speed: 1000 } };
+  addItem(base, p, { shiftKey: shift });
 }
 
 export function finishDraft() {
@@ -149,11 +168,11 @@ export function applyToolLabels() {
   $("palette").classList.toggle("labels", !!state.toolLabels);
 }
 
-// "Cable" is the same drawing, just with a cable-run template — no trench and
-// no duct. The catalog shows which entry is pressed.
-function drawCable() {
-  setDrawType("cable");
-  setPreview({ kind: "cond", key: "cable" });
+// Drawing with a named template: the catalog shows which entry is pressed. "Cable" is
+// the same drawing, just with a cable-run template — no trench and no duct.
+export function startDraw(key: string) {
+  setDrawType(key);
+  setPreview({ kind: "cond", key });
   setMode("draw");
 }
 
@@ -208,7 +227,7 @@ export function wireModes() {
 
   $("t-cable").onclick = () => {
     if (toolOf(mode) === "cable") return setMode("select");
-    drawCable();
+    startDraw("cable");
   };
 
   $("t-finish").onclick = finishDraft;
@@ -256,6 +275,6 @@ export function wireModes() {
     else if (e.key === "j" || e.key === "J") setMode("place-jb");
     else if (e.key === "h" || e.key === "H") setMode("place-hub");
     else if (e.key === "l" || e.key === "L") setMode("draw");
-    else if (e.key === "c" || e.key === "C") drawCable();
+    else if (e.key === "c" || e.key === "C") startDraw("cable");
   });
 }

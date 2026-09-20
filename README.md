@@ -169,7 +169,17 @@ same.
 
 A selected conduit shows point handles: **double-click on a point removes it,
 double-click on the duct between two points inserts a new one** — this lets a route be
-rerouted afterward. Right-click on a point also removes it.
+rerouted afterward.
+
+**Right-click opens a context menu for whatever sits under the pointer** (`src/planer/menu.ts`):
+on open ground place a camera, access point, junction or house connection there, start a
+conduit or a cable there, centre the view; on an element its data sheet, a conduit or cable
+from there, *Point at …* (the next click on the map turns the camera or access point
+towards it, Esc cancels), duplicate, zoom to and delete; on a conduit insert a point,
+select or delete it, on a point handle remove it or detach it from its element; on a group
+its members one by one. While drawing there is no menu — a right-click finishes the
+conduit there, the same as Enter. A long press does the same on a touch device; arrow
+keys, Home/End and Enter operate the menu, Esc closes it.
 
 A selected camera gets a dashed ring with a handle on it: dragging the handle rotates the
 viewing direction, Shift snaps it to 15° steps. The slider next to it stays valid and

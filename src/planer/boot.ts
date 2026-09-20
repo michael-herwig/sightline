@@ -40,6 +40,7 @@ import { renderBuild } from "./panel-build";
 import { renderList, wirePanelList } from "./panel-list";
 import { renderCost } from "./panel-cost";
 import { wireExport } from "./export";
+import { wireMenu } from "./menu";
 import { wireDrag } from "./drag";
 import { initLayout, wireLayout } from "./layout";
 import {
@@ -201,6 +202,7 @@ wireTiles();
 wireLook();
 wireGeosearch();
 wireRender();
+wireMenu();
 wireDrag();
 wireModes();
 wireLayout();

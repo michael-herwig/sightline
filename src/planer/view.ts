@@ -5,6 +5,12 @@ import { LOOK, setDrag, state, view } from "./store";
 import { mapwrap, svg } from "./dom";
 import type { Conduit, Item, View } from "./types";
 
+// The on-map controls live inside mapwrap. A pointer event on one of them must not
+// reach the map: a click on the layer selector would start a pan whose pointerup gets
+// lost in the menu, and a right-click there keeps the browser's own menu (paste into
+// the search field). Shared by drag.ts and menu.ts, hence here and not in either.
+export const ON_UI = ".mapui-tl, .mapui-br, .zoom, .palette, .toast";
+
 // ---------- Rendering: map ----------
 // Symbols stay screen-sized. Everything that's a symbol and not an area —
 // markers, clusters, point handles, conduit labels, draft — carries

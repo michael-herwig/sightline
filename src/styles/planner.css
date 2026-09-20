@@ -1998,6 +1998,59 @@ kbd {
   }
 }
 
+/* Context menu on the map: one node, refilled per right-click. Above the hover card,
+   because a right-click on a marker leaves that card standing. */
+#ctxMenu {
+  position: fixed;
+  z-index: 95;
+  left: 0;
+  top: 0;
+  min-width: 190px;
+  max-width: min(300px, calc(100vw - 16px));
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+#ctxMenu[hidden] {
+  display: none;
+}
+#ctxMenu button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.3;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#ctxMenu button:hover,
+#ctxMenu button:focus-visible {
+  background: var(--panel-2);
+  outline: none;
+}
+#ctxMenu hr {
+  margin: 4px 2px;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+/* "Point at …" waits for exactly one click — the crosshair says the map is armed. */
+.mapwrap.aiming {
+  cursor: crosshair;
+}
+
 .field {
   display: grid;
   grid-template-columns: 110px 1fr;

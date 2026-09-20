@@ -167,7 +167,7 @@ export const planner: PlannerText = {
   "help.key.esc": "Cancel the tool, clear the selection.",
   "help.key.enter": "Finish the conduit you started (right-click works too).",
   "help.tip.vtx":
-    "Double-click a conduit point to remove it, a right-click does the same; double-click the conduit to add one.",
+    "Double-click a conduit point to remove it, double-click the conduit to add one; a right-click opens a menu for either.",
   "help.tip.snap": "Conduit ends snap to any element and move with it until you pull them away.",
   "help.tip.cluster":
     "Zoomed far out the map merges elements that sit close together into one circle: the number inside says how many, a click zooms in. Symbols, handles and labels always stay the same size.",
@@ -439,6 +439,31 @@ export const planner: PlannerText = {
     "Head end and accessories live in the build panel under “Head end”: a click counts one more, the quantity sits in the selection panel, the bin takes the item out again.",
   "help.tip.info":
     "The ⓘ on every catalogue card opens the data sheet without adding anything; resting the pointer on a card, a device or cable row or a selector brings up a short card with image, key figures and two sentences.",
+  // ---------- Context menu on the map (menu.ts) ----------
+  "ctx.menu": "Context menu",
+  "ctx.place.cam": "Place a camera here",
+  "ctx.place.ap": "Place an access point here",
+  "ctx.place.jb": "Place a junction here",
+  "ctx.place.hub": "Place the house connection here",
+  "ctx.draw.cond": "Start a conduit here",
+  "ctx.draw.cable": "Start a cable here",
+  "ctx.from.cond": "Draw a conduit from here",
+  "ctx.from.cable": "Draw a cable from here",
+  "ctx.centre": "Centre the view here",
+  "ctx.info": "Open the data sheet",
+  "ctx.aim": "Point at …",
+  "ctx.aim.hint": "Click the map where {label} should point — Esc cancels.",
+  "ctx.aim.done": "{label} pointed at {n}°",
+  "ctx.dup": "Duplicate",
+  "ctx.zoom": "Zoom to this",
+  "ctx.del": "Delete",
+  "ctx.vtx.add": "Insert a point here",
+  "ctx.select": "Select the conduit",
+  "ctx.vtx.del": "Remove the point",
+  "ctx.vtx.free": "Detach from the element",
+  "ctx.cluster.in": "Zoom into the group",
+  "help.tip.ctx":
+    "A right-click opens a menu for whatever it hits: on the open map place, draw and centre; on an element the data sheet, a conduit from here, point at, duplicate and delete; on a conduit insert a point, on a point handle remove it or detach it from its element; on a group its members. While drawing there is no menu — there a right-click finishes the conduit. On a touch device a long press opens the same menu.",
 };
 
 // ---------- Website: landing page, 404, shared chrome ----------
@@ -551,7 +576,7 @@ export const help: HelpText = {
   "plans.long":
     "The plan name and subtitle sit at the top left; the arrow next to them opens the plan list. That is where you switch, delete and start a new plan. Each plan is stored on its own — a new one never overwrites an old one. The home page shows the same list with the date last changed.",
   "map.long":
-    "Aerial imagery and the cadastral map come as WMS from Geobasis NRW (licence dl-de/zero-2-0). Tiles sit on a fixed UTM grid and are cached in the browser for 30 days; <em>Reload tiles</em> in the layer menu (button below the zoom) throws them away. Place search runs through Nominatim (OpenStreetMap). Markers, point handles and labels keep the same size at every zoom level; only cones and ranges are to scale, because those are a statement about metres. When elements sit close together at a wide zoom, the map merges them into one circle: the <strong>number inside says how many, a click zooms in</strong>. That is display only — nothing in the plan changes. <strong>Back and forward in the browser jump to the previous map view</strong>: every jump is remembered (clicking a group, a row in the list, ⌂, a place-search hit), panning and zooming are not. Hovering a row in the element list highlights its counterpart on the map, and the other way round. The eye below the zoom hides fields of view, ranges, conduits, labels and cross-sections one by one; image export and print show what the map shows. The <strong>gear below it</strong> sets how the map looks: symbol size, text size, area opacity (cones, rings), conduit width and whether nearby elements collapse into groups. That is display only as well, but it belongs to the plan — it survives a reload, travels with the share link and applies to image export and print alike. <em>Reset</em> in the same box restores the defaults.",
+    "Aerial imagery and the cadastral map come as WMS from Geobasis NRW (licence dl-de/zero-2-0). Tiles sit on a fixed UTM grid and are cached in the browser for 30 days; <em>Reload tiles</em> in the layer menu (button below the zoom) throws them away. Place search runs through Nominatim (OpenStreetMap). Markers, point handles and labels keep the same size at every zoom level; only cones and ranges are to scale, because those are a statement about metres. When elements sit close together at a wide zoom, the map merges them into one circle: the <strong>number inside says how many, a click zooms in</strong>. That is display only — nothing in the plan changes. <strong>Back and forward in the browser jump to the previous map view</strong>: every jump is remembered (clicking a group, a row in the list, ⌂, a place-search hit), panning and zooming are not. Hovering a row in the element list highlights its counterpart on the map, and the other way round. The eye below the zoom hides fields of view, ranges, conduits, labels and cross-sections one by one; image export and print show what the map shows. The <strong>gear below it</strong> sets how the map looks: symbol size, text size, area opacity (cones, rings), conduit width and whether nearby elements collapse into groups. That is display only as well, but it belongs to the plan — it survives a reload, travels with the share link and applies to image export and print alike. <em>Reset</em> in the same box restores the defaults. A <strong>right-click on the map</strong> opens a menu for whatever sits underneath: on open ground place elements, start a conduit or a cable there and centre the view here; on an element the data sheet, a conduit from there, <em>Point at …</em> (the next click on the map turns the camera or access point towards it, <kbd>Esc</kbd> cancels), duplicate, zoom to and delete; on a conduit insert a point, on a point handle remove it or detach it from its element; on a group its members one by one. While drawing there is no menu — a right-click finishes the conduit there, just like <kbd>Enter</kbd>. On a touch device a long press opens the same menu; arrow keys, <kbd>Home</kbd>/<kbd>End</kbd> and <kbd>Enter</kbd> operate it, <kbd>Esc</kbd> closes it.",
   "layout.long":
     "Five panels — map, selection, build, elements, costs — can be placed side by side, stacked, torn off and resized; each scrolls on its own. <em>View</em> brings a closed panel back and holds <em>Reset layout</em>. Size, arrangement, language, viewport and catalogue filters are part of the saved state.",
   "save.long":

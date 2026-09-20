@@ -113,6 +113,9 @@ import "../styles/planner.css";
   <!-- Hover card: exactly one node, no state. showHover() fills it. -->
   <div id="hovercard" hidden></div>
 
+  <!-- Context menu on the map: one node, filled per right-click by menu.ts. -->
+  <div id="ctxMenu" role="menu" data-i18n-aria-label="ctx.menu" aria-label="Kontextmenü" hidden></div>
+
   <!-- The nodes live here until dockview hangs them into its panels. -->
   <div id="stash" hidden>
     <div class="mapwrap mode-select" id="mapwrap">

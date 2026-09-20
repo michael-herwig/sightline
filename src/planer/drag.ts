@@ -1,21 +1,17 @@
 // Pointer handling on the map: pan, drag, rotate, place, draw.
+import type { ItemKind } from "./types";
 import { renderMap, renderSide, scheduleSave, updateHint } from "./hooks";
 import { t } from "./i18n";
-import { isHousing } from "./catalogs";
 import { angleAt } from "./geom";
-import { draft, drag, mode, placeAp, placeJb, placeModel, setDrag, view } from "./store";
+import { draft, drag, mode, setDrag, view } from "./store";
 import { $, mapwrap, svg } from "./dom";
 import { snapTarget, syncBonds } from "./bonds";
 import { changed } from "./history";
-import { addItem, finishDraft, select } from "./modes";
-import { toSvg } from "./view";
+import { finishDraft, placeKind, select } from "./modes";
+import { ON_UI, toSvg } from "./view";
 import { applyBasemap, closeMapMenus } from "./tiles";
 import { applyView, fit, jumpView, refreshConduit, refreshItem, zoomAt } from "./render";
-
-// The controls live inside mapwrap. Without this check, a click on
-// the layer selector would start a pan whose pointerup gets lost in the selection menu —
-// after that, the map sticks to the pointer.
-const ON_UI = ".mapui-tl, .mapui-br, .zoom, .palette, .toast";
+import { aimClick, isAiming } from "./menu";
 
 // Grabbing the map means you're done with the text field. Otherwise the
 // plan name stays in edit mode while the map is already being dragged.
@@ -107,6 +103,8 @@ export function wireDrag() {
   mapwrap.addEventListener("pointerdown", (e: PointerEvent) => {
     if ((e.target as Element).closest && (e.target as Element).closest(ON_UI)) return;
     if (e.button !== 0 && e.pointerType === "mouse") return;
+    // While "point at …" waits for its click, dragging the map would only get in the way.
+    if (isAiming()) return;
     dropFocus();
     e.preventDefault(); // otherwise the browser selects the SVG labels
     if (mode === "select") {
@@ -147,36 +145,20 @@ export function wireDrag() {
     if (drag) endDrag();
   });
 
-  // click actions for place / draw
-  // Right-click while drawing finishes the draft, same as Enter. Outside draw
-  // mode the browser menu stays until the planner has its own.
-  mapwrap.addEventListener("contextmenu", (e: MouseEvent) => {
-    if (mode !== "draw") return;
-    e.preventDefault();
-    if (draft.length >= 2) finishDraft();
-  });
-
+  // click actions for place / draw. Right-click is menu.ts's: while drawing it finishes
+  // the draft, otherwise it opens the planner's own context menu.
   mapwrap.addEventListener("click", (e: MouseEvent) => {
-    if (mode === "select") return;
     // A click on the tool button itself bubbles up to here — otherwise the element
     // would land right under the palette.
     if ((e.target as Element).closest && (e.target as Element).closest(ON_UI)) return;
     const p = toSvg(e);
     p.x = +p.x.toFixed(1);
     p.y = +p.y.toFixed(1);
-    if (mode === "place-cam") addItem({ kind: "cam", model: placeModel, rot: 90 }, p, e);
-    else if (mode === "place-ap") addItem({ kind: "ap", model: placeAp }, p, e);
-    // A device from the catalog brings its own point — default: inside the building.
-    else if (mode === "place-jb")
-      addItem(
-        isHousing(placeJb)
-          ? { kind: "jb", model: placeJb, gear: [] }
-          : { kind: "jb", model: "indoor", gear: [{ model: placeJb, n: 1 }] },
-        p,
-        e,
-      );
-    else if (mode === "place-hub")
-      addItem({ kind: "hub", wan: { type: "fiber", speed: 1000 } }, p, e);
+    // "Point at …" from the context menu waits for exactly one click and takes it whole.
+    if (aimClick(p)) return;
+    if (mode === "select") return;
+    if (mode === "place-cam" || mode === "place-ap" || mode === "place-jb" || mode === "place-hub")
+      placeKind(mode.slice(6) as ItemKind, p, e.shiftKey);
     else if (mode === "draw") {
       const hit = snapTarget(p.x, p.y);
       draft.push(hit ? { x: hit.x, y: hit.y, at: hit.id } : p);

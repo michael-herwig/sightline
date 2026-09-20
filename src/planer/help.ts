@@ -56,6 +56,7 @@ export const HELP: HelpSection[] = [
     "help.tips",
     [
       ["", "help.tip.vtx"],
+      ["", "help.tip.ctx"],
       ["", "help.tip.snap"],
       ["", "help.tip.cross"],
       ["", "help.tip.cluster"],

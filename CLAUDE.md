@@ -77,6 +77,7 @@ point is the last one.
 | `panel-list.ts` | element list, `centerOn()` |
 | `panel-cost.ts` | cost panel and the bill of materials |
 | `export.ts` | PNG, PDF, print sheet, Markdown |
+| `menu.ts` | the context menu on the map, and "point at …" |
 | `drag.ts` | pointer handling on the map |
 | `layout.ts` | the dockview panel layout |
 | `persist.ts` | localStorage, plans, saving, language, `adopt()` |

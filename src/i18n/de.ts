@@ -175,7 +175,7 @@ export const planner = {
   "help.key.esc": "Werkzeug abbrechen, Auswahl aufheben.",
   "help.key.enter": "Angefangenen Kanal abschließen (auch Rechtsklick).",
   "help.tip.vtx":
-    "Doppelklick auf einen Kanalpunkt entfernt ihn, Rechtsklick darauf ebenso; Doppelklick auf das Rohr setzt einen neuen.",
+    "Doppelklick auf einen Kanalpunkt entfernt ihn, Doppelklick auf das Rohr setzt einen neuen; der Rechtsklick öffnet zu beidem ein Menü.",
   "help.tip.snap": "Kanalenden rasten an jedem Element ein und wandern mit, bis man sie wegzieht.",
   "help.tip.cluster":
     "Weit herausgezoomt fasst die Karte dicht beieinander liegende Elemente zu einem Kreis zusammen: die Zahl darin sagt, wie viele es sind, ein Klick zoomt hinein. Symbole, Griffe und Beschriftungen bleiben dabei immer gleich groß.",
@@ -450,6 +450,31 @@ export const planner = {
     "Zentrale und Zubehör liegen im Bauen-Panel unter „Zentrale“: ein Klick zählt ein Stück hoch, die Menge steht im Auswahl-Panel, der Papierkorb nimmt den Posten wieder heraus.",
   "help.tip.info":
     "Das ⓘ auf jeder Katalogkarte zeigt das Datenblatt, ohne etwas hinzuzufügen; wer mit dem Zeiger auf einer Karte, einer Geräte- oder Kabelzeile oder einer Auswahl stehen bleibt, bekommt eine Kurzkarte mit Bild, Kennzahlen und zwei Sätzen.",
+  // ---------- Context menu on the map (menu.ts) ----------
+  "ctx.menu": "Kontextmenü",
+  "ctx.place.cam": "Kamera hier setzen",
+  "ctx.place.ap": "Access Point hier setzen",
+  "ctx.place.jb": "Abzweig hier setzen",
+  "ctx.place.hub": "Hausanschluss hier setzen",
+  "ctx.draw.cond": "Kanal hier beginnen",
+  "ctx.draw.cable": "Kabel hier beginnen",
+  "ctx.from.cond": "Kanal von hier zeichnen",
+  "ctx.from.cable": "Kabel von hier zeichnen",
+  "ctx.centre": "Ansicht hierhin zentrieren",
+  "ctx.info": "Datenblatt öffnen",
+  "ctx.aim": "Ausrichten auf …",
+  "ctx.aim.hint": "Auf der Karte anklicken, wohin {label} zeigen soll — Esc bricht ab.",
+  "ctx.aim.done": "{label} auf {n}° ausgerichtet",
+  "ctx.dup": "Duplizieren",
+  "ctx.zoom": "Hierher zoomen",
+  "ctx.del": "Löschen",
+  "ctx.vtx.add": "Punkt hier einfügen",
+  "ctx.select": "Kanal auswählen",
+  "ctx.vtx.del": "Punkt entfernen",
+  "ctx.vtx.free": "Vom Element lösen",
+  "ctx.cluster.in": "In die Gruppe zoomen",
+  "help.tip.ctx":
+    "Rechtsklick öffnet ein Menü zu dem, worauf er trifft: auf der freien Karte setzen, zeichnen und zentrieren; auf einem Element Datenblatt, Kanal von hier, Ausrichten, Duplizieren und Löschen; auf einem Kanal einen Punkt einfügen, auf einem Punktgriff ihn entfernen oder vom Element lösen; auf einer Gruppe deren Mitglieder. Beim Zeichnen gibt es kein Menü — dort schließt der Rechtsklick den Kanal ab. Auf dem Touchgerät öffnet langes Drücken dasselbe Menü.",
 };
 
 // ---------- Website: landing page, 404, shared chrome ----------
@@ -564,7 +589,7 @@ export const help = {
   "plans.long":
     "Oben links stehen Name und Untertitel des Plans; der Pfeil daneben öffnet die Planliste. Dort wird umgeschaltet, gelöscht und ein neuer Plan angelegt. Jeder Plan liegt für sich im Browser — ein neuer überschreibt keinen alten. Die Startseite zeigt dieselbe Liste mit Änderungsdatum.",
   "map.long":
-    "Luftbild und Liegenschaftskataster kommen als WMS von Geobasis NRW (Lizenz dl-de/zero-2-0). Kacheln liegen auf einem festen UTM-Raster und werden im Browser zwischengespeichert (30 Tage); <em>Kacheln neu laden</em> im Ebenen-Menü (Knopf unter dem Zoom) wirft sie weg. Die Ortssuche läuft über Nominatim (OpenStreetMap). Marker, Punktgriffe und Beschriftungen bleiben beim Zoomen immer gleich groß; nur Sichtkegel und Reichweiten sind maßstäblich, denn die sind eine Aussage über Meter. Liegen Elemente weit herausgezoomt dicht beieinander, fasst die Karte sie zu einem Kreis zusammen: die <strong>Zahl darin sagt, wie viele es sind, ein Klick zoomt hinein</strong>. Das ist reine Darstellung — am Plan ändert sich dabei nichts. <strong>Zurück und Vor im Browser springen zur vorherigen Kartenansicht</strong>: jeder Sprung wird gemerkt (Gruppe anklicken, Zeile in der Liste, ⌂, Treffer der Ortssuche), Schwenken und Zoomen nicht. Zeigt man auf eine Zeile in der Elementliste, hebt sich das Gegenstück auf der Karte hervor, und umgekehrt. Das Auge unter dem Zoom blendet Sichtfelder, Reichweiten, Kanäle, Beschriftungen und Querschnitte einzeln aus; Bild-Export und Druck zeigen, was die Karte zeigt. Das <strong>Zahnrad darunter</strong> stellt ein, wie die Karte aussieht: Symbolgröße, Schriftgröße, Deckkraft der Flächen (Kegel, Ringe), Kanalbreite und ob nahe Elemente zu Gruppen zusammenfallen. Auch das ist reine Darstellung, gehört aber zum Plan — es überlebt den Reload, reist über den Teilen-Link mit und gilt genauso für Bild-Export und Druck. <em>Zurücksetzen</em> im selben Kasten holt die Vorgabe zurück.",
+    "Luftbild und Liegenschaftskataster kommen als WMS von Geobasis NRW (Lizenz dl-de/zero-2-0). Kacheln liegen auf einem festen UTM-Raster und werden im Browser zwischengespeichert (30 Tage); <em>Kacheln neu laden</em> im Ebenen-Menü (Knopf unter dem Zoom) wirft sie weg. Die Ortssuche läuft über Nominatim (OpenStreetMap). Marker, Punktgriffe und Beschriftungen bleiben beim Zoomen immer gleich groß; nur Sichtkegel und Reichweiten sind maßstäblich, denn die sind eine Aussage über Meter. Liegen Elemente weit herausgezoomt dicht beieinander, fasst die Karte sie zu einem Kreis zusammen: die <strong>Zahl darin sagt, wie viele es sind, ein Klick zoomt hinein</strong>. Das ist reine Darstellung — am Plan ändert sich dabei nichts. <strong>Zurück und Vor im Browser springen zur vorherigen Kartenansicht</strong>: jeder Sprung wird gemerkt (Gruppe anklicken, Zeile in der Liste, ⌂, Treffer der Ortssuche), Schwenken und Zoomen nicht. Zeigt man auf eine Zeile in der Elementliste, hebt sich das Gegenstück auf der Karte hervor, und umgekehrt. Das Auge unter dem Zoom blendet Sichtfelder, Reichweiten, Kanäle, Beschriftungen und Querschnitte einzeln aus; Bild-Export und Druck zeigen, was die Karte zeigt. Das <strong>Zahnrad darunter</strong> stellt ein, wie die Karte aussieht: Symbolgröße, Schriftgröße, Deckkraft der Flächen (Kegel, Ringe), Kanalbreite und ob nahe Elemente zu Gruppen zusammenfallen. Auch das ist reine Darstellung, gehört aber zum Plan — es überlebt den Reload, reist über den Teilen-Link mit und gilt genauso für Bild-Export und Druck. <em>Zurücksetzen</em> im selben Kasten holt die Vorgabe zurück. Ein <strong>Rechtsklick auf die Karte</strong> öffnet ein Menü zu dem, was darunter liegt: auf der freien Fläche Elemente setzen, einen Kanal oder ein Kabel dort beginnen und die Ansicht hierhin zentrieren; auf einem Element das Datenblatt, einen Kanal von dort aus, <em>Ausrichten auf …</em> (der nächste Klick auf die Karte dreht Kamera oder Access Point dorthin, <kbd>Esc</kbd> bricht ab), Duplizieren, Hierher zoomen und Löschen; auf einem Kanal einen Punkt einfügen, an einem Punktgriff ihn entfernen oder vom Element lösen; auf einer Gruppe deren Mitglieder einzeln. Beim Zeichnen gibt es kein Menü — dort schließt der Rechtsklick den Kanal ab, genau wie <kbd>Enter</kbd>. Auf dem Touchgerät öffnet langes Drücken dasselbe Menü; Pfeiltasten, <kbd>Pos1</kbd>/<kbd>Ende</kbd> und <kbd>Enter</kbd> bedienen es, <kbd>Esc</kbd> schließt es.",
   "layout.long":
     "Fünf Panels — Karte, Auswahl, Bauen, Elemente, Kosten — lassen sich nebeneinanderlegen, stapeln, abtrennen und in der Größe ziehen; jedes scrollt für sich. Über <em>Ansicht</em> kommt ein geschlossenes Panel zurück, dort steht auch <em>Layout zurücksetzen</em>. Größe, Anordnung, Sprache, Ausschnitt und Katalogfilter gehören zum gespeicherten Stand.",
   "save.long":
