@@ -16,7 +16,7 @@ ocx exec -- task serve     # → http://localhost:4321
 | Path | Content |
 |---|---|
 | `/` | website (Astro, `src/pages/index.astro`) — this is where refinement happens |
-| `/planner` | the planner (`src/pages/planner.astro` + `src/planer/app.ts`) |
+| `/planner` | the planner (`src/pages/planner.astro` + `src/planer/boot.ts`) |
 | `/help` | the long-form guide |
 
 Top right shows the **active language** (click to switch). The **basemap** sits as a
@@ -100,7 +100,7 @@ src/
   pages/index.astro         the website
   pages/help.astro          the long-form guide
   pages/planner.astro       the planner page: markup, served at /planner
-  planer/app.ts             the whole app, one module for now
+  planer/                   the app, split into flat modules (entry point boot.ts) — see CLAUDE.md for the layout
   styles/tokens.css         design tokens, both themes, used by planner and website
   styles/planner.css        the planner's styles
   layouts/Base.astro        website layout, maps the tokens onto Pico's --pico-*
@@ -117,7 +117,7 @@ ocx.toml                    toolchain: pnpm, task, oxlint, oxfmt, lefthook, gitl
 
 ## Scale
 
-`PX_PER_M` in `src/planer/app.ts` is set to **5.957 px per meter** — the sheet constant
+`PX_PER_M` in `src/planer/geo.ts` is set to **5.957 px per meter** — the sheet constant
 of the start box (`HOME`). The number is deliberately left unchanged in the code —
 changing it shifts every cable length and cost; that's a decision, not an incidental fix.
 

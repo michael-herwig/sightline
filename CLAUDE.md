@@ -36,21 +36,78 @@ triple instead of the short name (a packaging bug on ocx.sh's side), the wrapper
 via PATH regardless; drop it once ocx.sh fixes the metadata. CI (`.github/workflows/ci.yml`)
 runs the same chain via `ocx-sh/setup-ocx`.
 
+## Module map
+
+`src/planer/` in import order: pure data, then pure logic, then DOM. A module may import only
+from the ones above it — `import/no-cycle` is an error, and oxlint enforces it. The entry
+point is the last one.
+
+| Module | What lives there |
+|---|---|
+| `types.ts` | the shapes from `docs/DATA-MODEL.md`; imported as types by everyone |
+| `hooks.ts` | the five late-bound calls, filled by `boot.ts` |
+| `i18n.ts` | `T`, `t()`, `tx()`, the stored language |
+| `geo.ts` | plan box, `GEO`, `UTM`, pixel ↔ metre, `stampGeo()` |
+| `catalogs.ts` | `CAMS`, `APS`, `JUNCTIONS`, `PIPES`, `CABLES`, `CONDUITS`, `INFRA` — prices only here |
+| `conduit.ts` | ducts, cables, pipe rates, `condName()` |
+| `migrate.ts` | old save shapes → current ones |
+| `geom.ts` | lengths, angles, `offsetPath()`, points along a path |
+| `store.ts` | `state` and every binding more than one module writes, with setters |
+| `gear.ts` | devices in a junction or at the head end: power, SFP, PoE, ports, price |
+| `specs.ts` | `SPECS`, facets, catalogue tabs, `WHEN`, `optHint()` |
+| `help.ts` | `HELP` and the catalogue guides |
+| `links.ts` | the derived topology: `links()`, `linkText()`, `invalidateLinks()` |
+| `costs.ts` | `conduitCost()`, `costs()` |
+| `dom.ts` | `$`, `pane`, `DETACHED`, `el`, `h`, `esc`, icons, `setStatus()`, `applyStatic()` |
+| `bonds.ts` | conduit ends bound to an element, and the snapping that makes them |
+| `history.ts` | undo/redo, `changed()`, `condEdit()` |
+| `modes.ts` | tools and selection: `setMode()`, `select()`, `addItem()`, `finishDraft()`, keys |
+| `view.ts` | screen scale, transforms, measurement, `toSvg()`, `startDrag()` |
+| `hover.ts` | hover between list and map, and the hover card |
+| `clusters.ts` | `buildClusters(upp)`, `clusterOf()`, `displayPos()` |
+| `tiles.ts` | WMS pyramid, cache, prefetch, overlay, layer menu |
+| `render.ts` | drawing the map, plus the viewport commands that redraw it |
+| `look.ts` | appearance factors behind the gear icon |
+| `geosearch.ts` | Nominatim, jumping to a place, seeding a fresh plan |
+| `dialogs.ts` | data sheet, guide, image and help dialogues |
+| `catalog.ts` | the catalogue lists in the Build panel |
+| `panel-sel.ts` | selection panel, including the recommendations |
+| `share.ts` | JSON file and the `#p=` link |
+| `panel-build.ts` | Build panel: tabs, search, filter badges |
+| `panel-list.ts` | element list, `centerOn()` |
+| `panel-cost.ts` | cost panel and the bill of materials |
+| `export.ts` | PNG, PDF, print sheet, Markdown |
+| `drag.ts` | pointer handling on the map |
+| `layout.ts` | the dockview panel layout |
+| `persist.ts` | localStorage, plans, saving, language, `adopt()` |
+| `boot.ts` | `setHooks()`, the `wireX()` calls, `boot()` — and `renderSide()` |
+
 ## Rules
 
 - The planner is an Astro page: markup in `src/pages/planner.astro`, styles in
-  `src/styles/planner.css` (tokens in `src/styles/tokens.css`), the app in `src/planer/app.ts`,
-  loaded from the page via `<script>import "../planer/app.ts";</script>`. Astro bundles that
+  `src/styles/planner.css` (tokens in `src/styles/tokens.css`), the app in `src/planer/`,
+  loaded from the page via `<script>import "../planer/boot.ts";</script>`. Astro bundles that
   as a module — nothing is vendored, nothing hangs off a global. The only third-party
   libraries are dockview (`import { createDockview } from "dockview"`, plus its stylesheet
   from `dockview/dist/styles/dockview.css`), jsPDF (`await import("jspdf")` inside the export
   handler, so the 400 KB only load when someone actually exports) and the Codicons font
   (`@vscode/codicons`, on request: all icons unified as `<i class="codicon codicon-<name>">`,
   no more inline SVGs). No further ones without discussion.
-- `src/planer/app.ts` is still the old single-file planner **verbatim**, one IIFE with
-  `// @ts-nocheck`. It's excluded from oxfmt (`.prettierignore`) and three oxlint rules are
-  off for it (`.oxlintrc.json`) — both come back as the file is split into modules and typed.
-  No new file may rely on either.
+- **The module graph is a DAG, and oxlint enforces it** (`import/no-cycle` is an error). See
+  the module map below for the order; a module may import only from the ones above it. Five
+  calls genuinely point the other way — `renderMap`, `renderSide`, `scheduleSave`,
+  `updateHint` and `createPlan`, all of them "refresh the app" — and they go through
+  `src/planer/hooks.ts`, whose slots `boot.ts` fills before any handler can fire. Call sites
+  read like a direct call, because the name is the same. Anything else pointing upward is a
+  layering mistake, not a new hook.
+- **Every binding more than one module writes lives in `src/planer/store.ts`, behind a
+  setter.** An imported `let` is read-only for the importer, so `state`, `sel`, `mode`,
+  `view`, `draft`, `preview`, `drag`, `LOOK` and the rest come with `setState`, `setSel`,
+  `setModeName` and friends. A cache stays with its owner instead: `invalidateLinks()` in
+  `links.ts`, `setClusters()` in `clusters.ts`, `setHoverKey()` in `hover.ts`.
+- **A module's top-level side effects live in its `wireX()`.** Nothing but a declaration runs
+  at import time; `boot.ts` calls `wireTiles()`, `wireLook()`, … in the order the old IIFE ran
+  them, then `boot()`. A new listener belongs in the module's `wireX`, never at the top level.
 - The SVG `viewBox` must match the element's aspect ratio (`syncAspect`), otherwise the
   browser letterboxes and the whole map jumps whenever a panel changes width.
 - Never call `renderMap()` while dragging. `applyDrag()` runs once per frame and only
@@ -63,9 +120,11 @@ runs the same chain via `ocx-sh/setup-ocx`.
   measured via `vector-effect: non-scaling-stroke` in screen points, the `--sw` factor
   scales them up for export. Never use fixed map units for a symbol. Only viewing cones
   and ranges stay to scale.
-- **Clusters are pure presentation, not state.** `buildClusters()` clusters elements within
-  36 screen px of each other (only the selection stays on its own), `renderMap()` draws a
-  `g.marker.cluster` for that; none of it lands in `state`, the share link or the export.
+- **Clusters are pure presentation, not state.** `buildClusters(upp)` (`clusters.ts`)
+  clusters elements within 36 screen px of each other (only the selection stays on its own);
+  `upp` is `uPerPx()`, handed in rather than measured, which keeps the module free of the DOM
+  and testable. `renderMap()` draws a `g.marker.cluster` for that; none of it lands in
+  `state`, the share link or the export.
   After zooming, `clusterLater()` checks, debounced, whether the cluster membership changed.
   Conduit ends at a cluster member are drawn at the cluster center via `displayPos()` — only in
   the DOM. `state`, `syncBonds()` and `conduitCost()` see the real point.
@@ -94,9 +153,10 @@ runs the same chain via `ocx-sh/setup-ocx`.
 - dockview detaches inactive panels from the document. That's why `$()` falls back to
   searching the remembered panel nodes — `document.getElementById` alone isn't enough.
 - **A UI change is a help change.** Every change to tools, keys or workflows must land in
-  *three* texts: `HELP` + `help.*` keys in `src/planer/app.ts` (short version in the
-  `?` dialog), `src/pages/help.astro` (long version) and `README.md`. Otherwise the docs
-  drift away from the interface, and the user is the first to notice.
+  *three* texts: `HELP` in `src/planer/help.ts` plus its `help.*` keys in
+  `src/planer/i18n.ts` (short version in the `?` dialog), `src/pages/help.astro` (long
+  version) and `README.md`. Otherwise the docs drift away from the interface, and the user
+  is the first to notice.
 - The website uses **Pico CSS** (`@picocss/pico`, imported in `src/layouts/Base.astro`):
   semantic elements (`<article>`, `role="group"`, `table.striped`, `.secondary.outline`)
   instead of custom button and table CSS. Colors run through the `--pico-*` variables,
@@ -294,11 +354,11 @@ runs the same chain via `ocx-sh/setup-ocx`.
   `power`: a splice box, surge protector, SFP module and PoE extender need no power and are
   still devices. SFP slots sit as `sfpPorts` on a device, outputs as `poePorts` (injector),
   range extension as `extend` (PoE extender).
-- Undo/redo works with JSON snapshots via `HIST_KEYS`. Every mutation goes through
-  `changed()`, which calls `histPush()` — mutating around it means it can't be undone.
-- No tabs: the sidebar is a stack of collapsible, drag-sortable panels (`PANELS`,
-  `buildPanels()`, panes are still named `#pane-<id>`). No docking framework — that would
-  be a dependency. Selection changes nothing, it only fills `#pane-sel`.
+- Undo/redo works with JSON snapshots via `HIST_KEYS` (`history.ts`). Every mutation goes
+  through `changed()`, which calls `histPush()` — mutating around it means it can't be
+  undone. `condEdit()` sits there too: it is the mutate-and-record entry point for a conduit.
+- The sidebar is dockview (`layout.ts`), panes named `#pane-<id>`. Selection changes no
+  layout, it only fills `#pane-sel`.
 - Everything that makes up the working state belongs in `state` — only then does it survive
   a reload (localStorage) and travel in the share link. That includes UI odds and ends like
   search text, filters, panel layout, viewport.
@@ -356,8 +416,14 @@ smoke test before every commit:
    dev server), then the repo assertions in `tools/check.mjs`
 4. `ocx exec -- task build` must complete
 
-Playwright boots the real page; `tools/check.mjs` only reads files. Whoever makes a larger
-change to the planner adds a spec under `tests/e2e/` instead of relying on a visual check.
+Three levels, and each one has its own job. `tests/unit/` runs the pure modules in node —
+that is where migration, topology, conduits, geometry, costs, clusters and the catalogue
+invariants are checked, against the real objects. `tests/e2e/` boots the real page in
+Chromium and covers everything that needs a browser. `tools/check.mjs` is only about the
+repository: nothing secret under `public/`, no `PUBLIC_`/`VITE_` in `.env.local`, and the
+price date stated wherever prices are shown. Whoever changes a pure module adds a unit test;
+whoever changes behaviour in the page adds a spec under `tests/e2e/` instead of relying on a
+visual check.
 `PW_BASE_URL=http://localhost:4400 pnpm exec playwright test` runs the same suite against an
 already-running server — that's how the production bundle gets checked after `astro preview`.
 

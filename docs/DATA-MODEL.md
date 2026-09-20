@@ -1,24 +1,27 @@
 # Data model and cost logic
 
-Everything lives in `src/planer/app.ts`. Vanilla JS in one module, SVG overlay over the basemap tiles.
+The app is split into flat modules under `src/planer/` (entry point `boot.ts`), SVG overlay over
+the basemap tiles. Type declarations live in `src/planer/types.ts` (`Cam`, `Ap`, `Junction`,
+`InfraItem`, `Cable`, `Duct`, `Conduit`, `Point`, `Item`, `State`, `Look`, `Show`, `View`, `Geo`,
+`Sel`, `LinkStatus`, `LinkSource`, `LinkGear`, `Links`).
 
 ## Constants
 
 ```js
 PX_PER_M = 5.957      // cadastral extract 1:1000 at 150 dpi
 W = 1302, H = 1011    // size of plan.png = SVG viewBox
-S = 1.50817, OX = 452, OY = 497
-R(x, y)               // converts sketch coordinates (1163 px wide preview of the whole sheet) into plan.png pixels
 ```
 
-`R()` is only needed for the default plan. New elements are created directly in plan.png pixels.
+All three live in `src/planer/geo.ts`.
 
 ## State
+
+Defined in `src/planer/store.ts`.
 
 ```js
 {
   items: [
-    // x/y = plan pixels (cache), e/n = EPSG:25832 in metres (source of truth; stampGeo() on save, unstampGeo() in adopt())
+    // x/y = plan pixels (cache), e/n = EPSG:25832 in metres (source of truth; stampGeo() on save, unstampGeo() in adopt(), both geo.ts)
     // gear = switch/converter at the head end; the router lives in infra, not here.
     { id, kind: "hub",  label: "H",  x, y, e, n, note, wan: { type: "dsl"|"fiber", speed }, gear: [{ model: "usw-ultra-60w", n: 1 }] },
     { id, kind: "cam",  label: "K1", x, y, rot, model: "g6-bullet", note },   // rot in degrees, 0 = east, 90 = south
@@ -49,8 +52,9 @@ R(x, y)               // converts sketch coordinates (1163 px wide preview of th
 
 House nodes (`hub`) can be placed, moved and deleted; their `wan` holds the connection type and tier
 (DSL 10/15/25/50, fibre 100/200/400/600/1000 Mbit/s). `sane()` only checks on load that the
-models exist in the catalogue and every conduit has at least two points; `adopt()` merges a
-loaded state over the default and runs every conduit through `migrateConduit()`. That function knows
+models exist in the catalogue and every conduit has at least two points; `adopt()` (`persist.ts`)
+merges a loaded state over the default and runs every conduit through `migrateConduit()`
+(`migrate.ts`). That function knows
 four past shapes and turns all of them into a kind and a pipe list — share links carry the old
 shapes, **this path must stay**:
 
@@ -73,6 +77,8 @@ if it lands in an existing group, the layout stays untouched.
 
 ## Catalogues
 
+Defined in `src/planer/catalogs.ts`.
+
 - `CAMS[model]` → `{ name, price, res, ir (m), fov (°; 360 = PTZ, circular), poe, ip, out, note, tags, wifi?, vendor?, zoom? }`
   `out: true|false` is set explicitly, not guessed from `ip` — it drives the `mount` spec row,
   the `camout`/`camin` filters and the search words "außen/aussen/outdoor" resp. "innen/indoor"
@@ -93,17 +99,18 @@ if it lands in an existing group, the layout stays untouched.
 - `CONDUITS[key]` → template for the catalogue button: `{ name, kind, ducts: [{ pipe?, cables: [{type, n}] }] }`.
   The catalogue tab shows them in two groups (`cat.trench` / `cat.cable`); `cable` and `cable-fiber`
   are the cable runs, "Cable" (C) picks `cable`.
-- `condDucts(c)` / `ductCables(d)` / `condCables(c)` — **every reader goes through here.** `condCables()`
+- `condDucts(c)` / `ductCables(d)` / `condCables(c)` (`src/planer/conduit.ts`) — **every reader goes
+  through here.** `condCables()`
   is the union over all pipes, once per cable type with summed quantity, sorted by
   `CABLE_ORDER` (`fiber → cat → power`). Costs, `links()`, naming, export and the bill of materials all
   query it; only the drawing and the panel know the individual pipes.
-- `isCableRun(c)` / `condPipes(c)` / `pipeRate(c)` — the same role for the pipe side. `condPipes()`
+- `isCableRun(c)` / `condPipes(c)` / `pipeRate(c)` (also `conduit.ts`) — the same role for the pipe side. `condPipes()`
   counts the pipes per type (in the order of `PIPES`) and returns the empty list for a cable run;
   `pipeRate()` is the resulting sum in €/m. Costs, the pipe row in the panel, the preview and the name
   all go through it.
 - `WAN[type]` → `{ name, speeds: [Mbit/s] }` – the connection at the house node
-- `WHEN["<kind>:<key>"]` → `{ de: { yes, no }, en: { yes, no } }` – when the model fits and
-  when it doesn't. Deliberately kept next to the catalogues so the data sheets stay readable.
+- `WHEN["<kind>:<key>"]` → `{ de: { yes, no }, en: { yes, no } }` (`src/planer/specs.ts`) – when the
+  model fits and when it doesn't. Deliberately kept next to the catalogues so the data sheets stay readable.
 - `img:` in a catalogue entry is the image URL at the manufacturer (`tools/fetch-images.mjs`)
 - `INFRA[]` → `{ id, name, sub, note, price, qty, on, vendor?, url?, hidden? }` – head end and accessories.
   Its own catalogue tab `gear` in the Build panel; `hidden: true` stays out of it (switches sit
@@ -143,9 +150,9 @@ Total = Σ cameras + Σ APs + Σ junctions/gear + Σ conduits + Σ (INFRA on × 
 - `localStorage["sl-current"]` – the last plan opened
 - `localStorage["sl-lang"]` – language, shared with the website
 - `caches["sl-wms-v1"]` – WMS tiles, 30-day lifetime
-- All of these used to start with `oh-`. `migrateKeys()` renames them once at the start of
-  `boot()` (copy where the new name is free, drop the old one, delete the `oh-wms-v1`
-  cache) and is safe to run again.
+- All of these used to start with `oh-`. `migrateKeys()` (`src/planer/persist.ts`) renames them
+  once at the start of `boot()` (`boot.ts`) (copy where the new name is free, drop the old one,
+  delete the `oh-wms-v1` cache) and is safe to run again.
 - In the claude.ai Artifact version, additionally `claude.use("db")` → document `plan/current`; in
   the standalone build `window.claude` doesn't resolve and that branch is skipped
 - Export/import as JSON in the **Elements** tab (standalone)
@@ -153,11 +160,11 @@ Total = Σ cameras + Σ APs + Σ junctions/gear + Σ conduits + Σ (INFRA on × 
 ## Interaction
 
 - `mode`: `select | place-cam | place-ap | draw`
-- Pointer events on `#mapwrap`: pan in select mode, drag for markers and conduit points (`startDrag`),
-  clicking in place/draw mode places elements or points
-- Zoom via `viewBox` (`zoomAt`), coordinates via `getScreenCTM().inverse()`
-- Rendering is entirely state-driven: `renderMap()` rebuilds the SVG groups every time,
-  `renderSide()` the three panels. `changed()` = both + save.
+- Pointer events on `#mapwrap`: pan in select mode, drag for markers and conduit points
+  (`startDrag`, `view.ts`), clicking in place/draw mode places elements or points
+- Zoom via `viewBox` (`zoomAt`, `render.ts`), coordinates via `getScreenCTM().inverse()`
+- Rendering is entirely state-driven: `renderMap()` (`render.ts`) rebuilds the SVG groups every
+  time, `renderSide()` (`boot.ts`) the three panels. `changed()` (`history.ts`) = both + save.
 
 
 ## Additions (09/2026)
@@ -184,23 +191,26 @@ look: { size: 1, font: 1, alpha: 1, line: 1, cluster: true }
 
 | Field | Range | Effect |
 |---|---|---|
-| `size` | 0.6 … 1.6 | factor in `calcScale()` — markers, groups, handles, status rings, cross-section badges |
+| `size` | 0.6 … 1.6 | factor in `calcScale()` (`src/planer/view.ts`) — markers, groups, handles, status rings, cross-section badges |
 | `font` | 0.7 … 1.5 | CSS variable `--look-font`: marker, group, cross-section and conduit labels |
 | `alpha` | 0 … 1 | CSS variable `--look-alpha`: opacity of `#g-cover` (fields of view, AP rings, IR areas) |
 | `line` | 0.6 … 1.6 | CSS variable `--look-line`: stroke widths of the conduit layers and the spacing of their lanes |
-| `cluster` | `true`/`false` | off ⇒ `buildClusters()` returns `[]`, every marker stands on its own |
+| `cluster` | `true`/`false` | off ⇒ `buildClusters(upp)` (`src/planer/clusters.ts`, `upp` = `uPerPx()`, map units per screen pixel) returns `[]`, every marker stands on its own |
 
-The three variables hang off `svg.map` and get cloned along by `renderPng()` — whatever the
-map shows, image export and PDF show too. `applyLook()` clamps every value to its range,
-writes it back to `state.look` and re-runs `refreshScale()` and `refreshOffsets()`;
-only the group toggle triggers a redraw. `adopt()` fills in anything missing from `defaultState()`.
-`look` is **not** in `HIST_KEYS`: a slider isn't a work step.
+The three variables hang off `svg.map` and get cloned along by `renderPng()` (`export.ts`) —
+whatever the map shows, image export and PDF show too. `applyLook()` (`look.ts`) clamps every
+value to its range, writes it back to `state.look` and re-runs `refreshScale()` and
+`refreshOffsets()` (both `render.ts`); only the group toggle triggers a redraw. `adopt()` fills in
+anything missing from `defaultState()`. `look` is **not** in `HIST_KEYS` (`history.ts`): a slider
+isn't a work step.
 
 ### Junction points
 
 An item with `kind: "jb"` is **a place**: `model` is the housing (`shaft`, `box`, `cab`,
 `indoor`), `gear: [{ model, n }]` are the devices inside it. Empty `gear` is a purely logical
 point — cables just meet there, and that's not an error.
+
+These aggregates, and `gearPorts()` below, live in `src/planer/gear.ts`.
 
 | Aggregate | Rule |
 |---|---|
@@ -225,22 +235,22 @@ carries on downstream. Housing and device are told apart by `kind: "housing" | "
 catalogue entry — **never** by `power`: a splice box, surge protector, SFP module and PoE extender
 need no power and are still devices.
 
-`links()` only reads these aggregates, never `JUNCTIONS[it.model]` directly. A point without
-devices is passive: cables run through, fibre may end there (`takesFiber`), but copper gets no
-source there (`isCopperSource`).
+`links()` (`src/planer/links.ts`) only reads these aggregates, never `JUNCTIONS[it.model]`
+directly. A point without devices is passive: cables run through, fibre may end there
+(`takesFiber`), but copper gets no source there (`isCopperSource`) — both also in `links.ts`.
 
-**Migration** (`migrateJb()` in `adopt()`, this path must stay): an old point whose
+**Migration** (`migrateJb()` in `adopt()`, `migrate.ts`, this path must stay): an old point whose
 `model` was a device (switch, converter, splice box) becomes `{ model: "indoor", gear: [{ model: old, n: 1 }] }`.
 `indoor` costs 0 €, so the total stays unchanged. A point without `gear` gets `gear: []`.
 
 Points cost money and appear as their own group in the list, the bill of materials and the totals
-(`costs().jbs`, `sumJbs` = housing **and** devices). The bill of materials lists housings per model,
+(`costs().jbs` in `src/planer/costs.ts`, `sumJbs` = housing **and** devices). The bill of materials lists housings per model,
 with the devices bundled underneath across all points (`jbGearGroups()`).
 
 ### Recommendation at the point
 
-`jbAdvice(it)` shows as a `.tip` under the device list of a junction point (`#f-jb-advice`), like
-`hubAdvice()` at the head end. It only speaks up when fibre arrives there and **no single**
+`jbAdvice(it)` (`src/planer/panel-sel.ts`) shows as a `.tip` under the device list of a junction
+point (`#f-jb-advice`), like `hubAdvice()` (also `panel-sel.ts`) at the head end. It only speaks up when fibre arrives there and **no single**
 device has both `sfp` and `poe > 0` at once — a media converter plus a switch without SFP together
 meet both and are exactly the case meant here. It recommends the cheapest `JUNCTIONS` entry with
 `sfp && poe > 0 && poe >= watts && ports >= used` (the need coming from `links().gear`), and only as
@@ -256,20 +266,21 @@ PoE is already being handed out there) and costs at most `SWAP_SLACK` more. Feed
 
 `c.label` is **automatic** as long as it is empty, matches a template name from `CONDUITS`
 (both languages, `TEMPLATE_NAMES`), or matches exactly what `condName(c)` currently generates.
-Every change to kind, pipe, pipe count or cables goes through `condEdit(c, mutate)`: it checks
-**before** the mutation whether the name was automatic, and rewrites it afterwards. A name typed
-by hand stays put. `adopt()` migrates old plans once, `finishDraft()` builds the name straight from
-kind, pipes and cables instead of from the template name — otherwise "DN 50 + fibre" would sit over
-a cable run with Cat6A.
+Every change to kind, pipe, pipe count or cables goes through `condEdit(c, mutate)`
+(`src/planer/history.ts`): it checks **before** the mutation whether the name was automatic, and
+rewrites it afterwards. A name typed by hand stays put. `adopt()` migrates old plans once,
+`finishDraft()` (`modes.ts`) builds the name straight from kind, pipes and cables instead of from
+the template name — otherwise "DN 50 + fibre" would sit over a cable run with Cat6A.
 
-For a trench, `condName(c)` names the pipes grouped by type and then the cables
+For a trench, `condName(c)` (`src/planer/conduit.ts`) names the pipes grouped by type and then the cables
 ("2 × conduit DN 50 + 1 × conduit DN 63 + 1 × single-mode fibre, 4 fibres + 2 × Cat6A"; with exactly
 one pipe the leading count is dropped), and for a cable run "2 × Cat6A (no pipe)" (`cond.cableName`, de/en).
 
 ### Drawing conduits
 
-Pure rendering — nothing changes in the model. `drawConduit(c)` lays **three layers on
-the same path**, all widths in screen points (`strokePx`, `vector-effect: non-scaling-stroke`):
+Pure rendering — nothing changes in the model. `drawConduit(c)` (`src/planer/render.ts`) lays
+**three layers on the same path**, all widths in screen points (`strokePx`,
+`vector-effect: non-scaling-stroke`):
 
 | Layer | when | appearance |
 |---|---|---|
@@ -279,58 +290,61 @@ the same path**, all widths in screen points (`strokePx`, `vector-effect: non-sc
 | `path.strand` | per cable | `CABLES[type].color`, 2 px, copper dashed, **next to its pipe's parallel** |
 | `path.core` | always | invisible hit area, carries the click |
 
-`condLayout(c)` distributes the width: every pipe gets a lane of `max(3, (m−1)·2 + 3)` px for
-its `m` visible strands, the lanes sit side by side and the whole set is centred on the path.
-More than eight strands are not drawn — those show up in the cross-section instead. Every strand
-carries its pipe as `data-duct`.
+`condLayout(c)` (also `render.ts`) distributes the width: every pipe gets a lane of
+`max(3, (m−1)·2 + 3)` px for its `m` visible strands, the lanes sit side by side and the whole set
+is centred on the path. More than eight strands are not drawn — those show up in the cross-section
+instead. Every strand carries its pipe as `data-duct`.
 
-The parallels are built in `offsetPath(points, d)` (mitred at kinks, mitre limit 4, otherwise
+The parallels are built in `offsetPath(points, d)` (`src/planer/geom.ts`) (mitred at kinks, mitre limit 4, otherwise
 bevelled). `d` is in **map units**, so it's geometry, not a stroke: the offset in
 screen points hangs off the node as `data-off`, and `refreshOffsets()` (called from `refreshScale()`)
 recomputes it while zooming — nothing gets redrawn in the process.
 
 ### Cross-sections
 
-`drawSections(c, pts)` places **cross-sections** along the route: `g.csection[data-id]` in its
+`drawSections(c, pts)` (`src/planer/render.ts`) places **cross-sections** along the route: `g.csection[data-id]` in its
 own group `#g-sections` (above the markers, below the handles), rotated like the length
 label and shifted 17 px to its other side. Inside sits **one circle per pipe**,
 side by side along the route and touching; the cables of that pipe sit as coloured dots
 inside it, and above eight cables per pipe the count is shown instead. No ring inside a ring. For a
 cable run, only the dots remain. Clicking a cross-section selects the conduit.
 
-`sectionOffsets(c, pts, k)` decides where they sit: one at the centre, then one every
-`SECTION_STEP` (220) screen points to the left and right — a comb around the centre. The first and
-last `SECTION_EDGE` (40) px stay free, and 40 px around every bound waypoint, since a marker sits
-there. Below 40 px of route length there is none at all. **This hangs off the zoom, not the
-state:** `refreshOffsets()` compares the desired count with the existing one and only redraws on a
-difference — like `clusterLater()` does for the groups. `refreshConduit()` has to clean up
-`#g-sections` too.
+`sectionOffsets(c, pts, k)` (`src/planer/geom.ts`) decides where they sit: one at the centre, then
+one every `SECTION_STEP` (220) screen points to the left and right — a comb around the centre. The
+first and last `SECTION_EDGE` (40) px stay free, and 40 px around every bound waypoint, since a
+marker sits there. Below 40 px of route length there is none at all. **This hangs off the zoom,
+not the state:** `refreshOffsets()` compares the desired count with the existing one and only
+redraws on a difference — like `clusterLater()` (`render.ts`) does for the groups.
+`refreshConduit()` (`render.ts`) has to clean up `#g-sections` too.
 
 Its own toggle in the eye menu: `state.show.sections` (default on) sets `hide-sections` on
 `svg.map`, **independent** of `labels`. Both classes carry over into export and print.
 
 ### Bonds
 
-A conduit point may carry `at: "<itemId>"`. `syncBonds()` runs at the start of every
-`renderMap()` and copies `x`/`y` from the element; if `at` points nowhere, it's dropped.
-While dragging a point, `snapTarget()` decides within a 16-screen-px radius whether to rebind
-or release it. Everything else (length, costs, export, import) keeps computing only
+A conduit point may carry `at: "<itemId>"`. `syncBonds()` (`src/planer/bonds.ts`) runs at the
+start of every `renderMap()` and copies `x`/`y` from the element; if `at` points nowhere, it's
+dropped. While dragging a point, `snapTarget()` (also `bonds.ts`) decides within a 16-screen-px
+radius whether to rebind or release it. Everything else (length, costs, export, import) keeps computing only
 from `x`/`y`.
 
 ### Selection
 
 `sel` is `{ kind: "item" | "conduit" | "infra", id }`. `infra` is an item from `INFRA` and has
-no position: `centerOn()` bails out for it, `deleteSelected()` sets `on: false` instead of deleting,
-`duplicate()` doesn't exist for it. The panel is built by `buildGearSel()` with the signature `gear:<id>:<lang>`.
+no position: `centerOn()` (`src/planer/panel-list.ts`) bails out for it, `deleteSelected()`
+(`modes.ts`) sets `on: false` instead of deleting, `duplicate()` doesn't exist for it. The panel is
+built by `buildGearSel()` with the signature `gear:<id>:<lang>` (both `panel-sel.ts`).
 
 ### Connections (derived, never stored)
 
-`links()` computes the topology from the plan and caches it until the next `renderMap()`
-(which sets `LINKS = null`). **None of it lives in the state** — conduits and bonds are the source of truth.
+`links()` (`src/planer/links.ts`) computes the topology from the plan and caches it until the next
+`renderMap()` (which sets `LINKS = null`). **None of it lives in the state** — conduits and bonds
+are the source of truth. The steps below (`linkEdges`, `reach`, `reachHub`) are internal to
+`links()` in the same file.
 
 | Step | What happens |
 |---|---|
-| `poeWatts(m)` | from `tx(m.poe)`: `802.3bt` → 60 W, `802.3at` → 30 W, `802.3af` → 15.4 W, otherwise 0 |
+| `poeWatts(m)` (`gear.ts`) | from `tx(m.poe)`: `802.3bt` → 60 W, `802.3at` → 30 W, `802.3af` → 15.4 W, otherwise 0 |
 | `linkEdges()` | one edge per conduit and cable type between two bound points; the length is the distance **along the route**, not the whole conduit length |
 | `reach(id, type, isSource)` | PoE feed per camera/AP: Dijkstra to the first source, along the way only a `jb` without a powered device passes it on. The source for `cat` is `hub` or any `jb` with `jbPower` |
 | `reachHub(id)` | uplink per active `jb`: Dijkstra to the `hub`, **also through other active devices**. The state is `(node, incoming cable)`, not the node alone: the cable type is preserved, and it only switches over at a point with `jbPower && jbSfp`. A fibre edge additionally needs something at both ends that accepts it (`hub`, a passive `jb`, `jbPower && jbSfp`) |
@@ -344,7 +358,7 @@ Result: `{ status, src, gear, touch }`.
 
 - `status` per element `{ g: "ok"|"warn"|"err", key, vars, more? }`. `key` is a `link.*` key;
   `more` carries further findings when several apply at once (too long **and** no PoE source).
-  Every display goes through `linkText()`, none reads `key`/`vars` itself.
+  Every display goes through `linkText()` (`links.ts`), none reads `key`/`vars` itself.
 - `src` the PoE feed per camera/AP — and per active `jb`, **when its uplink arrives over copper**.
   That way a switch on another switch's copper counts there as a connected device
   (0 W), and its own port for the uplink counts against it.
@@ -363,8 +377,11 @@ checked". Now it holds what you actually install:
   (usable **on the LAN side**, not the WAN port) and `poe` (PoE output in W).
   `ucg`: 4 ports, `sfp: true` (one SFP+ can be switched to LAN), `poe: 30`.
   FRITZ!Box: `sfp: false` (there the SFP cage is WAN), `poe: 0`; `fb7690` 4, `fb5690`/`fb5590` 5,
-  `fb5530` 3, `fb6690` 4 ports. **One router per plan** — `pickRouter()` switches off the others.
+  `fb5530` 3, `fb6690` 4 ports. **One router per plan** — `pickRouter()` (`src/planer/panel-sel.ts`)
+  switches off the others.
 - **Devices**: `hub.gear` just like for `jb`, the same `JUNCTIONS` entries and the same helpers.
+
+The aggregates below, and `gearPrice()`, live in `src/planer/gear.ts`.
 
 | Aggregate | Result |
 |---|---|
@@ -375,11 +392,12 @@ checked". Now it holds what you actually install:
 | `hubPorts(it)` | router `ports` + `jbPorts()` of the devices |
 | `hubSfpPorts(it)` | 1 for a router with `sfp` (only one SFP+ becomes LAN) + `sfpPorts()` of the devices |
 
-`isCopperSource(hub)` is therefore `hubPower()`, `takesFiber(hub)` is `hubSfp()` — a fibre edge
+`isCopperSource(hub)` (`links.ts`) is therefore `hubPower()`, `takesFiber(hub)` (`links.ts`) is
+`hubSfp()` — a fibre edge
 into the head end is only usable if an SFP cage sits there. Migration in `adopt()`: a `hub`
 without `gear` gets `gear: []`. Costs: the head end's devices go through `gearPrice()` into
-`costs().hubs` and show up in the bill of materials, the print sheet and the Markdown export under
-*Junctions/gear*.
+`costs().hubs` (`src/planer/costs.ts`) and show up in the bill of materials, the print sheet and
+the Markdown export under *Junctions/gear*.
 
 ### Two-stage check
 
@@ -400,7 +418,7 @@ connected to" and only then "does that supply anything":
 | `link.sfpcount` | more arriving fibre cables than SFP cages at the point (`fiberEnds()`) |
 | `link.mains` | a device with `powerIn: "mains"` sits at a place with no outlet (`{pt}`, `{gear}`) |
 
-**Power at the point** (`mainsAt(it, touch)`): it's covered at the head end, in the `indoor`
+**Power at the point** (`mainsAt(it, touch)`, `src/planer/links.ts`): it's covered at the head end, in the `indoor`
 and `rack19` housings, or when a conduit with a `power` cable (NYY-J) ends at the point. Otherwise
 the point reports `link.mains` — **one** finding per point, not per device, sitting in `more` next
 to the uplink finding. A device with `powerIn: "poe"` doesn't trigger it: it hangs off the copper
@@ -421,16 +439,17 @@ balance check is dropped — splitting is allowed there. Power (`NYY-J`) is neve
 An extra finding in `more` raises `g` to at least `warn`: an "ok" with a warning would otherwise stay silent.
 
 Cameras and APs with `poeWatts === 0` (Wi-Fi, own power adapter) get no finding.
-This gets read by `drawMarker()` (ring `circle.alert`), `linkHtml()` (selection panel, `#f-link`),
-`renderList()` (the `.st` dot), `renderCost()` (`#c-warn`), `planMarkdown()` and `sheetData()`.
+This gets read by `drawMarker()` (`render.ts`, ring `circle.alert`), `linkHtml()` (`panel-sel.ts`,
+selection panel, `#f-link`), `renderList()` (`panel-list.ts`, the `.st` dot), `renderCost()`
+(`panel-cost.ts`, `#c-warn`), `planMarkdown()` and `sheetData()` (both `export.ts`).
 
 ### Georeferencing
 
-`GEO = { e0, n0, pxPerM: 150/25.4 }` maps plan pixels linearly onto
-EPSG:25832 (`px2e`, `px2n`). `applyBasemap()` builds the BBOX for the *current*
-viewport from it and fetches the WMS tile at screen resolution; `HOME` is the property.
-`e0`/`n0` come from `state.geo` (per plan; `adopt()` calls `useGeo()`), with `GEO_DEFAULT` = Cologne
-Cathedral at the plan's centre as the default. `seedFromPlace()` sets a new plan's origin to the
-searched address (`geoAround`). An origin change calls `resetTiles()`, because the tile rectangles
-hang off the origin.
+`GEO = { e0, n0, pxPerM: 150/25.4 }` (`src/planer/geo.ts`) maps plan pixels linearly onto
+EPSG:25832 (`px2e`, `px2n`, also `geo.ts`). `applyBasemap()` (`tiles.ts`) builds the BBOX for the
+*current* viewport from it and fetches the WMS tile at screen resolution; `HOME` is the property.
+`e0`/`n0` come from `state.geo` (per plan; `adopt()` calls `useGeo()`, `geo.ts`), with
+`GEO_DEFAULT` = Cologne Cathedral at the plan's centre as the default. `seedFromPlace()`
+(`geosearch.ts`) sets a new plan's origin to the searched address (`geoAround`, `geo.ts`). An
+origin change calls `resetTiles()` (`tiles.ts`), because the tile rectangles hang off the origin.
 **Not** the same as `PX_PER_M` — see the README, section Scale.
