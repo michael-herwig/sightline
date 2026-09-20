@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Installiert ocx, warmt den Object Store aus ocx.lock vor und legt
+      # pnpm/task/oxlint/oxfmt/gitleaks/lefthook/node auf den PATH — kein
+      # separater `ocx pull`-Schritt nötig. https://github.com/ocx-sh/setup-ocx
+      - uses: ocx-sh/setup-ocx@v1
+      - run: ocx exec -- pnpm install --frozen-lockfile
+      - run: ocx exec -- pnpm exec playwright install --with-deps chromium
+      - run: ocx exec -- task lint
+      - run: ocx exec -- task test
+      - run: ocx exec -- task build
+      - run: ocx exec -- task test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

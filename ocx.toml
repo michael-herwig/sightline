@@ -1,0 +1,11 @@
+#:schema https://ocx.sh/schemas/project/v1.json
+# OCX project toolchain — managed by `ocx add` / `ocx remove`
+
+[tools]
+pnpm = "ocx.sh/pnpm/pnpm"
+task = "ocx.sh/go-task/task"
+gitleaks = "ocx.sh/gitleaks/gitleaks:latest"
+lefthook = "ocx.sh/evilmartians/lefthook:latest"
+node = "ocx.sh/nodejs/node:latest"
+oxfmt = "ocx.sh/oxc-project/oxfmt:latest"
+oxlint = "ocx.sh/oxc-project/oxlint:latest"

@@ -1,0 +1,45 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  # ponytail: dist/client bis Phase 3 auf output:'static' umstellt (dann dist/).
+  PAGES_ARTIFACT_PATH: dist/client
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ocx-sh/setup-ocx@v1
+      - run: ocx exec -- pnpm install --frozen-lockfile
+      - run: ocx exec -- pnpm exec playwright install --with-deps chromium
+      - run: ocx exec -- task lint
+      - run: ocx exec -- task test
+      - run: ocx exec -- task build
+      - run: ocx exec -- task test:e2e
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.PAGES_ARTIFACT_PATH }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,14 @@
+import { chromium } from "playwright";
+const out = process.argv[2];
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 1 });
+await p.goto("http://localhost:4321/planner#new=1", { waitUntil: "load" });
+await p.waitForTimeout(800);
+await p.click("#t-export");
+await p.waitForTimeout(400);
+await p.click("#exp-bom");
+await p.waitForTimeout(300);
+await p.screenshot({ path: out + "/export.png" });
+const dlg = await p.$("#expDlg");
+await dlg.screenshot({ path: out + "/export-dlg.png" });
+await b.close();

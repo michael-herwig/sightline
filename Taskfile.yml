@@ -1,0 +1,105 @@
+# All commands run through `ocx exec`, so the toolchain from ocx.toml
+# (pnpm, task, oxlint, oxfmt, lefthook, gitleaks, node) applies — the shell
+# itself doesn't come with them.
+version: '3'
+
+vars:
+  PNPM: ocx exec -- pnpm
+  # ponytail: ocx.sh/oxc-project/{oxlint,oxfmt} publish the binary under the
+  # Rust target triple instead of the short name (a package-metadata bug on
+  # ocx.sh's side, not in this repo) — the wrapper still finds it via PATH.
+  # Drop this once ocx.sh fixes the packages and `ocx exec -- oxlint`/
+  # `oxfmt` resolve directly.
+  OXC: ocx exec -- sh tools/bin/oxc.sh
+
+tasks:
+  default:
+    desc: Overview of the tasks
+    cmds:
+      - task --list
+    silent: true
+
+  setup:
+    desc: Install dependencies
+    cmds:
+      - '{{.PNPM}} install'
+    sources:
+      - package.json
+      - pnpm-lock.yaml
+    generates:
+      - node_modules/.modules.yaml
+
+  serve:
+    desc: Start the dev server — website on /, planner on /planner, storage on /api/state
+    deps: [setup]
+    cmds:
+      - '{{.PNPM}} exec astro dev --host'
+
+  build:
+    desc: Build the website (dist/)
+    deps: [setup]
+    cmds:
+      - '{{.PNPM}} exec astro build'
+
+  preview:
+    desc: Serve the production build locally
+    deps: [build]
+    cmds:
+      - ocx exec -- node ./dist/server/entry.mjs
+
+  lint:
+    desc: Astro type check and oxlint
+    deps: [setup]
+    cmds:
+      - '{{.PNPM}} exec astro check'
+      - '{{.OXC}} oxlint .'
+
+  fmt:
+    desc: Write oxfmt over src/tools/tests
+    cmds:
+      - '{{.OXC}} oxfmt src tools tests'
+
+  fmt:check:
+    desc: Check oxfmt without writing
+    cmds:
+      - '{{.OXC}} oxfmt --check src tools tests'
+
+  test:
+    desc: Vitest (unit tests)
+    deps: [setup]
+    cmds:
+      - '{{.PNPM}} exec vitest run'
+
+  test:e2e:
+    desc: Playwright tests against /planner (starts its own dev server if needed)
+    deps: [setup]
+    cmds:
+      - '{{.PNPM}} exec playwright test'
+
+  check:
+    desc: >-
+      Full check chain: lint, vitest, playwright, then tools/check.mjs (angle math,
+      bonds, boot in jsdom, server-side store). The last step needs a running
+      server — start `task serve` in a second terminal first. Playwright brings
+      its own dev server along via webServer in playwright.config.ts.
+    deps: [setup]
+    cmds:
+      - task: lint
+      - task: test
+      - task: test:e2e
+      - ocx exec -- node tools/check.mjs
+
+  images:
+    desc: Write the product image URLs from the UniFi store into the catalogues
+    cmds:
+      - ocx exec -- node tools/fetch-images.mjs
+
+  tidy:
+    desc: Remove WSL leftovers (Zone.Identifier files)
+    cmds:
+      - find . -name '*Zone.Identifier' -type f -delete -print
+
+  clean:
+    desc: Delete build artifacts and node_modules
+    cmds:
+      - rm -rf dist .astro node_modules

@@ -1,0 +1,11 @@
+pre-commit:
+  parallel: true
+  commands:
+    oxlint:
+      glob: '*.{js,mjs,cjs,ts,mts,cts}'
+      run: ocx exec -- sh tools/bin/oxc.sh oxlint {staged_files}
+    oxfmt:
+      glob: '*.{js,mjs,cjs,ts,mts,cts}'
+      run: ocx exec -- sh tools/bin/oxc.sh oxfmt --check {staged_files}
+    gitleaks:
+      run: ocx exec -- gitleaks protect --staged --redact --config .gitleaks.toml

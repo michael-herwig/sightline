@@ -1,0 +1,14 @@
+.DS_Store
+shot*.png
+node_modules/
+dist/
+.astro/
+data/
+.task/
+.env.local
+assets/
+docs/private/
+tests/e2e/**/screenshots/
+test-results/
+playwright-report/
+.claude/state/

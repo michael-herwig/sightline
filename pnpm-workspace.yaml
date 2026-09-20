@@ -1,0 +1,7 @@
+packages: []
+
+# pnpm 11: Build-Skripte sind standardmäßig blockiert. esbuild braucht seines,
+# um die native Binary zu entpacken. core-js (über jsPDF) will nur werben — aus.
+allowBuilds:
+  core-js: false
+  esbuild: true

@@ -1,0 +1,170 @@
+---
+import Base from '../layouts/Base.astro';
+import LangToggle from '../components/LangToggle.astro';
+
+// Long-form help, bilingual. The short version lives in the planner behind
+// the ?-button (HELP + help.* keys in public/planner/index.html) — keep both in sync.
+const dict = {
+  de: {
+    'page.title': 'Anleitung — Leerrohr- und Kameraplaner',
+    'back.home': '← Startseite', 'back.app': 'Planer öffnen',
+    'h1': 'Anleitung',
+    'h.tools': 'Werkzeuge', 'h.keys': 'Tasten', 'h.pipes': 'Rohre und Kabel',
+    'h.link': 'Anschlüsse', 'h.gear': 'Zentrale und Zubehör',
+    'h.plans': 'Mehrere Pläne', 'h.map': 'Karte', 'h.layout': 'Layout',
+    'h.save': 'Speichern und teilen', 'h.cost': 'Kosten',
+    't.v': 'Auswählen', 't.k': 'Kamera', 't.a': 'Access Point', 't.j': 'Abzweig / Technik', 't.h': 'Haus', 't.l': 'Kanal', 't.c': 'Kabel',
+    'tools.where': 'Die Werkzeuge liegen als Palette unten links auf der Karte. Der Pfeil darunter blendet die Namen ein; der Buchstabe in der Ecke ist die Taste.',
+    'd.v': 'Klick wählt, Ziehen verschiebt, Entf entfernt. Ziehen auf freier Fläche verschiebt die Karte, das Mausrad zoomt.',
+    'd.k': 'Modell im Katalog wählen, dann auf die Karte klicken. Der Kegel zeigt Blickwinkel und Nachtsichtweite. Eine ausgewählte Kamera bekommt einen Ring mit Griff — ziehen dreht sie, Shift rastet in 15°-Schritten.',
+    'd.a': 'Wie die Kamera, nur mit zwei Ringen statt Kegel: außen gestrichelt das Freifeld nach Hersteller, innen gefüllt die verlässliche Zone (Hälfte, draußen zwei Drittel). Beides grobe Werte, keine Messung.',
+    'd.j': 'Ein Abzweigpunkt ist ein Ort: erst das Gehäuse wählen (Schacht, Gel-Dose, Verteilerkasten oder „Innen“ für Technik im Gebäude), dann die Geräte hineinlegen (Switch, Medienkonverter, Spleißbox). Ein Klick auf ein Gerät im Katalog legt es in den gerade ausgewählten Punkt; ist keiner ausgewählt, setzt der nächste Kartenklick einen neuen Punkt damit. Ein Punkt ohne Geräte ist in Ordnung — dort laufen nur Kabel zusammen. Preis, PoE-Budget und Ports eines Punktes sind die Summe seiner Geräte.',
+    'd.h': 'Hausanschluss. Trägt Beschreibung, Anschlussart (DSL oder Glasfaser) und Geschwindigkeit. Zwei Knöpfe holen Adresse und Flurstück zur Position.',
+    'd.l': 'Zeichnet einen <strong>Graben mit Rohren</strong>: Punkte auf der Karte klicken, Enter oder Rechtsklick schließt ab, Esc verwirft. Enden rasten an jedem Element ein. Gezeichnet wird die zuletzt gewählte Graben-Vorlage aus dem Reiter „Kanäle“, Vorgabe Glasfaser im DN 50. Jedes Rohr darin hat danach seinen eigenen Typ und seinen eigenen Preis; die Erdarbeit zahlt der Graben einmal je Meter.',
+    'd.c': 'Dasselbe Zeichnen, aber ein <strong>Kabelzug ohne Rohr</strong>: an der Wand, im Keller, über den Dachboden oder als Freileitung. Kein Graben, kein Rohr, keine Erdarbeit — nur das Kabel, Vorgabe Cat6A, und mehrere Kabel dürfen später im selben Bündel liegen. Endet ein Faser-Entwurf an einer Kamera oder einem Access Point, stellt der Planer beim Abschließen selbst auf Cat6A um und sagt es: dort sitzt kein SFP-Schacht. Wer wirklich Faser will, ändert es danach im Auswahl-Panel.',
+    'k.undo': 'Rückgängig und Wiederholen. Die beiden Pfeile oben rechts tun dasselbe.',
+    'k.del': 'Ausgewähltes Element entfernen.',
+    'k.esc': 'Werkzeug abbrechen, Auswahl aufheben.',
+    'k.enter': 'Angefangenen Kanal abschließen (auch Rechtsklick).',
+    'k.dbl': 'Auf einem Kanalpunkt: entfernt ihn — ein Rechtsklick darauf tut dasselbe. Auf dem Rohr dazwischen: setzt einen neuen.',
+    'k.dblname': 'Doppelklick',
+    'p.1': 'Ein Kanal hat eine <strong>Art</strong>, und sie steht zuoberst im Panel. <strong>Kanal (Graben)</strong> heißt Erdarbeit plus Rohre: darin liegen ein bis sechs <strong>Rohre</strong>, <strong>jedes mit eigenem Typ</strong> (DN 50 oder DN 63) und damit eigenem Preis je Meter, und in jedem Rohr seine Kabel. Im Panel steht deshalb ein Block je Rohr: Rohrtyp wählen, Kabel ergänzen, Menge setzen, Rohr hinzufügen oder wegnehmen (ein Rohr geht samt seiner Kabel). So liegt ein DN 63 für den Strom neben einem DN 50 für die Daten im selben Graben. <strong>Kabel (ohne Rohr)</strong> ist ein Kabelzug an der Wand, im Keller, über den Dachboden oder als Freileitung: kein Graben, kein Rohr, <strong>keine Erdarbeit</strong> — nur das Kabel, und mehrere Kabel dürfen sich ein Bündel teilen. Die Knöpfe im Katalog sind Vorlagen für beides und stehen dort in zwei Gruppen.',
+    'p.2': '<strong>Glasfaser wird am Abzweig nicht geteilt.</strong> Sie läuft ungeschnitten durch: zwei Ziele heißen zwei Kabel im Stammrohr, die sich am Schacht auf zwei Rohre verteilen. Ein optischer Splitter gehört zu PON, nicht zu einer Punkt-zu-Punkt-Strecke über SFP. Wer wirklich trennen muss, setzt eine Spleißbox — die kostet extra und braucht einen Fachbetrieb.',
+    'p.4': 'Auf der Karte wird ein Kanal in <strong>Schichten</strong> gezeichnet: ein blasser Graben, darin je Rohr eine dünne Linie, und daneben die Kabel dieses Rohrs als farbige Stränge (Kupfer gestrichelt). Ein Kabelzug <em>ohne</em> Rohr hat keinen Graben — er liegt als blankes Bündel da. Entlang der Trasse sitzen <strong>Querschnitte</strong>: ein Kreis je Rohr, nebeneinander, mit den Kabeln darin als farbigen Punkten; bei mehr als acht Kabeln in einem Rohr steht dort die Zahl. Ein Klick darauf wählt den Kanal. Auf einer langen Trasse wiederholen sie sich etwa alle Handbreit und halten von Enden und Markern Abstand — das rechnet der Planer beim Zoomen aus. Das Auge unter dem Zoom hat dafür einen <em>eigenen</em> Schalter, unabhängig von den Beschriftungen.',
+    'p.3': 'Am <em>Ende</em> der Faser muss wieder Kupfer herauskommen. Dort steht ein Switch (mehrere Ports, PoE für Kameras und Access Points) oder ein Medienkonverter (genau ein Gerät). Beide brauchen Strom und einen trockenen Platz. Die Faser geht nie direkt in eine Kamera oder einen Access Point.',
+    'p.link1': 'Welches Gerät woran hängt, rechnet der Planer selbst aus — gespeichert wird davon nichts. Grundlage sind die Kanalenden: ein Ende, das an einem Element eingerastet ist, führt dessen Kabel an dieses Gerät. <strong>Cat6A</strong> versorgt Kameras und Access Points mit Daten und Strom (PoE), <strong>Glasfaser</strong> endet nur an einem Switch oder Medienkonverter mit SFP-Port. Durch einen passiven Abzweig laufen die Kabel hindurch; ein Switch ist dagegen das Ende einer Strecke und der Anfang der nächsten.',
+    'p.link2': 'Was nicht aufgeht, steht auf der Karte. Ein <strong>roter Ring</strong> heißt kein oder ein falscher Anschluss — kein Kabel bis hierher, oder Glasfaser direkt am Gerät. Ein <strong>gelber Ring</strong> ist eine Warnung: über 90 m Kupfer, kein PoE an der Quelle, kein Uplink. Dieselben Befunde stehen als Punkt in der Elementliste, als Warnkasten im Kosten-Panel und im Export. Das Auswahl-Panel nennt zu jedem Gerät Quelle, Strecke und die Kanäle, die dort enden; bei einem Switch dazu PoE-Budget, belegte Ports und die Geräte daran.',
+    'p.link3': 'Verbunden ist nicht versorgt. <em>Kein Kabel bis hierher</em> heißt wirklich kein Kabel. <em>Kabel endet an J3</em> heißt: dort kommt es an, aber der Punkt trägt weder Switch noch Router. <em>Versorgt über S2, aber S2 hat keinen Uplink zur Zentrale</em> heißt: die Quelle selbst hängt an nichts. Gerät und Punkt melden je ihren Teil — jede Meldung nennt das Kürzel und die Abhilfe.',
+    'p.mains': 'Strom am Punkt: Switch, Medienkonverter und Injektor bringen ein eigenes Netzteil mit und brauchen am Ort 230 V. Innen und im 19-Zoll-Rack wird die Steckdose angenommen; im Erdschacht oder Verteilerkasten muss ein <strong>NYY-J</strong> in einem Kanal dort ankommen — sonst steht am Punkt <em>braucht 230 V</em>. Ohne Graben hilft ein <strong>PoE-gespeistes Gerät</strong>: es hängt am selben Netzwerkkabel wie die Kamera und zieht aus dem PoE-Budget des Switches davor.',
+    'p.info': 'Das Panel <em>Auswahl</em> zeigt nur, was man dort tut: Eingabefelder, Listen und den Anschlussbefund. Das <strong>Datenblatt</strong> steckt hinter dem <strong>ⓘ</strong> — neben dem Modell-, Gehäuse- oder Router-Select, in jeder Geräte- und Kabelzeile und neben jeder <em>Ergänzen</em>-Auswahl. Der Dialog zeigt immer dasselbe: Name, Eigenschaften, Einzelpreis, <em>Passt für</em> / <em>Eher nicht</em>, den vollen Text und — wo es etwas zu kaufen gibt — Bild, Produktseite und Händlersuche. In der Händlerliste führt <em>Amazon</em> direkt zum geprüften Artikel, wenn der Katalog einen kennt.',
+    'p.browse': 'Stöbern, ohne etwas zu setzen: Jede <strong>Katalogkarte</strong> trägt oben rechts ein kleines <strong>ⓘ</strong> — es öffnet das Datenblatt und fügt nichts hinzu, der Klick auf die Karte selbst platziert weiter wie bisher. Wer mit dem Zeiger auf einer Karte, einer Geräte- oder Kabelzeile oder einem Auswahlfeld stehen bleibt, bekommt nach einem kurzen Moment eine <strong>Kurzkarte</strong>: Bild, Name, Preis, eine Zeile Kennzahlen und zwei Sätze, wofür das Teil da ist. Sie verschwindet beim Weggehen, beim Scrollen und mit <kbd>Esc</kbd>; auf dem Touchgerät gibt es sie nicht, dort führt das ⓘ zum selben Inhalt. Die <strong>Auswahlfelder</strong> sind nach Aufgabe gruppiert: Geräte nach <em>Switch mit PoE</em>, <em>Switch/Konverter ohne PoE</em>, <em>Speisung</em> und <em>Zubehör ohne Strom</em>, Gehäuse nach <em>Erdverlegt</em>, <em>Außen an der Wand</em> und <em>Innen</em>, Router nach Hersteller. Hinter dem Namen stehen Preis und Kennzahl, etwa <em>8× PoE · 52 W</em>.',
+    'p.adv': 'Unter der Geräteliste eines Punktes kann eine <strong>Empfehlung</strong> stehen. Kommt dort Glasfaser an und steckt kein <em>einzelnes</em> Gerät im Kasten, das zugleich einen SFP-Schacht hat und PoE abgibt (Medienkonverter plus Switch ohne SFP ist genau dieser Fall), dann nennt sie den günstigsten Switch, der beides kann — und nur, wenn er höchstens 30 € über dem liegt, was schon drin ist. Am Plan ändert sie nichts; das bleibt eine Entscheidung am Kasten.',
+    'p.link4': 'An einem Abzweig <strong>ohne Technik</strong> zählt der Planer die Kabelenden: laufen Kabel durch, gleichen sie sich aus; endet eines ohne Gegenstück, steht das als Warnung da — am Abzweig wird durchgezogen, nicht geteilt. Wer wirklich trennt, legt eine <strong>Spleißbox</strong> hinein, dann entfällt die Bilanz. An einem Punkt <strong>mit</strong> Technik wird geprüft, ob die ankommenden Faserkabel genug SFP-Schächte finden.',
+    'p.hub': 'Der <strong>Hausanschluss</strong> ist ein Ort wie jeder andere. Im Panel <em>Auswahl</em> steht dort ein <strong>Router</strong> zur Wahl (dieselben Einträge wie im Reiter <em>Zentrale</em>, einer je Plan) und darunter die <strong>Geräte in der Zentrale</strong> — Switch, Medienkonverter, Spleißbox. Daraus rechnet der Planer LAN-Ports, PoE-Abgabe und SFP-Schächte: Das UCG Fiber hat vier Ports, einen LAN-fähigen SFP+ und gibt 30 W PoE ab (genau eine Kamera direkt daran). Bei jeder FRITZ!Box ist der SFP-Schacht der <em>WAN</em>-Anschluss — ankommende Glasfaser braucht dort einen Medienkonverter oder Switch daneben, und PoE kommt nur aus einem Switch. Ohne Router bleibt die Zentrale ein Kabelpunkt. Unter der Geräteliste steht eine <strong>Empfehlung</strong> aus dem Plan — was noch fehlt oder dass es passt; das <strong>ⓘ</strong> in der Kopfzeile öffnet die Kaufberatung zur Zentrale.',
+    'p.gear': 'Router, Rekorder, Speicher und Kleinmaterial stehen nicht auf der Karte — sie liegen im Panel <em>Bauen</em> unter <em>Zentrale</em>. Ein Klick auf ein Modell zählt ein Stück hoch; Menge, Erklärung und Produktlinks stehen danach im Auswahl-Panel, der Papierkorb nimmt den Posten wieder heraus. In Elementliste, Stückliste und Summen tauchen sie auf wie jedes andere Teil. Wer eine FRITZ!Box als Router nimmt, braucht für die Kameras zusätzlich einen UNVR — die FRITZ!Box zeichnet nichts auf.',
+    'p.plans': 'Oben links stehen Name und Untertitel des Plans; der Pfeil daneben öffnet die Planliste. Dort wird umgeschaltet, gelöscht und ein neuer Plan angelegt. Jeder Plan liegt für sich im Browser — ein neuer überschreibt keinen alten. Die Startseite zeigt dieselbe Liste mit Änderungsdatum.',
+    'p.map': 'Luftbild und Liegenschaftskataster kommen als WMS von Geobasis NRW (Lizenz dl-de/zero-2-0). Kacheln liegen auf einem festen UTM-Raster und werden im Browser zwischengespeichert (30 Tage); <em>Kacheln neu laden</em> im Ebenen-Menü (Knopf unter dem Zoom) wirft sie weg. Die Ortssuche läuft über Nominatim (OpenStreetMap). Marker, Punktgriffe und Beschriftungen bleiben beim Zoomen immer gleich groß; nur Sichtkegel und Reichweiten sind maßstäblich, denn die sind eine Aussage über Meter. Liegen Elemente weit herausgezoomt dicht beieinander, fasst die Karte sie zu einem Kreis zusammen: die <strong>Zahl darin sagt, wie viele es sind, ein Klick zoomt hinein</strong>. Das ist reine Darstellung — am Plan ändert sich dabei nichts. <strong>Zurück und Vor im Browser springen zur vorherigen Kartenansicht</strong>: jeder Sprung wird gemerkt (Gruppe anklicken, Zeile in der Liste, ⌂, Treffer der Ortssuche), Schwenken und Zoomen nicht. Zeigt man auf eine Zeile in der Elementliste, hebt sich das Gegenstück auf der Karte hervor, und umgekehrt. Das Auge unter dem Zoom blendet Sichtfelder, Reichweiten, Kanäle, Beschriftungen und Querschnitte einzeln aus; Bild-Export und Druck zeigen, was die Karte zeigt. Das <strong>Zahnrad darunter</strong> stellt ein, wie die Karte aussieht: Symbolgröße, Schriftgröße, Deckkraft der Flächen (Kegel, Ringe), Kanalbreite und ob nahe Elemente zu Gruppen zusammenfallen. Auch das ist reine Darstellung, gehört aber zum Plan — es überlebt den Reload, reist über den Teilen-Link mit und gilt genauso für Bild-Export und Druck. <em>Zurücksetzen</em> im selben Kasten holt die Vorgabe zurück.',
+    'p.layout': 'Fünf Panels — Karte, Auswahl, Bauen, Elemente, Kosten — lassen sich nebeneinanderlegen, stapeln, abtrennen und in der Größe ziehen; jedes scrollt für sich. Über <em>Ansicht</em> kommt ein geschlossenes Panel zurück, dort steht auch <em>Layout zurücksetzen</em>. Größe, Anordnung, Sprache, Ausschnitt und Katalogfilter gehören zum gespeicherten Stand.',
+    'p.save': 'Der Stand liegt im Browser und wird bei jeder Änderung gesichert. <em>Speichern</em> legt ihn als JSON-Datei ab, <em>Laden</em> holt sie als neuen Plan zurück. <em>Teilen</em> schreibt den kompletten Plan komprimiert in die Adresse — wer den Link öffnet, sieht genau diesen Stand, ohne Konto und ohne Server.',
+    'p.cost': 'Preise stehen in den Katalogen (Stand 09/2026, UniFi EU Store und Richtwerte für Rohr und Kabel) und sind keine Angebote. Neben der Herstellerseite steht bei jedem Produkt ein Amazon-Link (Paket-Symbol, ebenfalls Stand 09/2026); <em>Amazon (vergleichbar)</em> heißt, dort liegt kein Originalartikel, sondern ein gleichwertiger Ersatz. Tiefbau wird nur gerechnet, wenn ein Preis je Meter Graben eingetragen ist. Der Export-Knopf oben rechts liefert ein Bild (Zwischenablage oder PNG), den Druckbogen als PDF, die Stückliste als Text, den ganzen Plan als Markdown für eine KI und den Plan als JSON. Oben im Dialog steht, welchen <strong>Bereich</strong> Bild und Druck nehmen: <em>Ausschnitt</em> zeigt genau das, was gerade auf der Karte steht, <em>Ganzer Plan</em> rückt so weit heraus, dass alles daraufpasst.',
+    'foot': 'Kartendaten: Geobasis NRW, dl-de/zero-2-0 · Ortssuche: OpenStreetMap / Nominatim',
+  },
+  en: {
+    'page.title': 'Guide — Conduit and camera planner',
+    'back.home': '← Home', 'back.app': 'Open the planner',
+    'h1': 'Guide',
+    'h.tools': 'Tools', 'h.keys': 'Keys', 'h.pipes': 'Conduits and cables',
+    'h.link': 'Connections', 'h.gear': 'Head end and accessories',
+    'h.plans': 'Several plans', 'h.map': 'Map', 'h.layout': 'Layout',
+    'h.save': 'Saving and sharing', 'h.cost': 'Costs',
+    't.v': 'Select', 't.k': 'Camera', 't.a': 'Access point', 't.j': 'Junction / gear', 't.h': 'House', 't.l': 'Conduit', 't.c': 'Cable',
+    'tools.where': 'The tools sit as a palette at the bottom left of the map. The arrow beneath shows the names; the letter in the corner is the key.',
+    'd.v': 'Click to pick, drag to move, Del to remove. Dragging empty space pans the map, the wheel zooms.',
+    'd.k': 'Pick a model in the catalogue, then click the map. The cone shows the field of view and the night reach. A selected camera gets a ring with a handle — drag it to turn, Shift snaps to 15° steps.',
+    'd.a': 'Like the camera, but with two rings instead of a cone: outer dashed is the free-field range per manufacturer, inner filled the reliable zone (half, two thirds outdoors). Rough figures, not measurements.',
+    'd.j': 'A junction point is a place: pick the housing first (shaft, gel-filled box, cabinet, or “indoors” for gear inside the building), then drop the devices into it (switch, media converter, splice box). Clicking a device in the catalogue puts it into the point that is currently selected; with nothing selected, the next click on the map creates a new point with it. A point without devices is fine — cables just meet there. Price, PoE budget and ports of a point are the sum of its devices.',
+    'd.h': 'House connection. Carries a description, the connection type (DSL or fibre) and the speed. Two buttons look up the address and the parcel at its position.',
+    'd.l': 'Draws a <strong>trench with pipes</strong>: click points on the map, Enter or right-click finishes, Esc discards. Ends snap to any element. It draws the trench template last picked in the “Conduits” tab, fibre in DN 50 by default. Every pipe in it then has its own type and its own price; the trench pays the earthwork once per metre.',
+    'd.c': 'The same drawing, but a <strong>cable run without a conduit</strong>: along a wall, through the cellar, across the loft or overhead. No trench, no pipe, no earthwork — just the cable, Cat6A by default, and several cables may share one bundle later. If a fibre draft ends at a camera or an access point, the planner switches it to Cat6A when you finish and says so: there is no SFP cage there. If you really want fibre, change it afterwards in the selection panel.',
+    'k.undo': 'Undo and redo. The two arrows at the top right do the same.',
+    'k.del': 'Remove the selected element.',
+    'k.esc': 'Cancel the tool, clear the selection.',
+    'k.enter': 'Finish the conduit you started.',
+    'k.dbl': 'On a conduit point: removes it — a right-click on it does the same. On the conduit in between: adds one.',
+    'k.dblname': 'Double-click',
+    'p.1': 'A conduit run has a <strong>kind</strong>, and it sits at the top of the panel. <strong>Conduit (trench)</strong> means earthwork plus pipes: one to six <strong>pipes</strong>, <strong>each with its own type</strong> (DN 50 or DN 63) and therefore its own price per metre, and inside every pipe its cables. The panel therefore shows one block per pipe: pick the type, add cables, set the count, add or remove a pipe (a pipe goes together with its cables). That is how a DN 63 for power sits next to a DN 50 for data in the same trench. <strong>Cable (no conduit)</strong> is a run along a wall, through the cellar, across the loft or overhead: no trench, no pipe, <strong>no earthwork</strong> — just the cable, and several cables may share one bundle. The catalogue buttons are templates for both and are listed there in two groups.',
+    'p.2': '<strong>Fibre is not split at a branch.</strong> It runs through uncut: two destinations mean two cables in the trunk, splitting onto two pipes at the shaft. An optical splitter belongs to PON, not to a point-to-point link over SFP. If a fibre really has to be cut, that needs a splice box — extra cost and a specialist.',
+    'p.4': 'On the map a conduit run is drawn in <strong>layers</strong>: a pale trench, one thin line per pipe inside it, and beside it that pipe\u2019s cables as coloured strands (copper dashed). A cable run <em>without</em> a pipe has no trench — it lies there as a bare bundle. Along the route sit <strong>cross-sections</strong>: one circle per pipe, side by side, with that pipe\u2019s cables as coloured dots inside; with more than eight cables in a pipe the number is shown instead. Clicking one selects the run. On a long route they repeat about every hand\u2019s breadth and keep their distance from the ends and from markers — the planner works that out while you zoom. The eye below the zoom has its <em>own</em> switch for them, independent of the labels.',
+    'p.3': 'At the <em>far end</em> of the fibre, copper has to come back out. That is a switch (several ports, PoE for cameras and access points) or a media converter (exactly one device). Both need power and a dry spot. The fibre never goes straight into a camera or an access point.',
+    'p.link1': 'Which device hangs off what is worked out by the planner itself — none of it is stored. The conduit ends are the basis: an end snapped onto an element carries that conduit\'s cables to this device. <strong>Cat6A</strong> feeds cameras and access points with data and power (PoE), <strong>fibre</strong> only ends at a switch or media converter with an SFP port. Cables run straight through a passive junction; a switch, by contrast, is the end of one run and the start of the next.',
+    'p.link2': 'Whatever does not add up shows on the map. A <strong>red ring</strong> means no connection or the wrong one — no cable reaches here, or fibre straight into the device. A <strong>yellow ring</strong> is a warning: over 90 m of copper, no PoE at the source, no uplink. The same findings appear as a dot in the element list, as a warning box in the cost panel and in the export. For every device the selection panel names the source, the distance and the conduits that end there; for a switch also the PoE budget, the ports in use and the devices on it.',
+    'p.link3': 'Connected is not supplied. <em>No cable reaches here</em> really means no cable. <em>The cable ends at J3</em> means it arrives, but that point carries neither a switch nor a router. <em>Fed from S2, but S2 has no uplink to the head end</em> means the source itself hangs off nothing. The device and the point each report their part — every message names the label and the remedy.',
+    'p.mains': 'Power at the point: a switch, a media converter and an injector each carry their own mains adapter and need 230 V on the spot. Indoors and in a 19-inch rack the outlet is assumed; in a buried shaft or a cabinet an <strong>NYY-J</strong> has to arrive there in a conduit — otherwise the point reads <em>needs mains power</em>. Without digging, a <strong>PoE-powered device</strong> helps: it hangs on the same network cable as the camera and draws from the PoE budget of the switch in front of it.',
+    'p.info': 'The <em>Selection</em> panel shows only what you do there: input fields, lists and the connection finding. The <strong>data sheet</strong> sits behind the <strong>ⓘ</strong> — next to the model, housing or router selector, on every device and cable row and next to every <em>add</em> selector. The dialog always shows the same: name, specs, unit price, <em>Good for</em> / <em>Not for</em>, the full text and — where there is something to buy — image, product page and dealer search. In the dealer list <em>Amazon</em> goes straight to the checked article when the catalogue knows one.',
+    'p.browse': 'Browsing without placing anything: every <strong>catalogue card</strong> carries an <strong>ⓘ</strong> on the right — it opens the data sheet and adds nothing, while clicking the card itself still places or adds as before. Resting the pointer on a card, a device or cable row or a selector brings up a <strong>short card</strong> after a moment: image, name, price, one line of key figures and two sentences on what the part is for. It goes away when you leave, when you scroll and on <kbd>Esc</kbd>; on a touch device it does not appear at all and the ⓘ leads to the same content. The <strong>selectors</strong> are grouped by job: devices under <em>Switch with PoE</em>, <em>Switch/converter without PoE</em>, <em>Power feed</em> and <em>Accessories (no power)</em>, housings under <em>Buried</em>, <em>Outdoors on a wall</em> and <em>Indoors</em>, routers by vendor. Behind the name sit price and key figure, for instance <em>8× PoE · 52 W</em>.',
+    'p.adv': 'Below the device list of a point there can be a <strong>recommendation</strong>. When fibre arrives there and no <em>single</em> device in the box both has an SFP cage and hands out PoE (a media converter plus a switch without SFP is exactly that case), it names the cheapest switch that does both — and only when it costs at most 30 € more than what is already in there. It changes nothing about the plan; that stays a decision at the box.',
+    'p.link4': 'At a branch <strong>without gear</strong> the planner counts the cable ends: cables running through balance out; one that ends with nothing to pair up shows as a warning — at a branch you pull through, you do not split. If a fibre really has to be cut, drop in a <strong>splice box</strong> and the balance no longer applies. At a point <strong>with</strong> gear it checks whether the arriving fibre cables find enough SFP cages.',
+    'p.hub': 'The <strong>house connection</strong> is a place like any other. In the <em>Selection</em> panel it offers a <strong>router</strong> (the same entries as the <em>Head end</em> tab, one per plan) and below it the <strong>gear in the head end</strong> — switch, media converter, splice box. From that the planner works out LAN ports, PoE output and SFP cages: the UCG Fiber has four ports, one LAN-capable SFP+ and hands out 30 W of PoE (exactly one camera straight off it). On every FRITZ!Box the SFP cage is the <em>WAN</em> port — arriving fibre needs a media converter or switch next to it there, and PoE only comes from a switch. Without a router the head end stays a cable point. Below the gear list a <strong>recommendation</strong> derived from the plan says what is still missing, or that it fits; the <strong>ⓘ</strong> in the header opens the head-end buying guide.',
+    'p.gear': 'Router, recorder, storage and small parts are not on the map — they live in the <em>Build</em> panel under <em>Head end</em>. A click on a model counts one more; quantity, explanation and product links then sit in the selection panel, and the bin takes the item out again. They show up in the element list, the bill of materials and the totals like any other part. Using a FRITZ!Box as the router means the cameras also need a UNVR — the FRITZ!Box records nothing.',
+    'p.plans': 'The plan name and subtitle sit at the top left; the arrow next to them opens the plan list. That is where you switch, delete and start a new plan. Each plan is stored on its own — a new one never overwrites an old one. The home page shows the same list with the date last changed.',
+    'p.map': 'Aerial imagery and the cadastral map come as WMS from Geobasis NRW (licence dl-de/zero-2-0). Tiles sit on a fixed UTM grid and are cached in the browser for 30 days; <em>Reload tiles</em> in the layer menu (button below the zoom) throws them away. Place search runs through Nominatim (OpenStreetMap). Markers, point handles and labels keep the same size at every zoom level; only cones and ranges are to scale, because those are a statement about metres. When elements sit close together at a wide zoom, the map merges them into one circle: the <strong>number inside says how many, a click zooms in</strong>. That is display only — nothing in the plan changes. <strong>Back and forward in the browser jump to the previous map view</strong>: every jump is remembered (clicking a group, a row in the list, ⌂, a place-search hit), panning and zooming are not. Hovering a row in the element list highlights its counterpart on the map, and the other way round. The eye below the zoom hides fields of view, ranges, conduits, labels and cross-sections one by one; image export and print show what the map shows. The <strong>gear below it</strong> sets how the map looks: symbol size, text size, area opacity (cones, rings), conduit width and whether nearby elements collapse into groups. That is display only as well, but it belongs to the plan — it survives a reload, travels with the share link and applies to image export and print alike. <em>Reset</em> in the same box restores the defaults.',
+    'p.layout': 'Five panels — map, selection, build, elements, costs — can be placed side by side, stacked, torn off and resized; each scrolls on its own. <em>View</em> brings a closed panel back and holds <em>Reset layout</em>. Size, arrangement, language, viewport and catalogue filters are part of the saved state.',
+    'p.save': 'The state lives in the browser and is saved on every change. <em>Save</em> writes it to a JSON file, <em>Load</em> brings it back as a new plan. <em>Share</em> writes the whole plan compressed into the address — whoever opens the link sees exactly that state, with no account and no server.',
+    'p.cost': 'Prices come from the catalogues (as of 09/2026, UniFi EU Store plus typical figures for pipe and cable) and are not quotations. Next to the manufacturer page every product carries an Amazon link (parcel icon, also as of 09/2026); <em>Amazon (similar)</em> means there is no original article there, only an equivalent substitute. Earthwork is only counted when a price per metre of trench is entered. The export button at the top right gives an image (clipboard or PNG), the print sheet as PDF, the bill of materials as text, the whole plan as Markdown for an AI, and the plan as JSON. The top of the dialog picks the <strong>area</strong> for image and print: <em>View</em> shows exactly what is on the map right now, <em>Whole plan</em> zooms out far enough to fit everything.',
+    'foot': 'Map data: Geobasis NRW, dl-de/zero-2-0 · Place search: OpenStreetMap / Nominatim',
+  },
+};
+const tools = [['V', 'v'], ['K', 'k'], ['A', 'a'], ['J', 'j'], ['H', 'h'], ['L', 'l'], ['C', 'c']];
+const keys = [['Strg+Z / Strg+Y', 'undo'], ['Entf', 'del'], ['Esc', 'esc'], ['⏎', 'enter']];
+const paras = ['1', '4', '2', '3'];
+---
+
+<Base title="Anleitung — Leerrohr- und Kameraplaner" description="Werkzeuge, Tasten, Kanäle und Speichern/Teilen im Leerrohr- und Kameraplaner erklärt.">
+  <LangToggle dict={dict} />
+  <main class="container guide">
+    <p class="back">
+      <a href="/" data-i18n="back.home">← Startseite</a> · <a href="/planner" data-i18n="back.app">Planer öffnen</a>
+    </p>
+    <h1 data-i18n="h1">Anleitung</h1>
+
+    <h2 data-i18n="h.tools">Werkzeuge</h2>
+    <p data-i18n="tools.where">—</p>
+    <dl class="rows">
+      {tools.map(([k, id]) => (
+        <><dt><kbd>{k}</kbd> <span data-i18n={`t.${id}`}>—</span></dt><dd data-i18n={`d.${id}`}>—</dd></>
+      ))}
+    </dl>
+
+    <h2 data-i18n="h.keys">Tasten</h2>
+    <dl class="rows">
+      {keys.map(([k, id]) => (<><dt><kbd>{k}</kbd></dt><dd data-i18n={`k.${id}`}>—</dd></>))}
+      <dt><kbd data-i18n="k.dblname">Doppelklick</kbd></dt><dd data-i18n="k.dbl">—</dd>
+    </dl>
+
+    <h2 data-i18n="h.pipes">Rohre und Kabel</h2>
+    {paras.map((n) => (<p class={n === '2' ? 'tip' : ''} data-i18n-html={`p.${n}`}>—</p>))}
+
+    <h2 data-i18n="h.link">Anschlüsse</h2>
+    <p data-i18n-html="p.link1">—</p>
+    <p class="tip" data-i18n-html="p.link2">—</p>
+    <p data-i18n-html="p.link3">—</p>
+    <p data-i18n-html="p.link4">—</p>
+    <p data-i18n-html="p.mains">—</p>
+    <p data-i18n-html="p.adv">—</p>
+    <p data-i18n-html="p.hub">—</p>
+    <p data-i18n-html="p.info">—</p>
+    <p data-i18n-html="p.browse">—</p>
+
+    <h2 data-i18n="h.gear">Zentrale und Zubehör</h2>
+    <p data-i18n-html="p.gear">—</p>
+
+    <h2 data-i18n="h.plans">Mehrere Pläne</h2>
+    <p data-i18n-html="p.plans">—</p>
+
+    <h2 data-i18n="h.map">Karte</h2>
+    <p data-i18n-html="p.map">—</p>
+
+    <h2 data-i18n="h.layout">Layout</h2>
+    <p data-i18n-html="p.layout">—</p>
+
+    <h2 data-i18n="h.save">Speichern und teilen</h2>
+    <p data-i18n-html="p.save">—</p>
+
+    <h2 data-i18n="h.cost">Kosten</h2>
+    <p data-i18n-html="p.cost">—</p>
+
+    <p class="foot" data-i18n="foot">—</p>
+  </main>
+</Base>
+
+<style is:global>
+  .guide { max-width: 780px; padding-top: 2.5rem; padding-bottom: 3rem; }
+  .guide .back { font-size: 0.85rem; color: var(--ink-3); }
+  .guide h2 { font-size: 1.2rem; margin-top: 2rem; }
+  .guide p strong, .guide p em { color: var(--ink); }
+  .guide .tip { border-left: 3px solid var(--accent); padding-left: 0.75rem; }
+  .guide .rows { display: grid; grid-template-columns: minmax(130px, auto) 1fr; gap: 0.4rem 1rem; }
+  .guide .rows dt, .guide .rows dd { margin: 0; font-size: 0.9rem; }
+  .guide .rows dd { color: var(--ink-2); }
+  .guide .foot { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); }
+</style>
