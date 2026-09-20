@@ -17,10 +17,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "de",
-        "en"
-      ]
+      "required": ["de", "en"]
     },
     "Tags": {
       "description": "Bilingual word lists: the search tags on a card.",
@@ -40,30 +37,17 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "de",
-        "en"
-      ]
+      "required": ["de", "en"]
     },
     "Port": {
       "description": "One connector as the data sheet lists it. `dir: \"in\"` is an uplink or a feed.",
       "type": "object",
       "properties": {
         "type": {
-          "enum": [
-            "rj45",
-            "sfp",
-            "sfp+",
-            "dc",
-            "wan"
-          ]
+          "enum": ["rj45", "sfp", "sfp+", "dc", "wan"]
         },
         "dir": {
-          "enum": [
-            "in",
-            "out",
-            "both"
-          ]
+          "enum": ["in", "out", "both"]
         },
         "n": {
           "description": "How many of this kind.",
@@ -75,20 +59,11 @@
         },
         "poe": {
           "description": "PoE class this port hands out. `\"af/at\"` is a port that negotiates either.",
-          "enum": [
-            "af",
-            "at",
-            "bt",
-            "af/at"
-          ]
+          "enum": ["af", "at", "bt", "af/at"]
         }
       },
       "additionalProperties": false,
-      "required": [
-        "type",
-        "dir",
-        "n"
-      ]
+      "required": ["type", "dir", "n"]
     },
     "Beam": {
       "description": "Radiation pattern of an access point. `h: 360` is omnidirectional.",
@@ -108,9 +83,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "h"
-      ]
+      "required": ["h"]
     },
     "Openness": {
       "description": "How far a camera can be driven without the vendor's own console or app. A field that no data sheet confirmed is left out rather than guessed — \"unknown\" and \"no\" are different answers.",
@@ -131,18 +104,11 @@
           "type": "boolean"
         },
         "api": {
-          "enum": [
-            "none",
-            "community",
-            "documented"
-          ]
+          "enum": ["none", "community", "documented"]
         },
         "cloud": {
           "description": "`\"required\"`: nothing works without the vendor cloud.",
-          "enum": [
-            "optional",
-            "required"
-          ]
+          "enum": ["optional", "required"]
         }
       },
       "additionalProperties": false
@@ -165,9 +131,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "main"
-      ]
+      "required": ["main"]
     },
     "Links": {
       "description": "Where to buy it. `vendor` is a path under the UniFi store or an absolute URL.",
@@ -245,10 +209,7 @@
           "type": "number"
         },
         "place": {
-          "enum": [
-            "in",
-            "out"
-          ]
+          "enum": ["in", "out"]
         },
         "ports": {
           "description": "Network ports on a device — conduit openings on a housing.",
@@ -318,19 +279,11 @@
         },
         "kind": {
           "description": "Which catalogue it lands in.",
-          "enum": [
-            "cam",
-            "ap",
-            "jb",
-            "infra"
-          ]
+          "enum": ["cam", "ap", "jb", "infra"]
         },
         "form": {
           "description": "Junctions only: a place (`housing`) or something that goes into one (`device`).",
-          "enum": [
-            "housing",
-            "device"
-          ]
+          "enum": ["housing", "device"]
         },
         "vendor": {
           "description": "`\"any\"` = vendor-neutral (shaft, box, cabinet); it passes every vendor filter.",
@@ -338,11 +291,7 @@
         },
         "status": {
           "description": "Anything but `current` is hidden from the pickers unless \"show deprecated\" is on.",
-          "enum": [
-            "current",
-            "deprecated",
-            "eol"
-          ]
+          "enum": ["current", "deprecated", "eol"]
         },
         "successor": {
           "description": "The id that replaces this one. Only with a status other than `current`.",
@@ -391,11 +340,7 @@
         },
         "powerIn": {
           "description": "Where a device draws power from. Housings carry none.",
-          "enum": [
-            "mains",
-            "poe",
-            "none"
-          ]
+          "enum": ["mains", "poe", "none"]
         },
         "ports": {
           "description": "The connectors as the data sheet lists them.",
@@ -406,12 +351,7 @@
         },
         "poeIn": {
           "description": "The PoE class the device itself accepts.",
-          "enum": [
-            "af",
-            "at",
-            "bt",
-            "af/at"
-          ]
+          "enum": ["af", "at", "bt", "af/at"]
         },
         "beam": {
           "$ref": "#/$defs/Beam"
@@ -430,17 +370,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "id",
-        "kind",
-        "vendor",
-        "status",
-        "order",
-        "name",
-        "price",
-        "priceDate",
-        "specs"
-      ]
+      "required": ["id", "kind", "vendor", "status", "order", "name", "price", "priceDate", "specs"]
     }
   }
 }

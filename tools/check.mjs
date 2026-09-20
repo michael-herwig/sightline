@@ -75,10 +75,11 @@ console.log("ok — the price date is stated in catalogue, cost tab, export and 
 // src/catalog/schema.json. A stale copy would wave through a field that the
 // loader then ignores in silence.
 {
-  const { SCHEMA_JSON, schemaOnDisk } = await import("./catalog-schema.mjs");
-  assert.equal(
+  const { schemaFromTypes, schemaOnDisk } = await import("./catalog-schema.mjs");
+  // Content, not text: oxfmt reformats the file after the generator wrote it.
+  assert.deepEqual(
     schemaOnDisk(),
-    SCHEMA_JSON,
+    schemaFromTypes(),
     "src/catalog/schema.json is stale — run: ocx exec -- task catalog:schema",
   );
 }

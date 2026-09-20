@@ -87,11 +87,21 @@ const schema = {
 
 export const SCHEMA_JSON = JSON.stringify(schema, null, 2) + "\n";
 
-/** What is on disk right now — tools/check.mjs compares the two. */
-export const schemaOnDisk = () => readFileSync(OUT, "utf8");
+/** What is on disk right now, parsed — oxfmt owns the file's whitespace. */
+export const schemaOnDisk = () => JSON.parse(readFileSync(OUT, "utf8"));
 
-// Importing this module must not write anything; only running it does.
+/** The schema as it should be, parsed. Compare these two, never the text. */
+export const schemaFromTypes = () => schema;
+
+// Importing this module must not write anything; only running it does. And it
+// only writes when the content really changed: oxfmt reformats the file after
+// this script has stringified it, so rewriting it every time would leave a
+// dirty tree for no reason.
 if (process.argv[1] && process.argv[1].endsWith("catalog-schema.mjs")) {
-  writeFileSync(OUT, SCHEMA_JSON);
-  console.log(`schema.json written (${Object.keys(defs).length} definitions)`);
+  const same = JSON.stringify(schemaOnDisk()) === JSON.stringify(schema);
+  if (same) console.log("schema.json is already up to date");
+  else {
+    writeFileSync(OUT, SCHEMA_JSON);
+    console.log(`schema.json written (${Object.keys(defs).length} definitions)`);
+  }
 }
