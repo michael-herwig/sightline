@@ -1,72 +1,43 @@
 ---
-// Language toggle for the website. The planner uses the same localStorage
-// key (sl-lang) so the landing page and the app don't drift apart.
-interface Props { dict: Record<string, Record<string, string>>; }
-const { dict } = Astro.props;
+// Language toggle for the website. The texts of the page travel as JSON next to
+// the button; src/site/lang.ts picks them up. That keeps the logic in a bundled,
+// typed module while every page still carries only its own dictionary — the
+// landing page does not ship the guide.
+import type { Dict } from "../site/lang";
+
+interface Props {
+  dict: { de: Dict; en: Dict };
+  /** Dictionary key for <title>. The 404 page has its own. */
+  titleKey?: string;
+}
+const { dict, titleKey } = Astro.props;
+// `</script>` inside a value would end the tag early; < is valid JSON for `<`.
+const payload = JSON.stringify({ ...dict, titleKey }).replace(/</g, "\\u003c");
 ---
 
-<button class="langtoggle secondary outline btn-sm" id="siteLang" type="button" title="Sprache umschalten" aria-label="Sprache umschalten">DE</button>
+<script type="application/json" id="i18n" set:html={payload} />
+<button
+  class="langtoggle secondary outline btn-sm"
+  id="siteLang"
+  type="button"
+  title="Sprache umschalten"
+  aria-label="Sprache umschalten">DE</button
+>
 
-<script is:inline define:vars={{ dict }}>
-  (function () {
-    const KEY = 'sl-lang';
-    // Keys used to carry the old project prefix oh-; migrate them once to sl-.
-    // Same one-time prefix swap as migrateKeys() in the planner — that file has
-    // no build step, so it cannot be imported here.
-    // ponytail: duplicated in index.astro, folded into one module in phase 4.
-    try {
-      const old = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith('oh-')) old.push(k);
-      }
-      old.forEach((k) => {
-        const to = 'sl-' + k.slice(3);
-        if (localStorage.getItem(to) === null) localStorage.setItem(to, localStorage.getItem(k));
-        localStorage.removeItem(k);
-      });
-    } catch (e) { /* private mode: nothing to carry over */ }
-    const btn = document.getElementById('siteLang');
-    let lang = 'de';
-    try {
-      const stored = localStorage.getItem(KEY);
-      if (stored === 'de' || stored === 'en') lang = stored;
-    } catch (e) { /* private mode: fall back to German */ }
-
-    const TITLE = { de: 'Sprache umschalten', en: 'Switch language' };
-
-    function apply() {
-      const d = dict[lang] || {};
-      document.documentElement.lang = lang;
-      const title = TITLE[lang] || TITLE.de;
-      btn.title = title;
-      btn.setAttribute('aria-label', title);
-      document.querySelectorAll('[data-i18n]').forEach((el) => {
-        const v = d[el.dataset.i18n];
-        if (v != null) el.textContent = v;
-      });
-      document.querySelectorAll('[data-i18n-html]').forEach((el) => {
-        const v = d[el.dataset.i18nHtml];
-        if (v != null) el.innerHTML = v;
-      });
-      document.querySelectorAll('[data-i18n-ph]').forEach((el) => {
-        const v = d[el.dataset.i18nPh];
-        if (v != null) el.placeholder = v;
-      });
-      if (d['page.title']) document.title = d['page.title'];
-      btn.textContent = lang.toUpperCase();   // shows the active language, like in the planner
-    }
-
-    btn.addEventListener('click', () => {
-      lang = lang === 'de' ? 'en' : 'de';
-      try { localStorage.setItem(KEY, lang); } catch (e) {}
-      apply();
-    });
-    // The button sits before the content: at parse time the [data-i18n] nodes don't exist yet.
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply); else apply();
-  })();
+<script>
+  import { wireLang } from "../site/lang";
+  wireLang();
 </script>
 
 <style>
-  .langtoggle { position: fixed; top: 14px; right: 16px; z-index: 5; font-weight: 600; letter-spacing: 0.04em; background: var(--panel); box-shadow: var(--shadow); }
+  .langtoggle {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 5;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
 </style>

@@ -1,0 +1,28 @@
+---
+// Bottom of the website pages: page links in the slot, the data credit on the
+// right. Both map data and place search come from someone else and have to be
+// named wherever they are shown.
+---
+
+<footer class="foot">
+  <slot />
+  <small data-i18n="foot.src">—</small>
+</footer>
+
+<style is:global>
+  .foot {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: baseline;
+  }
+  .foot small {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--ink-3);
+    margin-left: auto;
+  }
+</style>

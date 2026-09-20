@@ -1,0 +1,106 @@
+---
+// "Start fresh": an address or place, and the planner opens there. The hits come
+// from Nominatim (OpenStreetMap) — see src/site/address-search.ts for the
+// debounce and the credit line.
+---
+
+<form id="startGeo">
+  <label for="addr" data-i18n="new.label">—</label>
+  <div class="geobox">
+    <fieldset role="group">
+      <input
+        id="addr"
+        name="addr"
+        type="search"
+        autocomplete="off"
+        data-i18n-ph="new.ph"
+        placeholder="Straße, Hausnummer, Ort"
+        required
+      />
+      <button type="submit" data-i18n="new.go">—</button>
+    </fieldset>
+    <ul class="geolist" id="geoList" hidden></ul>
+  </div>
+</form>
+
+<script>
+  import { wireAddressSearch } from "../site/address-search";
+  wireAddressSearch();
+</script>
+
+<!-- Global, not scoped: the hits are built by the script and would otherwise get
+     no data-astro-cid — that is exactly how a list stayed unstyled once before. -->
+<style is:global>
+  #startGeo {
+    margin: 0;
+  }
+  #startGeo fieldset {
+    margin-bottom: 0;
+  }
+
+  /* Address hits: a list in the style of the Pico dropdown, below the field. */
+  .geobox {
+    position: relative;
+  }
+  .geolist {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% - 0.25rem);
+    z-index: 4;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    background: var(--pico-dropdown-background-color);
+    border: 1px solid var(--pico-dropdown-border-color);
+    border-radius: var(--pico-border-radius);
+    box-shadow: var(--pico-box-shadow);
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .geolist li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .geolist button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin: 0;
+    padding: 0.45rem 0.6rem;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--pico-dropdown-color);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    box-shadow: none;
+  }
+  .geolist button:hover,
+  .geolist button:focus-visible {
+    background: var(--pico-dropdown-hover-background-color);
+    outline: none;
+  }
+  .geolist .t,
+  .geolist .s {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .geolist .t {
+    font-weight: 500;
+  }
+  .geolist .s {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+  }
+  .geolist .cred {
+    padding: 0.4rem 0.6rem 0.2rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--ink-3);
+  }
+</style>

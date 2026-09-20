@@ -33,6 +33,7 @@ import { applyBasemap, applyShow, fillBasemapSelect, resetTiles } from "./tiles"
 import { restoreView } from "./render";
 import { applyLook } from "./look";
 import { applyDockLayout, retitlePanels } from "./layout";
+import { CURRENT_KEY, INDEX_KEY, LEGACY_KEY, migrateKeys, PLAN_KEY } from "../site/storage";
 import type { Lang, State } from "./types";
 
 /** One row of the plan index in localStorage. */
@@ -63,34 +64,11 @@ function setLang(l: Lang) {
 // Each plan lives under its own key, alongside a list with name
 // and modification time. A single "sl-plan" key would otherwise get silently overwritten
 // as soon as you start over from the homepage.
-const PLAN_KEY = (id: string) => "sl-plan:" + id;
-
-export const INDEX_KEY = "sl-plans",
-  CURRENT_KEY = "sl-current",
-  LEGACY_KEY = "sl-plan";
-
-// Keys used to carry the old project prefix oh-; migrate them once to sl-.
-// One prefix swap, before anything reads: copy where the new key is still free,
-// then drop the old one. Idempotent — a second run finds nothing left to do.
-// The tile cache is keyed by name, so the old one is simply thrown away.
-export function migrateKeys() {
-  try {
-    const old: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith("oh-")) old.push(k);
-    }
-    old.forEach((k) => {
-      const to = "sl-" + k.slice(3);
-      // k came straight out of localStorage.key(), so the read cannot be null.
-      if (localStorage.getItem(to) === null) localStorage.setItem(to, localStorage.getItem(k)!);
-      localStorage.removeItem(k);
-    });
-  } catch {}
-  try {
-    if (typeof caches !== "undefined" && caches.delete) caches.delete("oh-wms-v1");
-  } catch {}
-}
+//
+// The keys and the one-time oh- → sl- migration are shared with the website, so
+// they live in src/site/storage.ts. Re-exported here because the planner modules
+// have always got them from this file.
+export { CURRENT_KEY, INDEX_KEY, LEGACY_KEY, migrateKeys };
 
 export function planIndex(): PlanEntry[] {
   try {

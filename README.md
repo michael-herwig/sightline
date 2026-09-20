@@ -41,13 +41,11 @@ change time and element count (`sl-plans`), plus the most recently opened one
 delete, create a new plan. A single old `sl-plan` state migrates into the list
 automatically on first start.
 
-The keys used to start with `oh-` (the previous project prefix). `migrateKeys()`
-in the planner renames them once, before anything reads: each `oh-*` key is copied to
-`sl-*` where that name is still free, then the old one is dropped, and the old tile cache
-`oh-wms-v1` is deleted. The website runs the same few lines inline in
-`src/components/LangToggle.astro` and `src/pages/index.astro`, because a file in
-`public/` has no build step and cannot be imported from Astro. Running it twice changes
-nothing.
+The keys used to start with `oh-` (the previous project prefix). `migrateKeys()` in
+`src/site/storage.ts` renames them once, before anything reads: each `oh-*` key is copied
+to `sl-*` where that name is still free, then the old one is dropped, and the old tile
+cache `oh-wms-v1` is deleted. Planner and website call the same function — whichever page
+is opened first does the work. Running it twice changes nothing.
 
 Addresses in the page: `#new=1` creates a new plan, `#o=<id>` opens a specific one,
 `#p=<data>` adopts a shared state as a **new** plan, `#ll=<lat>,<lon>&n=<name>` also sets
@@ -63,8 +61,12 @@ its own plan) and **Recently edited** with a date per plan.
 `/help` is the long-form guide. Both pages share the same **DE/EN** toggle as the planner
 and share the localStorage key `sl-lang` — the language stays the same across the landing
 page, the guide and the app. In the planner, a **?** button top right holds the short
-version with a link to the guide. Whoever changes the UI keeps both texts in sync — see
-`CLAUDE.md`.
+version with a link to the guide.
+
+Both versions live in **one file per language**: `src/i18n/de.ts` and `src/i18n/en.ts`,
+section `planner` for the short text (`help.*`) and section `help` for the long one (the
+same name plus `.long`). A UI change therefore touches one file per language plus this
+README — the two help texts can no longer drift apart in separate files.
 
 ## Publishing (GitHub Pages, static)
 
@@ -101,6 +103,9 @@ src/
   pages/help.astro          the long-form guide
   pages/planner.astro       the planner page: markup, served at /planner
   planer/                   the app, split into flat modules (entry point boot.ts) — see CLAUDE.md for the layout
+  i18n/de.ts, en.ts         all texts, one file per language: planner, website, guide
+  components/               SiteHeader, SiteFooter, LangToggle, AddressSearch, PlanList
+  site/                     what those components run: lang, storage, address search, plan list
   styles/tokens.css         design tokens, both themes, used by planner and website
   styles/planner.css        the planner's styles
   layouts/Base.astro        website layout, maps the tokens onto Pico's --pico-*

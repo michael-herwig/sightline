@@ -1,359 +1,79 @@
 ---
-import Base from '../layouts/Base.astro';
-import LangToggle from '../components/LangToggle.astro';
+import Base from "../layouts/Base.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import AddressSearch from "../components/AddressSearch.astro";
+import PlanList from "../components/PlanList.astro";
+import { site as de } from "../i18n/de";
+import { site as en } from "../i18n/en";
 
-// The home page is not a brochure but a switch: start fresh, load a plan,
-// or pick up where you left off. Everything else lives on /help.
-// Text sits bilingually in the dictionary; the markup only carries the keys.
+// The home page is not a brochure but a switch: start fresh, load a plan, or pick
+// up where you left off. Everything else lives on /help. Texts come from
+// src/i18n/{de,en}.ts, the markup only carries the keys.
 // Look and feel comes from Pico (see Base.astro) — only what Pico doesn't cover lives here.
-const dict = {
-  de: {
-    'page.title': 'Leerrohr- und Kameraplaner',
-    'head': 'Kamera, WLAN und Leerrohr auf einem Blatt.',
-    'lede': 'Maßstabsgetreu auf Luftbild und Liegenschaftskataster planen: Sichtfelder prüfen, Trassen zeichnen, Längen und Kosten mitlaufen lassen. Läuft im Browser, ohne Konto.',
-    'new.head': 'Neu anfangen',
-    'new.label': 'Adresse oder Ort',
-    'new.ph': 'Straße, Hausnummer, Ort',
-    'new.go': 'Planen',
-    'geo.busy': 'suche …', 'geo.none': 'nichts gefunden', 'geo.failed': 'Suche nicht erreichbar',
-    'geo.cred': 'Suche: OpenStreetMap / Nominatim',
-    'open.head': 'Plan öffnen',
-    'open.hint': 'Noch kein Plan gespeichert. Eine JSON-Datei laden oder oben neu anfangen.',
-    'open.go': 'Datei wählen …',
-    'open.err': 'Das ist kein gültiger Plan. Erwartet wird die JSON-Datei aus „Speichern“.',
-    'col.name': 'Plan', 'col.n': 'Elemente', 'col.when': 'Geändert', 'col.del': 'Löschen',
-    'plan.del.confirm': 'Plan „{name}“ wirklich löschen?',
-    'foot.guide': 'Anleitung', 'foot.blank': 'Leeren Plan öffnen',
-    'foot.src': 'Karten: Geobasis NRW (dl-de/zero-2-0) · Suche: OpenStreetMap / Nominatim',
-    'resume.unnamed': 'Unbenannter Plan',
-  },
-  en: {
-    'page.title': 'Conduit and camera planner',
-    'head': 'Cameras, Wi-Fi and conduits on one sheet.',
-    'lede': 'Plan to scale on aerial imagery and the cadastral map: check fields of view, draw trenches, watch lengths and costs add up. Runs in the browser, no account.',
-    'new.head': 'Start fresh',
-    'new.label': 'Address or place',
-    'new.ph': 'Street, number, town',
-    'new.go': 'Plan',
-    'geo.busy': 'searching …', 'geo.none': 'nothing found', 'geo.failed': 'search not reachable',
-    'geo.cred': 'Search: OpenStreetMap / Nominatim',
-    'open.head': 'Open a plan',
-    'open.hint': 'No plan saved yet. Load a JSON file or start fresh above.',
-    'open.go': 'Choose a file …',
-    'open.err': 'That is not a valid plan. Expected is the JSON file from “Save”.',
-    'col.name': 'Plan', 'col.n': 'Elements', 'col.when': 'Changed', 'col.del': 'Delete',
-    'plan.del.confirm': 'Really delete the plan “{name}”?',
-    'foot.guide': 'Guide', 'foot.blank': 'Open an empty plan',
-    'foot.src': 'Maps: Geobasis NRW (dl-de/zero-2-0) · Search: OpenStreetMap / Nominatim',
-    'resume.unnamed': 'Untitled plan',
-  },
-};
+const dict = { de, en };
 ---
 
-<Base title="Leerrohr- und Kameraplaner" description="Kameras, WLAN und Leerrohre maßstabsgetreu auf Luftbild und Liegenschaftskataster planen: Adresse suchen, Plan laden oder fortsetzen.">
-  <LangToggle dict={dict} />
+<Base
+  title="Leerrohr- und Kameraplaner"
+  description="Kameras, WLAN und Leerrohre maßstabsgetreu auf Luftbild und Liegenschaftskataster planen: Adresse suchen, Plan laden oder fortsetzen."
+>
+  <SiteHeader dict={dict} />
   <main class="container landing">
     <hgroup>
       <h1 data-i18n="head">Kamera, WLAN und Leerrohr auf einem Blatt.</h1>
       <p data-i18n="lede">
-        Maßstabsgetreu auf Luftbild und Liegenschaftskataster planen: Sichtfelder prüfen,
-        Trassen zeichnen, Längen und Kosten mitlaufen lassen. Läuft im Browser, ohne Konto.
+        Maßstabsgetreu auf Luftbild und Liegenschaftskataster planen: Sichtfelder prüfen, Trassen
+        zeichnen, Längen und Kosten mitlaufen lassen. Läuft im Browser, ohne Konto.
       </p>
     </hgroup>
 
     <article>
       <header class="row">
-        <span data-i18n="new.head">Neu anfangen</span>
-        <a role="button" class="secondary outline btn-sm" href="/planner#new=1" data-i18n="foot.blank">Leeren Plan öffnen</a>
+        <span data-i18n="new.head">—</span>
+        <a
+          role="button"
+          class="secondary outline btn-sm"
+          href="/planner#new=1"
+          data-i18n="foot.blank">—</a
+        >
       </header>
-      <form id="startGeo">
-        <label for="addr" data-i18n="new.label">Adresse oder Ort</label>
-        <div class="geobox">
-          <fieldset role="group">
-            <input id="addr" name="addr" type="search" autocomplete="off"
-                   data-i18n-ph="new.ph" placeholder="Straße, Hausnummer, Ort" required />
-            <button type="submit" data-i18n="new.go">Planen</button>
-          </fieldset>
-          <ul class="geolist" id="geoList" hidden></ul>
-        </div>
-      </form>
+      <AddressSearch />
     </article>
 
-    <article>
-      <header class="row">
-        <span data-i18n="open.head">Plan öffnen</span>
-        <button class="secondary outline btn-sm" id="openFile" type="button" data-i18n="open.go">Datei wählen …</button>
-        <input type="file" id="planFile" accept="application/json" hidden />
-      </header>
-      <p class="err" id="fileErr" hidden data-i18n="open.err"></p>
-      <p class="empty" id="noPlans"><small data-i18n="open.hint">Eine zuvor gespeicherte JSON-Datei laden.</small></p>
-      <div id="resumeCard" hidden>
-        <table class="plans">
-          <thead>
-            <tr>
-              <th scope="col" data-i18n="col.name">Plan</th>
-              <th scope="col" class="num" data-i18n="col.n">Elemente</th>
-              <th scope="col" class="num" data-i18n="col.when">Geändert</th>
-              <th scope="col" class="act"><span class="sr" data-i18n="col.del">Löschen</span></th>
-            </tr>
-          </thead>
-          <tbody id="planList"></tbody>
-        </table>
-      </div>
-    </article>
+    <PlanList />
 
-    <footer class="foot">
-      <a href="/help" data-i18n="foot.guide">Anleitung</a>
-      <small data-i18n="foot.src">Karten: Geobasis NRW (dl-de/zero-2-0) · Suche: OpenStreetMap / Nominatim</small>
-    </footer>
+    <SiteFooter>
+      <a href="/help" data-i18n="foot.guide">—</a>
+    </SiteFooter>
   </main>
 </Base>
 
-<script is:inline define:vars={{ dict }}>
-  const words = () => dict[document.documentElement.lang === 'en' ? 'en' : 'de'];
-
-  // Address: the same search as in the planner, so the hit already shows up here.
-  // Clicking one carries the plan name, house address and parcel straight over.
-  const form = document.getElementById('startGeo');
-  const addr = document.getElementById('addr');
-  const geoList = document.getElementById('geoList');
-  let geoTimer = null, geoSeq = 0;
-
-  const shortName = (d) => (d.display_name || '').split(',').slice(0, 2).map((x) => x.trim()).join(' ');
-  function goTo(hit) {
-    const q = `#new=1&ll=${(+hit.lat).toFixed(6)},${(+hit.lon).toFixed(6)}&n=${encodeURIComponent(shortName(hit))}`;
-    location.href = '/planner' + q;
-  }
-  function closeGeo() { geoList.hidden = true; geoList.innerHTML = ''; }
-  function li(cls, text) { const el = document.createElement('li'); el.className = cls; el.textContent = text; return el; }
-  function note(text) { geoList.innerHTML = ''; geoList.appendChild(li('cred', text)); geoList.hidden = false; }
-
-  addr.addEventListener('input', () => {
-    clearTimeout(geoTimer);
-    const q = addr.value.trim();
-    if (q.length < 3) { closeGeo(); return; }
-    geoTimer = setTimeout(async () => {
-      const mine = ++geoSeq;
-      note(words()['geo.busy']);
-      let hits = [];
-      try {
-        const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(q)}`, { headers: { Accept: 'application/json' } });
-        if (!r.ok) throw new Error(String(r.status));
-        hits = await r.json();
-      } catch (e) { if (mine === geoSeq) note(words()['geo.failed']); return; }
-      if (mine !== geoSeq) return;
-      if (!hits.length) { note(words()['geo.none']); return; }
-      geoList.innerHTML = ''; geoList.hidden = false;
-      hits.forEach((hit) => {
-        const parts = (hit.display_name || '').split(',').map((x) => x.trim());
-        const item = document.createElement('li');
-        const b = document.createElement('button');
-        b.type = 'button';
-        const title = document.createElement('span');
-        title.className = 't';
-        title.textContent = parts.slice(0, 2).join(' ');
-        const rest = document.createElement('span');
-        rest.className = 's';
-        rest.textContent = parts.slice(2).join(', ');
-        b.append(title, rest);
-        b.addEventListener('click', () => goTo(hit));
-        item.appendChild(b);
-        geoList.appendChild(item);
-      });
-      geoList.appendChild(li('cred', words()['geo.cred']));
-    }, 450);   // Nominatim doesn't like every keystroke as a request
-  });
-  addr.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeGeo(); });
-  document.addEventListener('pointerdown', (e) => { if (!e.target.closest || !e.target.closest('.geobox')) closeGeo(); });
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const q = addr.value.trim();
-    // Starting fresh means a new plan — the old one stays put.
-    location.href = q ? `/planner#new=1&q=${encodeURIComponent(q)}` : '/planner#new=1';
-  });
-
-  // File: hand it on as a share link. That way there's exactly one path to
-  // adopt someone else's state — the one that's already validated anyway.
-  const pick = document.getElementById('planFile');
-  const err = document.getElementById('fileErr');
-  document.getElementById('openFile').addEventListener('click', () => pick.click());
-  pick.addEventListener('change', async () => {
-    const file = pick.files && pick.files[0];
-    if (!file) return;
-    err.hidden = true;
-    try {
-      const plan = JSON.parse(await file.text());
-      if (!plan || !Array.isArray(plan.items) || !Array.isArray(plan.conduits)) throw new Error('not a plan');
-      const bytes = new TextEncoder().encode(JSON.stringify(plan));
-      let payload = '1' + b64url(bytes);
-      if (typeof CompressionStream === 'function') {
-        const packed = new Uint8Array(await new Response(
-          new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'))
-        ).arrayBuffer());
-        payload = '2' + b64url(packed);
-      }
-      location.href = `/planner#p=${payload}`;
-    } catch (e) {
-      err.textContent = words()['open.err'];
-      err.hidden = false;
-    } finally {
-      pick.value = '';
-    }
-  });
-  function b64url(bytes) {
-    let out = '';
-    bytes.forEach((b) => (out += String.fromCharCode(b)));
-    return btoa(out).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  }
-
-  // Keys used to carry the old project prefix oh-; migrate them once to sl-.
-  // Same one-time prefix swap as migrateKeys() in the planner. LangToggle runs
-  // it too and runs first — this copy keeps the list honest if that ever changes.
-  // ponytail: third copy of six lines, folded into one module in phase 4.
-  try {
-    const old = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('oh-')) old.push(k);
-    }
-    old.forEach((k) => {
-      const to = 'sl-' + k.slice(3);
-      if (localStorage.getItem(to) === null) localStorage.setItem(to, localStorage.getItem(k));
-      localStorage.removeItem(k);
-    });
-  } catch (e) { /* private mode: nothing to carry over */ }
-
-  // The planner's plan list, newest first. Each entry opens exactly its own plan.
-  function plans() {
-    try {
-      const v = JSON.parse(localStorage.getItem('sl-plans') || '[]');
-      return Array.isArray(v) ? v : [];
-    } catch (e) { return []; }
-  }
-  const TRASH = '<i class="codicon codicon-trash" aria-hidden="true"></i>';
-
-  function removePlan(id) {
-    try {
-      localStorage.removeItem('sl-plan:' + id);
-      localStorage.setItem('sl-plans', JSON.stringify(plans().filter((e) => e.id !== id)));
-      if (localStorage.getItem('sl-current') === id) localStorage.removeItem('sl-current');
-    } catch (e) { /* nothing to remove */ }
-    showPlans();
-  }
-
-  function showPlans() {
-    const list = plans();
-    const card = document.getElementById('resumeCard');
-    const box = document.getElementById('planList');
-    document.getElementById('noPlans').hidden = list.length > 0;
-    if (!list.length) { card.hidden = true; return; }
-    card.hidden = false;
-    const w = words();
-    const loc = document.documentElement.lang === 'en' ? 'en-GB' : 'de-DE';
-    box.innerHTML = '';
-    list.forEach((e) => {
-      const name = (e.name || '').trim() || w['resume.unnamed'];
-      const tr = document.createElement('tr');
-      const href = `/planner#o=${encodeURIComponent(e.id)}`;
-      tr.tabIndex = 0;
-      tr.addEventListener('click', (ev) => { if (!ev.target.closest('a, button')) location.href = href; });
-      tr.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && ev.target === tr) location.href = href; });
-
-      const tdName = document.createElement('td');
-      const a = document.createElement('a');
-      a.href = href;
-      a.textContent = name;
-      tdName.appendChild(a);
-
-      const tdN = document.createElement('td');
-      tdN.className = 'num';
-      tdN.textContent = String(e.n || 0);
-
-      const tdWhen = document.createElement('td');
-      tdWhen.className = 'num';
-      if (e.updated) {
-        const time = document.createElement('time');
-        time.dateTime = new Date(e.updated).toISOString();
-        time.textContent = new Date(e.updated).toLocaleString(loc,
-          { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
-        tdWhen.appendChild(time);
-      }
-
-      const tdAct = document.createElement('td');
-      tdAct.className = 'act';
-      const del = document.createElement('button');
-      del.type = 'button';
-      del.className = 'del';
-      del.title = w['col.del'];
-      del.setAttribute('aria-label', `${w['col.del']}: ${name}`);
-      del.innerHTML = TRASH;
-      del.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        if (confirm(w['plan.del.confirm'].replace('{name}', name))) removePlan(e.id);
-      });
-      tdAct.appendChild(del);
-
-      tr.append(tdName, tdN, tdWhen, tdAct);
-      box.appendChild(tr);
-    });
-  }
-  showPlans();
-  document.getElementById('siteLang').addEventListener('click', () => setTimeout(showPlans, 0));
-</script>
-
-<!-- Global, not scoped: rows and search hits are created by the script and would
-     otherwise get no data-astro-cid — that's exactly how the table stayed unstyled before. -->
 <style is:global>
-  .landing { max-width: 880px; padding-top: 3rem; padding-bottom: 2.5rem; }
-  .landing hgroup p { max-width: 62ch; }
-  .landing article > header.row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
-  .landing article > header.row > .btn-sm { margin: -0.2rem 0; }
-  .landing form { margin: 0; }
-  .landing form fieldset { margin-bottom: 0; }
-  .landing .err { color: var(--cam); font-size: 0.85rem; margin: 0 0 0.5rem; }
-  .landing .empty { margin: 0; color: var(--ink-3); }
-
-  /* Address hits: a list in the style of the Pico dropdown, below the field. */
-  .geobox { position: relative; }
-  .geolist {
-    position: absolute; left: 0; right: 0; top: calc(100% - 0.25rem); z-index: 4;
-    margin: 0; padding: 0.25rem; list-style: none;
-    background: var(--pico-dropdown-background-color); border: 1px solid var(--pico-dropdown-border-color);
-    border-radius: var(--pico-border-radius); box-shadow: var(--pico-box-shadow);
-    max-height: 280px; overflow-y: auto;
+  .landing {
+    max-width: 880px;
+    padding-top: 3rem;
+    padding-bottom: 2.5rem;
   }
-  .geolist li { list-style: none; margin: 0; padding: 0; }
-  .geolist button {
-    display: block; width: 100%; text-align: left; margin: 0; padding: 0.45rem 0.6rem;
-    border: 0; border-radius: 6px; background: none; color: var(--pico-dropdown-color);
-    font-size: 0.9rem; line-height: 1.3; box-shadow: none;
+  .landing hgroup p {
+    max-width: 62ch;
   }
-  .geolist button:hover, .geolist button:focus-visible { background: var(--pico-dropdown-hover-background-color); outline: none; }
-  .geolist .t, .geolist .s { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .geolist .t { font-weight: 500; }
-  .geolist .s { font-size: 0.78rem; color: var(--ink-3); }
-  .geolist .cred {
-    padding: 0.4rem 0.6rem 0.2rem; border-top: 1px solid var(--line);
-    font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3);
+  .landing article > header.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
-
-  .plans { margin-bottom: 0; }
-  .plans th, .plans td { background: transparent; padding: 0.55rem 0.75rem; }
-  .plans thead th { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); }
-  .plans tbody tr { cursor: pointer; }
-  .plans tbody tr:hover td, .plans tbody tr:focus-visible td { background: var(--panel-2); }
-  .plans tbody tr:focus-visible { outline: none; }
-  .plans th.num, .plans td.num { text-align: right; }
-  .plans th.act, .plans td.act { width: 1px; padding: 0 0.5rem; text-align: center; vertical-align: middle; }
-  .plans td { vertical-align: middle; }
-  .plans tbody tr:last-child td { border-bottom: 0; }
-  .plans td.num { font-family: var(--mono); font-size: 0.8rem; font-style: italic; color: var(--ink-3); white-space: nowrap; }
-  .plans .del { display: grid; place-items: center; width: 2rem; height: 2rem; margin: 0 auto; padding: 0; border: 0; background: none; box-shadow: none; color: var(--ink-3); line-height: 1; }
-  .plans .del:hover, .plans .del:focus-visible { color: var(--cam); background: none; }
-  .plans .del .codicon { font-size: 1.25rem; }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-
-  .foot { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 1rem; align-items: baseline; }
-  .foot small { font-family: var(--mono); font-size: 0.7rem; color: var(--ink-3); margin-left: auto; }
+  .landing article > header.row > .btn-sm {
+    margin: -0.2rem 0;
+  }
+  .landing .err {
+    color: var(--cam);
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem;
+  }
+  .landing .empty {
+    margin: 0;
+    color: var(--ink-3);
+  }
 </style>

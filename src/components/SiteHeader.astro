@@ -1,0 +1,32 @@
+---
+// Top of every website page: the language toggle (fixed, top right) and — where a
+// page puts something in the slot — the back-links above the heading.
+// The planner has its own header and does not use this.
+import LangToggle from "./LangToggle.astro";
+import type { Dict } from "../site/lang";
+
+interface Props {
+  dict: { de: Dict; en: Dict };
+  titleKey?: string;
+}
+const { dict, titleKey } = Astro.props;
+---
+
+<LangToggle dict={dict} titleKey={titleKey} />
+{
+  Astro.slots.has("default") && (
+    <nav class="sitenav">
+      <slot />
+    </nav>
+  )
+}
+
+<style is:global>
+  .sitenav {
+    max-width: 780px;
+    margin-inline: auto;
+    padding: 2.5rem var(--pico-spacing) 0;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+</style>

@@ -185,9 +185,11 @@ test("/help explains the planner in both languages", async ({ page }) => {
   await expect(page.locator("#siteLang")).toBeVisible();
   await expect(page.locator("body")).toContainText("Glasfaser wird am Abzweig nicht geteilt");
   // The explanations come from the script, not from the markup.
-  await expect(page.locator('[data-i18n="d.v"]')).not.toHaveText("—");
-  await expect(page.locator('[data-i18n-html="p.2"]')).toContainText("Glasfaser");
-  await expect(page.locator('[data-i18n-html="p.mains"]')).toContainText("230 V");
+  await expect(page.locator('[data-i18n-html="tool.select.long"]')).not.toHaveText("—");
+  await expect(page.locator('[data-i18n-html="pipes.2.long"]')).toContainText("Glasfaser");
+  await expect(page.locator('[data-i18n-html="mains.long"]')).toContainText("230 V");
+  // Long texts carry markup — they must arrive as elements, not as literal tags.
+  await expect(page.locator('[data-i18n-html="tool.cond.long"] strong')).toHaveCount(1);
 
   await page.locator("#siteLang").click();
   await expect(page.locator("body")).toContainText("Fibre is not split at a branch");

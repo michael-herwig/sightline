@@ -2,15 +2,14 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { APS, CAMS, CONDUITS, INFRA, JUNCTIONS } from "../../src/planer/catalogs";
 import { T } from "../../src/planer/i18n";
+import { help as deHelp, planner as dePlanner, site as deSite } from "../../src/i18n/de";
+import { help as enHelp, planner as enPlanner, site as enSite } from "../../src/i18n/en";
 import { powerIn } from "../../src/planer/gear";
 import { whenOf } from "../../src/planer/specs";
 import { defaultState } from "../../src/planer/store";
 
 // Repo invariants that used to be text regexes in tools/check.mjs. They now run
 // against the real objects.
-const SRC = new URL("../../src/planer/", import.meta.url);
-
-const read = (f: string) => readFileSync(new URL(f, SRC), "utf8");
 
 // t() looks keys up by string, so the test does too — the literal's exact key
 // union is not what is under test here.
@@ -18,11 +17,11 @@ const texts = T as Record<"de" | "en", Record<string, string>>;
 
 describe("i18n", () => {
   it("every key exists in both languages", () => {
-    const de = Object.keys(texts.de),
-      en = Object.keys(texts.en);
-    expect(de.length).toBeGreaterThan(300);
-    expect(de.filter((k) => !(k in texts.en))).toEqual([]);
-    expect(en.filter((k) => !(k in texts.de))).toEqual([]);
+    const dk = Object.keys(texts.de),
+      ek = Object.keys(texts.en);
+    expect(dk.length).toBeGreaterThan(300);
+    expect(dk.filter((k) => !(k in texts.en))).toEqual([]);
+    expect(ek.filter((k) => !(k in texts.de))).toEqual([]);
   });
 
   it("no text is empty", () => {
@@ -30,6 +29,19 @@ describe("i18n", () => {
       (k) => !String(texts.de[k]).trim() || !String(texts.en[k]).trim(),
     );
     expect(empty).toEqual([]);
+  });
+
+  // The types in de.ts already make a missing key a build error; this catches the
+  // other half — a key that is present but never got translated or filled in.
+  const sections: [string, Record<string, string>, Record<string, string>][] = [
+    ["planner", dePlanner, enPlanner],
+    ["site", deSite, enSite],
+    ["help", deHelp, enHelp],
+  ];
+  it.each(sections)("%s: both languages are filled in", (_name, a, b) => {
+    expect(Object.keys(a).length).toBeGreaterThan(20);
+    expect(Object.keys(a).filter((k) => !a[k]?.trim() || !b[k]?.trim())).toEqual([]);
+    expect(Object.keys(b).filter((k) => !(k in a))).toEqual([]);
   });
 });
 
@@ -126,12 +138,24 @@ describe("the shipped source carries nothing location-specific", () => {
     expect(d.conduits).toEqual([]);
   });
 
-  it("no parcel numbers and no street-and-number anywhere in src/planer", () => {
+  it("no parcel numbers and no street-and-number in the shipped sources", () => {
     const parcel = /Flurstück \d/i;
     const address = /[A-ZÄÖÜ][a-zäöü]+straße \d|[A-ZÄÖÜ][a-zäöü]+ \d+, \d{5}/;
-    const files = readdirSync(SRC).filter((n) => n.endsWith(".ts"));
-    expect(files.length).toBeGreaterThan(20); // the scan must not pass by reading nothing
-    const hits = files.filter((f) => parcel.test(read(f)) || address.test(read(f)));
+    // The texts moved to src/i18n and the website scripts to src/site — both are
+    // shipped just like the planner and have to be scanned with it.
+    const dirs = ["planer/", "i18n/", "site/"].map(
+      (d) => new URL("../../src/" + d, import.meta.url),
+    );
+    const files = dirs.flatMap((dir) =>
+      readdirSync(dir)
+        .filter((n) => n.endsWith(".ts"))
+        .map((n) => new URL(n, dir)),
+    );
+    expect(files.length).toBeGreaterThan(24); // the scan must not pass by reading nothing
+    const hits = files
+      .map((f) => [f.pathname, readFileSync(f, "utf8")] as const)
+      .filter(([, src]) => parcel.test(src) || address.test(src))
+      .map(([p]) => p);
     expect(hits).toEqual([]);
   });
 });

@@ -1,0 +1,119 @@
+---
+// "Open a plan": the plans already in this browser (sl-plans / sl-plan:<id> /
+// sl-current) and a JSON file from elsewhere. A file is handed to the planner as
+// a share link, so there is exactly one checked path for adopting a foreign state.
+---
+
+<article>
+  <header class="row">
+    <span data-i18n="open.head">—</span>
+    <button class="secondary outline btn-sm" id="openFile" type="button" data-i18n="open.go"
+      >—</button
+    >
+    <input type="file" id="planFile" accept="application/json" hidden />
+  </header>
+  <p class="err" id="fileErr" hidden data-i18n="open.err"></p>
+  <p class="empty" id="noPlans"><small data-i18n="open.hint">—</small></p>
+  <div id="resumeCard" hidden>
+    <table class="plans">
+      <thead>
+        <tr>
+          <th scope="col" data-i18n="col.name">—</th>
+          <th scope="col" class="num" data-i18n="col.n">—</th>
+          <th scope="col" class="num" data-i18n="col.when">—</th>
+          <th scope="col" class="act"><span class="sr" data-i18n="col.del">—</span></th>
+        </tr>
+      </thead>
+      <tbody id="planList"></tbody>
+    </table>
+  </div>
+</article>
+
+<script>
+  import { wireOpenFile, wirePlanList } from "../site/plan-list";
+  wirePlanList();
+  wireOpenFile();
+</script>
+
+<!-- Global, not scoped: the rows are built by the script and would otherwise get
+     no data-astro-cid — that is exactly how the table stayed unstyled once. -->
+<style is:global>
+  .plans {
+    margin-bottom: 0;
+  }
+  .plans th,
+  .plans td {
+    background: transparent;
+    padding: 0.55rem 0.75rem;
+  }
+  .plans thead th {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+  }
+  .plans tbody tr {
+    cursor: pointer;
+  }
+  .plans tbody tr:hover td,
+  .plans tbody tr:focus-visible td {
+    background: var(--panel-2);
+  }
+  .plans tbody tr:focus-visible {
+    outline: none;
+  }
+  .plans th.num,
+  .plans td.num {
+    text-align: right;
+  }
+  .plans th.act,
+  .plans td.act {
+    width: 1px;
+    padding: 0 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .plans td {
+    vertical-align: middle;
+  }
+  .plans tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .plans td.num {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+  .plans .del {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin: 0 auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--ink-3);
+    line-height: 1;
+  }
+  .plans .del:hover,
+  .plans .del:focus-visible {
+    color: var(--cam);
+    background: none;
+  }
+  .plans .del .codicon {
+    font-size: 1.25rem;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

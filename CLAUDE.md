@@ -46,7 +46,7 @@ point is the last one.
 |---|---|
 | `types.ts` | the shapes from `docs/DATA-MODEL.md`; imported as types by everyone |
 | `hooks.ts` | the five late-bound calls, filled by `boot.ts` |
-| `i18n.ts` | `T`, `t()`, `tx()`, the stored language |
+| `i18n.ts` | `t()`, `tx()`, the stored language — the texts come from `src/i18n/` |
 | `geo.ts` | plan box, `GEO`, `UTM`, pixel ↔ metre, `stampGeo()` |
 | `catalogs.ts` | `CAMS`, `APS`, `JUNCTIONS`, `PIPES`, `CABLES`, `CONDUITS`, `INFRA` — prices only here |
 | `conduit.ts` | ducts, cables, pipe rates, `condName()` |
@@ -153,10 +153,11 @@ point is the last one.
 - dockview detaches inactive panels from the document. That's why `$()` falls back to
   searching the remembered panel nodes — `document.getElementById` alone isn't enough.
 - **A UI change is a help change.** Every change to tools, keys or workflows must land in
-  *three* texts: `HELP` in `src/planer/help.ts` plus its `help.*` keys in
-  `src/planer/i18n.ts` (short version in the `?` dialog), `src/pages/help.astro` (long
-  version) and `README.md`. Otherwise the docs drift away from the interface, and the user
-  is the first to notice.
+  **one i18n file per language plus the README**: `src/i18n/de.ts` and `en.ts` carry the
+  short version (`planner` section, `help.*` keys, listed by `HELP` in
+  `src/planer/help.ts`) and the long version (`help` section, the same name plus `.long`)
+  side by side, and `README.md` describes it. Since both versions sit in the same file, the
+  `?` dialog and `/help` can no longer drift apart unnoticed.
 - The website uses **Pico CSS** (`@picocss/pico`, imported in `src/layouts/Base.astro`):
   semantic elements (`<article>`, `role="group"`, `table.striped`, `.secondary.outline`)
   instead of custom button and table CSS. Colors run through the `--pico-*` variables,
@@ -242,7 +243,23 @@ point is the last one.
   working because the path didn't change.
 - Never hardcode text into markup or template strings: static text goes through
   `data-i18n`, dynamic text through `t("key")`, catalog text as `{ de, en }` via `tx()`.
-  Every new key in **both** languages.
+  Every new key in **both** languages — `src/i18n/de.ts` defines the key sets as types, so
+  a key missing from `en.ts` fails `astro check` instead of silently falling back.
+- **One i18n file per language.** `src/i18n/de.ts` and `en.ts` hold three sections:
+  `planner` (everything behind `t()`), `site` (landing page, 404, shared chrome) and `help`
+  (the long guide). Three sections rather than one object so a page only carries what it
+  shows — the planner bundle has no guide texts in it, the landing page none of either.
+  Check that with a `grep` over `dist/_astro/` after a build if you add a section.
+- The website lives in `src/components/` (`SiteHeader`, `SiteFooter`, `LangToggle`,
+  `AddressSearch`, `PlanList`) with its logic in `src/site/` — `lang.ts`, `storage.ts`,
+  `address-search.ts`, `plan-list.ts`. No inline `<script>` on the pages: a component's
+  `<script>` imports its module, Astro bundles and type-checks it. The page's texts travel
+  to `lang.ts` as JSON in `<script type="application/json" id="i18n">`, which is why
+  `define:vars` (and with it `is:inline`) is no longer needed.
+- **Every localStorage key lives in `src/site/storage.ts`** (`sl-plans`, `sl-plan:<id>`,
+  `sl-current`, `sl-lang`), together with the one-time `oh-` → `sl-` migration
+  `migrateKeys()`. The planner imports them from there through `persist.ts`, which
+  re-exports them for the modules that have always got them from it.
 - An element's properties come from `SPECS[kind]`: fixed order, fixed rating (`ok` green
   `✓` = meets the spec, `warn` yellow `!` = a limitation). Color alone never carries the
   meaning.
@@ -378,16 +395,14 @@ point is the last one.
   under `sl-current`. Never write a global `sl-plan` key again — that's exactly what
   overwrote the previous plan on a fresh start. `migrateLegacy()` lifts old states over.
 - **Every browser key starts with `sl-`.** They used to start with `oh-`.
-  `migrateKeys()` runs as the first line of `boot()`, before any read: copy each `oh-*`
-  key to `sl-*` where that name is free, drop the old one, delete the `oh-wms-v1` tile
-  cache. Idempotent — it may run on every boot. The website needs the same few lines
-  inline in `src/components/LangToggle.astro` and `src/pages/index.astro`: a file under
-  `public/` has no build step, so Astro cannot import it. Keep the three copies in step
-  until one shared module replaces them.
+  `migrateKeys()` from `src/site/storage.ts` runs as the first line of `boot()` and of
+  `wireLang()`, before any read: copy each `oh-*` key to `sl-*` where that name is free,
+  drop the old one, delete the `oh-wms-v1` tile cache. Idempotent — it may run on every
+  boot, and both entry points call the same function.
 - Language: the planner and the website share `localStorage["sl-lang"]`. The planner
-  writes it in `setLang()` and `adopt()`, the website via
-  `src/components/LangToggle.astro`. New pages must include that component, otherwise the
-  page falls back to German.
+  writes it in `setLang()` and `adopt()`, the website in `src/site/lang.ts` behind
+  `src/components/SiteHeader.astro`. New pages must include that component, otherwise the
+  page falls back to German and carries no texts.
 - **`defaultState()` starts empty.** No elements, no conduits, nothing preselected in
   infrastructure. The planner is meant for general use and must never show someone else's
   property as an example. `task check` fails as soon as content or place names land in it

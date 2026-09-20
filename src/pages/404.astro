@@ -1,32 +1,25 @@
 ---
-import Base from '../layouts/Base.astro';
-import LangToggle from '../components/LangToggle.astro';
+import Base from "../layouts/Base.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { site as de } from "../i18n/de";
+import { site as en } from "../i18n/en";
 
-const dict = {
-  de: {
-    'page.title': 'Seite nicht gefunden',
-    'h1': 'Seite nicht gefunden',
-    'lede': 'Diese Adresse gibt es hier nicht.',
-    'home': '← Zur Startseite',
-  },
-  en: {
-    'page.title': 'Page not found',
-    'h1': 'Page not found',
-    'lede': 'This address does not exist here.',
-    'home': '← Back to the homepage',
-  },
-};
+const dict = { de, en };
 ---
 
 <Base title="Seite nicht gefunden" description="Diese Seite gibt es nicht.">
-  <LangToggle dict={dict} />
+  <SiteHeader dict={dict} titleKey="nf.title" />
   <main class="container notfound">
-    <h1 data-i18n="h1">Seite nicht gefunden</h1>
-    <p data-i18n="lede">Diese Adresse gibt es hier nicht.</p>
-    <p><a href="/" data-i18n="home">← Zur Startseite</a></p>
+    <h1 data-i18n="nf.h1">Seite nicht gefunden</h1>
+    <p data-i18n="nf.lede">Diese Adresse gibt es hier nicht.</p>
+    <p><a href="/" data-i18n="nf.home">← Zur Startseite</a></p>
   </main>
 </Base>
 
 <style is:global>
-  .notfound { max-width: 640px; padding-top: 4rem; text-align: center; }
+  .notfound {
+    max-width: 640px;
+    padding-top: 4rem;
+    text-align: center;
+  }
 </style>

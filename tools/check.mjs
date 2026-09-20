@@ -55,19 +55,17 @@ console.log("ok — nothing secret in public/, .env.local stays server-side");
   const asOf = /09\/2026/;
   const wants = [
     ["src/planer/catalogs.ts", "the catalogue header"],
-    ["src/planer/i18n.ts", "the cost tab note (cost.bom.note, both languages)"],
     ["src/planer/export.ts", "the Markdown export"],
-    ["src/pages/help.astro", "the help page"],
+    ["src/i18n/de.ts", "the cost tab note and the guide"],
+    ["src/i18n/en.ts", "the cost tab note and the guide"],
   ];
   for (const [path, what] of wants) {
     const src = readFileSync(new URL("../" + path, import.meta.url), "utf8");
     assert.match(src, asOf, `no price date in ${path} — ${what}`);
   }
-  const i18n = readFileSync(new URL("../src/planer/i18n.ts", import.meta.url), "utf8");
-  assert.equal(
-    (i18n.match(/"cost\.bom\.note":/g) || []).length,
-    2,
-    "cost.bom.note must exist in both languages",
-  );
+  for (const lang of ["de", "en"]) {
+    const src = readFileSync(new URL(`../src/i18n/${lang}.ts`, import.meta.url), "utf8");
+    assert.match(src, /"cost\.bom\.note":/, `cost.bom.note is missing in ${lang}`);
+  }
 }
-console.log("ok — the price date is stated in catalogue, cost tab, export and help");
+console.log("ok — the price date is stated in catalogue, cost tab, export and guide");
