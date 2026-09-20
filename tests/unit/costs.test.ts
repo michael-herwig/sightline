@@ -10,8 +10,13 @@ const line = [
   { x: TEN_M, y: 0 },
 ];
 
-const trench = (ducts: any[], points = line) => ({ kind: "trench", ducts, points });
-const run = (cables: any[], points = line) => ({ kind: "cable", ducts: [{ cables }], points });
+// Fixtures stay loose on purpose: several of these are deliberately malformed.
+const trench = (ducts: any[], points = line): any => ({ kind: "trench", ducts, points });
+const run = (cables: any[], points = line): any => ({
+  kind: "cable",
+  ducts: [{ cables }],
+  points,
+});
 
 function load(patch: any = {}) {
   const st: any = { ...defaultState(), ...patch };

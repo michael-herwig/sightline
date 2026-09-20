@@ -1,4 +1,3 @@
-// @ts-nocheck
 // The dockview panel layout.
 import { createDockview } from "dockview";
 import { renderSide, scheduleSave } from "./hooks";
@@ -13,7 +12,7 @@ import { applyView } from "./render";
 // Panels can be placed side by side,
 // stacked, detached, and resized this way; each scrolls independently.
 // The layout itself is part of the saved state.
-const DOCK_NODES = {
+const DOCK_NODES: Record<string, string> = {
   map: "mapwrap",
   sel: "pane-sel",
   build: "pane-build",
@@ -21,19 +20,21 @@ const DOCK_NODES = {
   cost: "pane-cost",
 };
 
-const DOCK_TITLE = {
+const DOCK_TITLE: Record<string, string> = {
   map: "panel.map",
   sel: "panel.sel",
   build: "tab.build",
   list: "tab.list",
   cost: "tab.cost",
 };
-let dockTimer = null;
+let dockTimer: ReturnType<typeof setTimeout> | undefined;
 
 // dockview splits the target area 50/50 when redocking. The opposite is expected:
 // the existing layout stays, and the moved panel gets back the size
 // it had before. So we remember each panel's group size.
-const groupSize = (g) => {
+// `g`: any — a dockview group object; `dock` itself is untyped (store.ts), so
+// nothing reaching it through `dock.panels` carries real types either.
+const groupSize = (g: any): { width: number; height: number } | null => {
   if (!g) return null;
   const w = (g.api && g.api.width) || (g.element && g.element.clientWidth) || 0;
   const h = (g.api && g.api.height) || (g.element && g.element.clientHeight) || 0;
@@ -50,7 +51,8 @@ function recordDockSizes() {
   state.dockSize = out;
 }
 
-function adoptDropped(panel) {
+// `panel`: any — a dockview panel object, same reason as groupSize's `g`.
+function adoptDropped(panel: any) {
   const g = panel && panel.group;
   // Dropped into an existing group: nothing there gets touched, the panel
   // simply takes on that group's size. Only a freshly opened group gets sized.
@@ -110,7 +112,7 @@ function defaultDockLayout() {
   }
 }
 
-function fallbackLayout(host) {
+function fallbackLayout(host: HTMLElement) {
   // Without dockview (it throws, no layout at all) a plain stack remains — the
   // planner must stay usable even then.
   host.classList.add("plainlayout");
@@ -184,7 +186,8 @@ export function initLayout() {
     }, 400);
   });
   if (dock.onDidMovePanel)
-    dock.onDidMovePanel((e) => {
+    dock.onDidMovePanel((e: any) => {
+      // `e`: any — dockview's move-panel event, same reason as groupSize's `g`.
       const pl = e && e.panel;
       if (!pl) return;
       setTimeout(() => adoptDropped(pl), 0); // only once dockview has re-laid its grid
@@ -199,7 +202,7 @@ export function initLayout() {
 
 // Also called after loading a saved state — otherwise the default would stick
 // and sizes wouldn't match between two visits.
-export function applyDockLayout() {
+export function applyDockLayout(): boolean {
   if (!dock || !state.dock) return false;
   try {
     dock.fromJSON(state.dock);
@@ -210,7 +213,7 @@ export function applyDockLayout() {
 }
 
 // A closed panel would otherwise be gone. The menu brings it back.
-function reopenPanel(id) {
+function reopenPanel(id: string) {
   if (!dock) return;
   const there = dock.getPanel(id);
   if (there) {
@@ -248,7 +251,7 @@ function buildViewMenu() {
     const on = !!(dock && dock.getPanel(id));
     const b = h(
       `<button class="${on ? "" : "off"}"><span class="mk">✓</span>${esc(t(DOCK_TITLE[id]))}</button>`,
-    ).firstElementChild;
+    ).firstElementChild as HTMLElement;
     b.onclick = () => {
       reopenPanel(id);
       $("viewMenu").open = false;
@@ -257,7 +260,7 @@ function buildViewMenu() {
     list.appendChild(b);
   });
   list.appendChild(h(`<hr>`).firstElementChild);
-  const r = h(`<button>${esc(t("view.reset"))}</button>`).firstElementChild;
+  const r = h(`<button>${esc(t("view.reset"))}</button>`).firstElementChild as HTMLElement;
   r.onclick = () => {
     resetLayout();
     $("viewMenu").open = false;

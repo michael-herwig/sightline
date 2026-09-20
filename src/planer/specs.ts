@@ -1,14 +1,36 @@
-// @ts-nocheck
 // Property tables, filter facets, catalogue tabs and the buying guide.
 import { t, tx } from "./i18n";
 import { CABLES, catEntry, isHousing, isVendor } from "./catalogs";
 import { condCables, pipeRate } from "./conduit";
 import { powerIn } from "./gear";
+import type { Ap, Cam, InfraItem, Junction, Model, WhenEntry } from "./types";
+
+/**
+ * One row of a property table for a catalogue entry of kind M. `when` leaves the
+ * row out entirely — a housing has no PoE budget worth a line.
+ */
+interface SpecRow<M> {
+  k: string;
+  v: (m: M) => string;
+  g: (m: M) => "ok" | "warn";
+  when?: (m: M) => boolean;
+}
+
+// The fields the rows reach for are optional on the catalogue types (a camera has
+// no `ports`), but present on every entry of the kind the row belongs to — that is
+// what tests/unit/catalogs.test.ts pins down. Hence the `!` below, never a fallback:
+// a fallback would invent a value where the invariant is the thing being relied on.
 
 // ---------- Properties: fixed order, fixed rating ----------
 // ok   = meets the planning requirement (green)
 // warn = usable, but with a limitation worth knowing (yellow)
-export const SPECS = {
+export const SPECS: {
+  cam: SpecRow<Cam>[];
+  ap: SpecRow<Ap>[];
+  jb: SpecRow<Junction>[];
+  router: SpecRow<InfraItem>[];
+  [kind: string]: SpecRow<Model>[];
+} = {
   cam: [
     { k: "res", v: (m) => m.res, g: (m) => (/4K/.test(m.res) ? "ok" : "warn") },
     {
@@ -26,7 +48,7 @@ export const SPECS = {
     },
   ],
   ap: [
-    { k: "radio", v: (m) => m.wifi, g: () => "ok" },
+    { k: "radio", v: (m) => m.wifi!, g: () => "ok" },
     { k: "range", v: (m) => "~" + m.radius + " m", g: (m) => (m.radius >= 30 ? "ok" : "warn") },
     {
       k: "mount",
@@ -34,7 +56,7 @@ export const SPECS = {
       g: (m) => (m.out ? "ok" : "warn"),
     },
     { k: "power", v: (m) => tx(m.poe), g: () => "ok" },
-    { k: "ip", v: (m) => m.ip, g: (m) => (/IP6[5-8]/.test(m.ip) ? "ok" : "warn") },
+    { k: "ip", v: (m) => m.ip!, g: (m) => (/IP6[5-8]/.test(m.ip!) ? "ok" : "warn") },
   ],
   jb: [
     // On the housing the old line stays; on the device `powerIn` says more than "needs power" ever could.
@@ -50,7 +72,7 @@ export const SPECS = {
       g: (m) => (m.dig ? "warn" : "ok"),
     },
     { k: "mount", v: (m) => tx(m.mount), g: () => "ok" },
-    { k: "ip", v: (m) => m.ip, g: (m) => (/IP6[5-8]/.test(m.ip) ? "ok" : "warn") },
+    { k: "ip", v: (m) => m.ip!, g: (m) => (/IP6[5-8]/.test(m.ip!) ? "ok" : "warn") },
     // A power supply wants a mains socket on site — in an underground shaft that's the link.mains finding.
     {
       k: "powerIn",
@@ -58,11 +80,11 @@ export const SPECS = {
       g: (m) => (powerIn(m) === "mains" ? "warn" : "ok"),
       when: (m) => m.kind === "device",
     },
-    { k: "ports", v: (m) => m.ports + "", g: (m) => (m.ports >= 4 ? "ok" : "warn") },
+    { k: "ports", v: (m) => m.ports + "", g: (m) => (m.ports! >= 4 ? "ok" : "warn") },
     {
       k: "access",
-      v: (m) => t(/IP68/.test(m.ip) ? "spec.dig" : "spec.reachable"),
-      g: (m) => (/IP68/.test(m.ip) ? "warn" : "ok"),
+      v: (m) => t(/IP68/.test(m.ip!) ? "spec.dig" : "spec.reachable"),
+      g: (m) => (/IP68/.test(m.ip!) ? "warn" : "ok"),
     },
     // Only for devices with power: a shaft has neither an SFP port nor a PoE budget.
     {
@@ -74,13 +96,13 @@ export const SPECS = {
     {
       k: "poe",
       v: (m) => (m.poe ? m.poe + " W" : t("spec.poe.none")),
-      g: (m) => (m.poe > 0 ? "ok" : "warn"),
+      g: (m) => (m.poe! > 0 ? "ok" : "warn"),
       when: (m) => !!m.power,
     },
   ],
   // Router in the hub: LAN ports, LAN-side SFP, PoE output.
   router: [
-    { k: "ports", v: (m) => m.ports + "", g: (m) => (m.ports >= 4 ? "ok" : "warn") },
+    { k: "ports", v: (m) => m.ports + "", g: (m) => (m.ports! >= 4 ? "ok" : "warn") },
     {
       k: "sfp",
       v: (m) => t(m.sfp ? "spec.sfp.yes" : "spec.sfp.no"),
@@ -89,13 +111,22 @@ export const SPECS = {
     {
       k: "poe",
       v: (m) => (m.poe ? m.poe + " W" : t("spec.poe.none")),
-      g: (m) => (m.poe > 0 ? "ok" : "warn"),
+      g: (m) => (m.poe! > 0 ? "ok" : "warn"),
     },
   ],
 };
 
+/** One filter badge above a catalogue list, tested against an entry of kind M. */
+interface Facet<M> {
+  id: string;
+  group?: string;
+  label: string;
+  i18n?: boolean;
+  test: (m: M) => boolean;
+}
+
 // Filter badges above the camera catalog. Order is the display order.
-export const FACETS = [
+export const FACETS: Facet<Cam>[] = [
   { id: "v-ui", group: "vendor", label: "UniFi", test: (m) => isVendor(m, "ubiquiti") },
   { id: "v-reo", group: "vendor", label: "Reolink", test: (m) => isVendor(m, "reolink") },
   { id: "v-net", group: "vendor", label: "Netatmo", test: (m) => isVendor(m, "netatmo") },
@@ -112,20 +143,20 @@ export const FACETS = [
 ];
 
 // Different category, different questions — hence a separate set per tab.
-export const FACETS_AP = [
+export const FACETS_AP: Facet<Ap>[] = [
   { id: "av-ui", group: "vendor", label: "UniFi", test: (m) => isVendor(m, "ubiquiti") },
   { id: "av-tp", group: "vendor", label: "TP-Link", test: (m) => isVendor(m, "tplink") },
   { id: "av-mt", group: "vendor", label: "MikroTik", test: (m) => isVendor(m, "mikrotik") },
   { id: "av-avm", group: "vendor", label: "AVM FRITZ!", test: (m) => isVendor(m, "avm") },
   { id: "apout", label: "facet.outdoor", i18n: true, test: (m) => !!m.out },
   { id: "apin", label: "facet.indoor", i18n: true, test: (m) => !m.out },
-  { id: "ap6", label: "6 GHz", test: (m) => /6 GHz/.test(m.wifi) },
+  { id: "ap6", label: "6 GHz", test: (m) => /6 GHz/.test(m.wifi!) },
   { id: "apfar", label: "facet.range30", i18n: true, test: (m) => m.radius >= 30 },
 ];
 
 // Housings and devices sit in the same list; the two chips tell them apart.
 // "no power" stays alongside it — a surge protector is a device without power.
-export const FACETS_JB = [
+export const FACETS_JB: Facet<Junction>[] = [
   { id: "jv-ui", group: "vendor", label: "UniFi", test: (m) => isVendor(m, "ubiquiti") },
   { id: "jv-tp", group: "vendor", label: "TP-Link", test: (m) => isVendor(m, "tplink") },
   { id: "jv-mt", group: "vendor", label: "MikroTik", test: (m) => isVendor(m, "mikrotik") },
@@ -134,17 +165,19 @@ export const FACETS_JB = [
   { id: "jbhous", label: "facet.housing", i18n: true, test: (m) => m.kind === "housing" },
   { id: "jbdev", label: "facet.device", i18n: true, test: (m) => m.kind === "device" },
   { id: "jbpas", label: "facet.passive", i18n: true, test: (m) => !m.power },
-  { id: "jbsw", label: "facet.switch", i18n: true, test: (m) => !!m.power && m.ports >= 8 },
-  { id: "jbip68", label: "IP68", test: (m) => /IP6[78]/.test(m.ip) },
+  { id: "jbsw", label: "facet.switch", i18n: true, test: (m) => !!m.power && m.ports! >= 8 },
+  { id: "jbip68", label: "IP68", test: (m) => /IP6[78]/.test(m.ip!) },
 ];
 
 // Hub and accessories: only the vendor question, everything else is in the subtitle.
-export const FACETS_GEAR = [
+export const FACETS_GEAR: Facet<InfraItem>[] = [
   { id: "gv-ui", group: "vendor", label: "UniFi", test: (m) => isVendor(m, "ubiquiti") },
   { id: "gv-avm", group: "vendor", label: "AVM FRITZ!", test: (m) => isVendor(m, "avm") },
 ];
 
-export const FACET_SETS = {
+// Indexed by catalogue tab, so the value type stays the loose one — which shape a
+// facet tests is decided by the tab, exactly as with CATALOG and catEntry().
+export const FACET_SETS: Record<string, Facet<Model>[]> = {
   cam: FACETS,
   ap: FACETS_AP,
   jb: FACETS_JB,
@@ -163,7 +196,7 @@ export const CAT_TABS = [
 
 // When the model fits, when it doesn't — the sentence you'd otherwise search a forum for.
 // Kept separate from the catalog so the datasheets stay readable.
-const WHEN = {
+const WHEN: Record<string, WhenEntry> = {
   "cam:g6-bullet": {
     de: {
       yes: "Der Standardfall außen: Zufahrt, Hofseite, Stallwand. 30 m Nachtsicht decken die meisten Wege ab.",
@@ -1026,15 +1059,16 @@ const WHEN = {
   },
 };
 
-export const whenOf = (kind, key) => WHEN[kind + ":" + key] || null;
+export const whenOf = (kind: string, key: string): WhenEntry | null =>
+  WHEN[kind + ":" + key] || null;
 
 // ---------- Metric and groups: one place for select fields and hover card ----------
 // What the part provides, in one line: "8× PoE · 52 W", "2× SFP", "IP54 · 6 ports".
 // Units (PoE, SFP, W, m) are the same in both languages — only text gets translated.
-export function optHint(kind, key) {
+export function optHint(kind: string, key: string): string {
   const m = catEntry(kind, key);
   if (!m) return "";
-  const p = [];
+  const p: string[] = [];
   if (kind === "cam") p.push(m.res, m.fov >= 360 ? "PTZ" : m.fov + "°", "IR " + m.ir + " m");
   else if (kind === "ap") p.push(m.wifi, "~" + m.radius + " m");
   else if (kind === "cable") p.push(m.m.toFixed(2) + " €/m", m.max ? "max " + m.max + " m" : "");

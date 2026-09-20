@@ -1,4 +1,3 @@
-// @ts-nocheck
 // PNG, PDF, print sheet and Markdown export.
 import { lang, t, tx } from "./i18n";
 import { PX_PER_M, bboxOf } from "./geo";
@@ -24,33 +23,56 @@ import { ALKIS_LINES, BASEMAPS, wms } from "./tiles";
 import { fmtW } from "./panel-sel";
 import { exportPlan } from "./share";
 import { bomRows, copyBom } from "./panel-cost";
+import type { Item, Point, Product, View } from "./types";
+
+/** What the export dialogue's checkboxes select for print, PDF and sheet. */
+interface SheetOpts {
+  bom: boolean;
+  price: boolean;
+  items: boolean;
+  links: boolean;
+  area: string;
+}
+
+/** One entry of the product-link list on the sheet. */
+interface PLink {
+  name: string;
+  amazon: string;
+  amazonLabel: string;
+}
 
 // ---------- PDF: print sheet from map and bill of materials ----------
 // No PDF generator as a dependency — the browser's print dialog makes the PDF.
 // Tile stack out, one full image in for the box. hrefs: null = WMS address
 // directly (print), otherwise a map url→data: (image export, because an SVG used as <img>
 // isn't allowed to load anything externally).
-function sheetBackdrop(clone, box, wpx, overlay, hrefs) {
+function sheetBackdrop(
+  clone: SVGSVGElement,
+  box: View,
+  wpx: number,
+  overlay: boolean,
+  hrefs: Map<string, string> | null,
+) {
   const bm = BASEMAPS[state.basemap] || BASEMAPS.dop;
   const hpx = Math.round((wpx * box.h) / box.w),
     bbox = bboxOf(box.x, box.y, box.w, box.h);
-  const put = (layers, service, transparent, gid) => {
-    const g = clone.querySelector("#" + gid);
+  const put = (layers: string, service: string, transparent: boolean, gid: string) => {
+    const g = clone.querySelector<SVGGElement>("#" + gid);
     if (!g) return;
     g.innerHTML = "";
     const url = wms(service, layers, bbox, wpx, hpx, transparent);
     const img = document.createElementNS(NS, "image");
-    img.setAttribute("x", box.x);
-    img.setAttribute("y", box.y);
-    img.setAttribute("width", box.w);
-    img.setAttribute("height", box.h);
+    img.setAttribute("x", String(box.x));
+    img.setAttribute("y", String(box.y));
+    img.setAttribute("width", String(box.w));
+    img.setAttribute("height", String(box.h));
     img.setAttribute("preserveAspectRatio", "none");
     img.setAttribute("class", "ok instant"); // otherwise the fade-in rule (#g-tiles image { opacity: 0 }) keeps the image invisible
     img.setAttribute("href", hrefs ? hrefs.get(url) || "" : url);
     g.appendChild(img);
   };
   put(bm.layers, bm.service, false, "g-tiles");
-  const go = clone.querySelector("#g-overlay");
+  const go = clone.querySelector<SVGGElement>("#g-overlay");
   if (go) {
     go.innerHTML = "";
     go.style.display = "";
@@ -58,10 +80,10 @@ function sheetBackdrop(clone, box, wpx, overlay, hrefs) {
   if (overlay && state.basemap !== "alkis") put(ALKIS_LINES, "wms_nw_alkis", true, "g-overlay");
 }
 
-const blobToDataUrl = (b) =>
-  new Promise((res, rej) => {
+const blobToDataUrl = (b: Blob) =>
+  new Promise<string>((res, rej) => {
     const r = new FileReader();
-    r.onload = () => res(r.result);
+    r.onload = () => res(r.result as string);
     r.onerror = rej;
     r.readAsDataURL(b);
   });
@@ -69,8 +91,8 @@ const blobToDataUrl = (b) =>
 // PNG of the viewport: draw an SVG clone with page styles and embedded images via
 // <img> onto a canvas. Resolution: double the screen width.
 // Viewport as shown, or the whole plan in the screen's aspect ratio.
-function exportBox(area) {
-  let box = { ...view };
+function exportBox(area: string): View {
+  let box: View = { ...view };
   if (area === "all") {
     const cb = contentBox();
     if (cb) {
@@ -82,7 +104,7 @@ function exportBox(area) {
   return box;
 }
 
-async function renderPng(overlay, area, mime, quality) {
+async function renderPng(overlay: boolean, area: string, mime?: string, quality?: number) {
   const box = exportBox(area);
   const wpx = Math.min(4096, svg.clientWidth * 2),
     hpx = Math.round((wpx * box.h) / box.w);
@@ -91,7 +113,7 @@ async function renderPng(overlay, area, mime, quality) {
   const urls = [wms(bm.service, bm.layers, bbox, wpx, hpx, false)];
   if (overlay && state.basemap !== "alkis")
     urls.push(wms("wms_nw_alkis", ALKIS_LINES, bbox, wpx, hpx, true));
-  const hrefs = new Map();
+  const hrefs = new Map<string, string>();
   await Promise.all(
     urls.map(async (u) => {
       try {
@@ -99,13 +121,13 @@ async function renderPng(overlay, area, mime, quality) {
       } catch {}
     }),
   );
-  const clone = svg.cloneNode(true);
+  const clone = svg.cloneNode(true) as SVGSVGElement;
   clone.removeAttribute("id");
   clone.setAttribute("xmlns", NS);
   clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
   clone.setAttribute("viewBox", `${box.x} ${box.y} ${box.w} ${box.h}`);
-  clone.setAttribute("width", wpx);
-  clone.setAttribute("height", hpx);
+  clone.setAttribute("width", String(wpx));
+  clone.setAttribute("height", String(hpx));
   clone.classList.add("map");
   sheetBackdrop(clone, box, wpx, overlay, hrefs);
   // Strokes with non-scaling-stroke are measured in image pixels. The image is rendered
@@ -131,11 +153,11 @@ async function renderPng(overlay, area, mime, quality) {
     const cv = document.createElement("canvas");
     cv.width = wpx;
     cv.height = hpx;
-    const cx = cv.getContext("2d");
+    const cx = cv.getContext("2d")!;
     cx.fillStyle = "#d8d5cc";
     cx.fillRect(0, 0, wpx, hpx);
     cx.drawImage(img, 0, 0, wpx, hpx);
-    return await new Promise((res, rej) =>
+    return await new Promise<Blob>((res, rej) =>
       cv.toBlob((b) => (b ? res(b) : rej(new Error("png"))), mime || "image/png", quality),
     );
   } finally {
@@ -143,10 +165,10 @@ async function renderPng(overlay, area, mime, quality) {
   }
 }
 
-async function exportPng(copy) {
+async function exportPng(copy: boolean) {
   const overlay = !!state.overlay; // layers are already chosen on the map, not selected again here
   setStatus(t("exp.busy"));
-  let blob;
+  let blob: Blob;
   try {
     blob = await renderPng(overlay, expArea);
   } catch {
@@ -172,7 +194,7 @@ async function exportPng(copy) {
 
 let expArea = "view";
 
-const printOpts = () => ({
+const printOpts = (): SheetOpts => ({
   bom: $("exp-p-bom").checked,
   price: $("exp-p-price").checked,
   items: $("exp-p-items").checked,
@@ -185,14 +207,15 @@ const printOpts = () => ({
 function planMarkdown() {
   const c = costs(),
     de = lang === "de",
-    L = [];
+    L: string[] = [];
   const hub = state.items.find((i) => i.kind === "hub");
   const o = hub ? { x: hub.x, y: hub.y } : { x: view.x + view.w / 2, y: view.y + view.h / 2 };
-  const m = (v) => (v / PX_PER_M).toFixed(1);
-  const rel = (it) =>
+  const m = (v: number) => (v / PX_PER_M).toFixed(1);
+  const rel = (it: Item) =>
     `${m(it.x - o.x)} m ${de ? "Ost" : "east"} / ${m(o.y - it.y)} m ${de ? "Nord" : "north"}`;
   const byId = Object.fromEntries(state.items.map((i) => [i.id, i]));
-  const at = (p) => (p.at && byId[p.at] ? byId[p.at].label : `(${m(p.x - o.x)}, ${m(o.y - p.y)})`);
+  const at = (p: Point) =>
+    p.at && byId[p.at] ? byId[p.at].label : `(${m(p.x - o.x)}, ${m(o.y - p.y)})`;
   L.push(`# ${planTitle()}`, "");
   L.push(
     de
@@ -231,7 +254,7 @@ function planMarkdown() {
     );
     L.push("|---|---|---|---|---|---|---|---|---|");
     cams.forEach((i) => {
-      const md = CAMS[i.model];
+      const md = CAMS[i.model as string];
       L.push(
         `| ${i.label} | ${md.name} (${VENDORS[vendorOf(md)]}) | ${rel(i)} | ${Math.round(i.rot || 0)}° | ${md.fov >= 360 ? "PTZ" : md.fov + "°"} | ${md.ir} m | ${md.res} | ${tx(md.poe)} | ${i.note || ""} |`,
       );
@@ -248,7 +271,7 @@ function planMarkdown() {
     );
     L.push("|---|---|---|---|---|---|---|");
     aps.forEach((i) => {
-      const md = APS[i.model];
+      const md = APS[i.model as string];
       L.push(
         `| ${i.label} | ${md.name} (${VENDORS[vendorOf(md)]}) | ${rel(i)} | ${md.wifi} | ~${md.radius} m | ${md.out ? (de ? "ja" : "yes") : de ? "nein" : "no"} | ${i.note || ""} |`,
       );
@@ -265,7 +288,7 @@ function planMarkdown() {
     );
     L.push("|---|---|---|---|---|---|---|");
     jbs.forEach((i) => {
-      const md = JUNCTIONS[i.model];
+      const md = JUNCTIONS[i.model as string];
       L.push(
         `| ${i.label} | ${tx(md.name)} | ${rel(i)} | ${gearNames(i) || (de ? "keine" : "none")} | ${jbPower(i) ? (de ? "ja" : "yes") : de ? "nein" : "no"} | ${tx(md.use)} | ${i.note || ""} |`,
       );
@@ -315,7 +338,7 @@ function planMarkdown() {
       const g = LK.gear.get(it.id);
       if (!g) continue;
       const names = g.devices.length
-        ? g.devices.map((d) => d.label).join(", ")
+        ? g.devices.map((d: Item) => d.label).join(", ")
         : de
           ? "keine"
           : "none";
@@ -382,31 +405,33 @@ function planMarkdown() {
 // What belongs on the sheet — same data for print and PDF.
 function sheetData() {
   const c = costs(),
-    items = [],
-    bom = [],
-    plinks = new Map(),
+    items: { lab: string; name: string; sub: string }[] = [],
+    bom: { name: string; qty: string; amount: number }[] = [],
+    plinks = new Map<string, PLink>(),
     LK = links();
-  const add = (lab, name, sub) => items.push({ lab, name, sub: sub || "" });
+  const add = (lab: string, name: string, sub?: string) =>
+    items.push({ lab, name, sub: sub || "" });
   // The connection belongs on the sheet: either where the cable comes from or what's missing.
-  const via = (id) => {
+  const via = (id: string) => {
     const st = LK.status.get(id),
       r = LK.src.get(id);
     if (st && st.g !== "ok") return "⚠ " + linkText(st);
     return r ? t("sheet.via", { src: r.src.label, len: r.len.toFixed(0) }) : "";
   };
   c.cams.forEach((i) => {
-    const m = CAMS[i.model];
+    const m = CAMS[i.model as string];
     add(
       i.label,
-      m.name,
+      // Camera and AP names are plain strings in the catalogue, never bilingual.
+      m.name as string,
       [i.note, `${m.fov >= 360 ? "PTZ" : m.fov + "°"} · IR ${m.ir} m · ${tx(m.poe)}`, via(i.id)]
         .filter(Boolean)
         .join(" · "),
     );
   });
   c.aps.forEach((i) => {
-    const m = APS[i.model];
-    add(i.label, m.name, [i.note, m.wifi, via(i.id)].filter(Boolean).join(" · "));
+    const m = APS[i.model as string];
+    add(i.label, m.name as string, [i.note, m.wifi, via(i.id)].filter(Boolean).join(" · "));
   });
   c.hubs.forEach((i) => {
     const rt = hubRouter();
@@ -417,23 +442,23 @@ function sheetData() {
     );
   });
   c.jbs.forEach((i) => {
-    const m = JUNCTIONS[i.model];
+    const m = JUNCTIONS[i.model as string];
     add(
       i.label,
       tx(m.name),
       [i.note, gearNames(i) || tx(m.use), via(i.id)].filter(Boolean).join(" · "),
     );
   });
-  c.conds.forEach((i) => add(i.label, condName(i), fmtM(i.c.len)));
+  c.conds.forEach((i) => add(i.label!, condName(i), fmtM(i.c.len)));
   // A line item for €0 isn't a purchase — it doesn't belong on any sheet.
-  const grp = (arr, cat) => {
-    const g = {};
+  const grp = (arr: Item[], cat: Record<string, Product>) => {
+    const g: Record<string, number> = {};
     arr.forEach((i) => {
-      g[i.model] = (g[i.model] || 0) + 1;
+      g[i.model as string] = (g[i.model as string] || 0) + 1;
     });
     for (const k in g)
       if (cat[k].price)
-        bom.push({ name: tx(cat[k].name), qty: g[k] + " ×", amount: cat[k].price * g[k] });
+        bom.push({ name: tx(cat[k].name), qty: g[k] + " ×", amount: cat[k].price! * g[k] });
   };
   grp(c.cams, CAMS);
   grp(c.aps, APS);
@@ -451,7 +476,7 @@ function sheetData() {
   c.infra.forEach((i) =>
     bom.push({ name: tx(i.name), qty: i.qty + " ×", amount: i.price * i.qty }),
   );
-  const sums = [
+  const sums: [string, number][] = [
     [t("cost.sum.cams"), c.sumCams],
     [t("cost.sum.aps"), c.sumAps],
     [t("cost.sum.jbs"), c.sumJbs],
@@ -461,12 +486,12 @@ function sheetData() {
   // Product links: manufacturer page, plus — where verified — the Amazon listing.
   // The key stays the manufacturer URL, so nothing ends up duplicated on the sheet.
   [
-    ...c.cams.map((i) => CAMS[i.model]),
-    ...c.aps.map((i) => APS[i.model]),
-    ...c.jbs.map((i) => JUNCTIONS[i.model]),
+    ...c.cams.map((i) => CAMS[i.model as string]),
+    ...c.aps.map((i) => APS[i.model as string]),
+    ...c.jbs.map((i) => JUNCTIONS[i.model as string]),
     ...Object.keys(gg).map((k) => JUNCTIONS[k]),
     ...c.infra,
-  ].forEach((m) => {
+  ].forEach((m: Product) => {
     const u = productUrl(m);
     if (u && !plinks.has(u))
       plinks.set(u, {
@@ -481,9 +506,9 @@ function sheetData() {
 // PDF straight from the browser: jsPDF, loaded on demand — 400 kB that nobody
 // who only plans ever needs. Map as PNG at double resolution,
 // tables laid out by hand — a table plugin would be the next dependency.
-async function exportPdf(o) {
+async function exportPdf(o: SheetOpts) {
   setStatus(t("exp.busy"));
-  let jsPDF;
+  let jsPDF: typeof import("jspdf").jsPDF;
   try {
     ({ jsPDF } = await import("jspdf"));
   } catch {
@@ -491,7 +516,7 @@ async function exportPdf(o) {
     return;
   }
   const { c, items, bom, sums, plinks } = sheetData();
-  let png = null;
+  let png: string | null = null;
   // JPEG instead of PNG: aerial imagery compresses to a tenth the size, keeping the PDF under half a MB.
   try {
     png = await blobToDataUrl(await renderPng(!!state.overlay, o.area, "image/jpeg", 0.85));
@@ -501,13 +526,20 @@ async function exportPdf(o) {
     PW = 210 - 2 * M,
     PH = 297 - M;
   let y = M;
-  const need = (h) => {
+  const need = (h: number) => {
     if (y + h > PH) {
       doc.addPage();
       y = M;
     }
   };
-  const line = (txt, size, style, color, x, w) => {
+  const line = (
+    txt: string,
+    size: number,
+    style?: string,
+    color?: number,
+    x?: number,
+    w?: number,
+  ) => {
     doc.setFontSize(size);
     doc.setFont("helvetica", style || "normal");
     doc.setTextColor(color || 0);
@@ -516,7 +548,7 @@ async function exportPdf(o) {
     doc.text(rows, x || M, y);
     y += rows.length * size * 0.42;
   };
-  const h2 = (txt) => {
+  const h2 = (txt: string) => {
     y += 4;
     line(txt, 12, "bold");
     y += 1.5;
@@ -550,17 +582,23 @@ async function exportPdf(o) {
     doc.rect(M + (PW - w) / 2, y, w, h);
     y += h + 2;
   }
-  const row = (cols, widths, size, style, rule) => {
+  const row = (
+    cols: (string | number)[],
+    widths: number[],
+    size: number,
+    style?: string,
+    rule?: number,
+  ) => {
     doc.setFontSize(size);
     doc.setFont("helvetica", style || "normal");
     doc.setTextColor(0);
-    const cells = cols.map((c2, i) =>
+    const cells = cols.map((c2: string | number, i: number) =>
       doc.splitTextToSize(String(c2 == null ? "" : c2), widths[i] - 2),
     );
-    const h = Math.max(...cells.map((x) => x.length)) * size * 0.42 + 2.2;
+    const h = Math.max(...cells.map((x: string[]) => x.length)) * size * 0.42 + 2.2;
     need(h);
     let x = M;
-    cells.forEach((cell, i) => {
+    cells.forEach((cell: string[], i: number) => {
       const right = i === cols.length - 1 && cols.length > 2;
       doc.text(
         cell,
@@ -607,7 +645,7 @@ async function exportPdf(o) {
   setStatus(t("exp.pdf.saved"));
 }
 
-function printSheet(o) {
+function printSheet(o?: SheetOpts) {
   o = o || { bom: true, price: true, items: true, links: false, area: "view" };
   const c = costs(),
     b = bomRows(c);
@@ -628,7 +666,7 @@ function printSheet(o) {
             .replace(/<th style="text-align:right">[^<]*<\/th>/, ""),
         )
         .join("");
-  const clone = svg.cloneNode(true);
+  const clone = svg.cloneNode(true) as SVGSVGElement;
   clone.removeAttribute("id");
   clone.setAttribute("viewBox", `${box.x} ${box.y} ${box.w} ${box.h}`);
   clone.setAttribute("width", "100%");
@@ -655,7 +693,7 @@ function printSheet(o) {
             .join("")}</ul>`
         : ""
     }`;
-  sheet.querySelector(".sheetmap").appendChild(clone);
+  sheet.querySelector(".sheetmap")!.appendChild(clone);
   document.body.appendChild(sheet);
   const cleanup = () => {
     sheet.remove();
@@ -668,12 +706,12 @@ function printSheet(o) {
 export function wireExport() {
   $("exp-area")
     .querySelectorAll("[data-area]")
-    .forEach((b) => {
+    .forEach((b: HTMLElement) => {
       b.onclick = () => {
-        expArea = b.dataset.area;
+        expArea = b.dataset.area!;
         $("exp-area")
           .querySelectorAll("[data-area]")
-          .forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+          .forEach((x: Element) => x.setAttribute("aria-pressed", String(x === b)));
       };
     });
 

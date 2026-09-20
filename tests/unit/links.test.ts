@@ -24,9 +24,11 @@ function load(plan: any) {
 
 const S = (): any => state;
 const byLabel = (label: string): any => S().items.find((i: any) => i.label === label);
-const st = (label: string) => links().status.get(byLabel(label).id);
-const gear = (label: string) => links().gear.get(byLabel(label).id);
-const src = (label: string) => links().src.get(byLabel(label).id);
+// Loose on purpose: every lookup here is asserted right after, and a `!` on
+// each of the sixty call sites would only add noise.
+const st = (label: string): any => links().status.get(byLabel(label).id);
+const gear = (label: string): any => links().gear.get(byLabel(label).id);
+const src = (label: string): any => links().src.get(byLabel(label).id);
 const keys = (s: any) => (s ? [s.key, ...(s.more || []).map((m: any) => m.key)] : []);
 
 beforeEach(() => {

@@ -1,9 +1,10 @@
-// @ts-nocheck
 // Text catalogue and language: T, t(), tx(). No DOM, no state.
 
 // ---------- i18n ----------
 // Language lives in state so it travels along with server storage.
 // Static texts hang off the markup as data-i18n, dynamic ones go through t().
+import type { Lang } from "./types";
+
 export const T = {
   de: {
     "brand.sub": "Maßstab 1 : 1000 · Geobasis NRW",
@@ -895,17 +896,18 @@ export const T = {
   },
 };
 
-export let lang = "de";
+export let lang: Lang = "de";
 
-export function t(k, v) {
-  let out = (T[lang] && T[lang][k]) != null ? T[lang][k] : T.de[k] != null ? T.de[k] : k;
-  if (v) for (const n in v) out = out.split("{" + n + "}").join(v[n]);
+export function t(k: string, v?: Record<string, string | number>) {
+  const all = T as Record<string, Record<string, string>>;
+  let out = (all[lang] && all[lang][k]) != null ? all[lang][k] : all.de[k] != null ? all.de[k] : k;
+  if (v) for (const n in v) out = out.split("{" + n + "}").join(String(v[n]));
   return out;
 }
 
 // Bilingual catalog fields: { de, en } resolves to the active language,
 // everything else (product names, numbers) comes back unchanged.
-export function tx(v) {
+export function tx(v: any): any {
   return v && typeof v === "object" && !Array.isArray(v) ? (v[lang] != null ? v[lang] : v.de) : v;
 }
 
@@ -913,7 +915,7 @@ export function tx(v) {
 // while the planner speaks English.
 const LANG_KEY = "sl-lang";
 
-export function rememberLang(l) {
+export function rememberLang(l: Lang) {
   try {
     localStorage.setItem(LANG_KEY, l);
   } catch {}
@@ -929,6 +931,6 @@ export function storedLang() {
 }
 
 // Written from other modules; ES module bindings are read-only for importers.
-export const setLangValue = (v) => {
+export const setLangValue = (v: Lang) => {
   lang = v;
 };

@@ -1,5 +1,5 @@
-// @ts-nocheck
 // Nominatim address search, jumping to a place, seeding a fresh plan.
+import type { Item } from "./types";
 import { scheduleSave } from "./hooks";
 import { t } from "./i18n";
 import { GEO, UTM, e2px, geoAround, n2px, px2e, px2n, stampGeo, useGeo } from "./geo";
@@ -11,9 +11,26 @@ import { syncAspect } from "./view";
 import { resetTiles } from "./tiles";
 import { applyView, fit, jumpView } from "./render";
 
+// The Nominatim search/reverse result shape, trimmed to the fields this file reads.
+interface NominatimHit {
+  lat: string;
+  lon: string;
+  display_name?: string;
+  address?: {
+    road?: string;
+    house_number?: string;
+    postcode?: string;
+    village?: string;
+    town?: string;
+    city?: string;
+    hamlet?: string;
+    suburb?: string;
+  };
+}
+
 // ALKIS answers GetFeatureInfo and allows CORS. This lets us query the
 // parcel under a point without a key and without a second service.
-export async function parcelAt(x, y) {
+export async function parcelAt(x: number, y: number) {
   const e = px2e(x),
     n = px2n(y),
     d = 20;
@@ -26,9 +43,9 @@ export async function parcelAt(x, y) {
   if (!r.ok) throw new Error("alkis " + r.status);
   const doc2 = new DOMParser().parseFromString(await r.text(), "text/html");
   const cells = [...doc2.querySelectorAll("td")].map((td) =>
-    td.textContent.replace(/\s+/g, " ").trim(),
+    td.textContent!.replace(/\s+/g, " ").trim(),
   );
-  const after = (label) => {
+  const after = (label: string) => {
     const i = cells.findIndex((c) => c.toLowerCase().startsWith(label));
     return i >= 0 ? (cells[i + 1] || "").trim() : "";
   };
@@ -46,7 +63,7 @@ export async function parcelAt(x, y) {
 
 const NOMINATIM = "https://nominatim.openstreetmap.org";
 
-export async function geoLookup(q) {
+export async function geoLookup(q: string): Promise<NominatimHit[]> {
   const r = await fetch(`${NOMINATIM}/search?format=jsonv2&limit=6&q=${encodeURIComponent(q)}`, {
     headers: { Accept: "application/json" },
   });
@@ -54,7 +71,7 @@ export async function geoLookup(q) {
   return r.json();
 }
 
-export async function geoReverse(lat, lon) {
+export async function geoReverse(lat: number, lon: number): Promise<NominatimHit> {
   const r = await fetch(`${NOMINATIM}/reverse?format=jsonv2&zoom=18&lat=${lat}&lon=${lon}`, {
     headers: { Accept: "application/json" },
   });
@@ -62,8 +79,8 @@ export async function geoReverse(lat, lon) {
   return r.json();
 }
 
-export function shortAddress(d) {
-  const a = (d && d.address) || {};
+export function shortAddress(d: NominatimHit): string {
+  const a: NonNullable<NominatimHit["address"]> = (d && d.address) || {};
   const street = [a.road, a.house_number].filter(Boolean).join(" ");
   const place = [a.postcode, a.village || a.town || a.city || a.hamlet || a.suburb]
     .filter(Boolean)
@@ -72,7 +89,7 @@ export function shortAddress(d) {
 }
 
 // Jump to a point: roughly 150 m edge length, that's property scale.
-export function gotoLatLon(lat, lon, span) {
+export function gotoLatLon(lat: number, lon: number, span?: number) {
   const u = UTM.fwd(lat, lon);
   const w = (span || 150) * GEO.pxPerM;
   view.w = w;
@@ -82,7 +99,7 @@ export function gotoLatLon(lat, lon, span) {
   applyView();
 }
 
-export const shortPlace = (hit) =>
+export const shortPlace = (hit: NominatimHit): string =>
   (hit.display_name || "")
     .split(",")
     .slice(0, 2)
@@ -91,7 +108,7 @@ export const shortPlace = (hit) =>
 
 // A freshly created plan gets its house connection right away: viewport,
 // marker, plan name, address, and parcel — everything that follows from the hit.
-export async function seedFromPlace(place) {
+export async function seedFromPlace(place: { lat: number; lon: number; label: string }) {
   const u = UTM.fwd(place.lat, place.lon);
   state.geo = geoAround(u.e, u.n);
   useGeo(state.geo);
@@ -99,7 +116,7 @@ export async function seedFromPlace(place) {
   gotoLatLon(place.lat, place.lon, 150);
   const cx = view.x + view.w / 2,
     cy = view.y + view.h / 2;
-  const hub = {
+  const hub: Item = {
     id: uid(),
     kind: "hub",
     label: nextLabel("H"),
@@ -149,7 +166,7 @@ export async function migrateLegacyGeo() {
   const hub = state.items.find((i) => i.kind === "hub" && (i.note || "").trim());
   if (!hub) return false;
   try {
-    const hits = await geoLookup(hub.note);
+    const hits = await geoLookup(hub.note!); // guaranteed non-empty by the find() predicate above
     if (!hits || !hits.length) return false;
     const u = UTM.fwd(+hits[0].lat, +hits[0].lon);
     state.geo = {
@@ -172,9 +189,9 @@ export function wireGeosearch() {
   {
     const box = $("geoQ"),
       list = $("geoList");
-    let geoTimer = null,
+    let geoTimer: ReturnType<typeof setTimeout> | undefined,
       geoSeq = 0;
-    const show = (html) => {
+    const show = (html: string) => {
       list.innerHTML = html;
       list.hidden = false;
     };
@@ -188,7 +205,7 @@ export function wireGeosearch() {
       geoTimer = setTimeout(async () => {
         const mine = ++geoSeq;
         show(`<div class="cred">${esc(t("geo.busy"))}</div>`);
-        let hits = [];
+        let hits: NominatimHit[] = [];
         try {
           hits = await geoLookup(q);
         } catch {
@@ -203,7 +220,8 @@ export function wireGeosearch() {
         list.innerHTML = "";
         list.hidden = false;
         hits.forEach((hit) => {
-          const b = h(`<button type="button">${esc(hit.display_name)}</button>`).firstElementChild;
+          const b = h(`<button type="button">${esc(hit.display_name)}</button>`)
+            .firstElementChild as HTMLElement;
           b.onclick = () => {
             jumpView(() => gotoLatLon(+hit.lat, +hit.lon));
             geoClose();
@@ -214,14 +232,15 @@ export function wireGeosearch() {
         list.appendChild(h(`<div class="cred">${esc(t("geo.cred"))}</div>`).firstElementChild);
       }, 450); // Nominatim doesn't like keystrokes as requests
     };
-    box.onkeydown = (e) => {
+    box.onkeydown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         geoClose();
         box.blur();
       }
     };
     document.addEventListener("pointerdown", (e) => {
-      if (!e.target.closest || !e.target.closest(".geo")) geoClose();
+      const tgt = e.target as Element; // same access pattern as before, just aliased for the cast
+      if (!tgt.closest || !tgt.closest(".geo")) geoClose();
     });
   }
 }

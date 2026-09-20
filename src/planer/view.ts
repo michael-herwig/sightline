@@ -1,9 +1,9 @@
-// @ts-nocheck
 // Viewport primitives: screen scale, transforms, measurement, drag start.
 import { GEO, PX_PER_M } from "./geo";
 import { APS, CAMS } from "./catalogs";
 import { LOOK, setDrag, state, view } from "./store";
 import { mapwrap, svg } from "./dom";
+import type { Conduit, Item, View } from "./types";
 
 // ---------- Rendering: map ----------
 // Symbols stay screen-sized. Everything that's a symbol and not an area —
@@ -27,11 +27,12 @@ export function calcScale() {
 
 export let SCALE = 1;
 
-export const markerTransform = (p, rot) =>
+export const markerTransform = (p: { x: number; y: number }, rot?: number | null) =>
   `translate(${p.x} ${p.y}) scale(${SCALE})` + (rot == null ? "" : ` rotate(${rot})`);
 
 // Remember the anchor so refreshScale() can update the transform without redrawing.
-export function scaleAt(node, x, y, rot) {
+// `node` stays `any`: it comes from el(), and dataset takes the raw numbers.
+export function scaleAt(node: any, x: number, y: number, rot?: number) {
   node.dataset.sx = x;
   node.dataset.sy = y;
   if (rot != null) node.dataset.srot = rot;
@@ -69,15 +70,15 @@ export const canHistory = () => {
 export const viewState = () => ({ x: view.x, y: view.y, w: view.w, h: view.h });
 
 // ⌂ shows the plan itself, as long as one exists — otherwise the overview.
-export function contentBox() {
-  const xs = [],
-    ys = [];
+export function contentBox(): View | null {
+  const xs: number[] = [],
+    ys: number[] = [];
   // Ranges and cones of view belong in the box too, otherwise "whole plan" clips the rings.
   state.items.forEach((i) => {
     let r = 0;
-    if (i.kind === "ap" && APS[i.model] && (i.rings || "both") !== "none")
-      r = APS[i.model].radius * PX_PER_M;
-    if (i.kind === "cam" && CAMS[i.model]) r = CAMS[i.model].ir * PX_PER_M;
+    if (i.kind === "ap" && APS[i.model!] && (i.rings || "both") !== "none")
+      r = APS[i.model!].radius * PX_PER_M;
+    if (i.kind === "cam" && CAMS[i.model!]) r = CAMS[i.model!].ir * PX_PER_M;
     xs.push(i.x - r, i.x + r);
     ys.push(i.y - r, i.y + r);
   });
@@ -108,7 +109,7 @@ export function contentBox() {
   return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 
-export function toSvg(evt) {
+export function toSvg(evt: { clientX: number; clientY: number }) {
   const p = svg.createSVGPoint();
   p.x = evt.clientX;
   p.y = evt.clientY;
@@ -117,7 +118,12 @@ export function toSvg(evt) {
   return { x: q.x, y: q.y };
 }
 
-export function startDrag(e, target) {
+// What a drag holds on to: an element (move or rotate) or one point of a conduit.
+export type DragTarget =
+  | { type: "item" | "rot"; it: Item }
+  | { type: "vtx"; c: Conduit; idx: number };
+
+export function startDrag(e: PointerEvent, target: DragTarget) {
   const p = toSvg(e);
   setDrag({
     target,
@@ -137,6 +143,6 @@ export function startDrag(e, target) {
 }
 
 // Written from other modules; ES module bindings are read-only for importers.
-export const setScale = (v) => {
+export const setScale = (v: number) => {
   SCALE = v;
 };

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Hover between list and map, and the small hover card.
 import { tx } from "./i18n";
 import { CABLES, catEntry, imgUrl } from "./catalogs";
@@ -17,8 +16,8 @@ export let hoverKey = "";
 const HOVER_WAIT = 350,
   HOVER_CHARS = 220;
 
-let hoverTimer = null,
-  hoverNode = null;
+let hoverTimer: ReturnType<typeof setTimeout> | undefined,
+  hoverNode: Element | null = null;
 
 function hideHover() {
   clearTimeout(hoverTimer);
@@ -27,7 +26,7 @@ function hideHover() {
   if (n) n.hidden = true;
 }
 
-function showHover(kind, key, anchor) {
+function showHover(kind: string, key: string, anchor: Element | null) {
   const m = catEntry(kind, key),
     n = $("hovercard");
   if (!m || !n || !anchor || !anchor.isConnected) return;
@@ -62,7 +61,9 @@ function showHover(kind, key, anchor) {
 }
 
 // An <option> has no hover. So the card attaches to the field and shows what's selected.
-export function hoverSel(s, kind) {
+// `s`: any — an <input>/<select>/<button> depending on the call site (catalog field,
+// device row, cable row); same DOM-plumbing ambiguity dom.ts's $() is `any` for.
+export function hoverSel(s: any, kind: string) {
   if (!s) return;
   const set = () => s.setAttribute("data-hover", kind + ":" + s.value);
   set();
@@ -76,21 +77,22 @@ export function hoverSel(s, kind) {
 // Hover links list and map in both directions: a class, no state,
 // no renderMap(). If the map redraws, the hover is gone — that's fine.
 // mouseover/mouseout instead of mouseenter/mouseleave, because both sides use delegation.
-function hoverAt(target) {
+function hoverAt(target: Element | null): string {
   const n =
     target &&
     target.closest &&
     target.closest(".lrow[data-sk], [data-goto], #g-markers .marker, #g-conduits g.conduit");
   if (!n) return "";
-  if (n.dataset && n.dataset.sk) return n.dataset.sk;
-  if (n.getAttribute("data-goto")) return n.getAttribute("data-goto");
-  const id = n.getAttribute("data-id");
-  if (id) return (n.classList.contains("conduit") ? "conduit:" : "item:") + id;
+  const nd = n as HTMLElement; // .lrow/.marker/.conduit: HTML or SVG, both carry dataset
+  if (nd.dataset && nd.dataset.sk) return nd.dataset.sk;
+  if (nd.getAttribute("data-goto")) return nd.getAttribute("data-goto")!;
+  const id = nd.getAttribute("data-id");
+  if (id) return (nd.classList.contains("conduit") ? "conduit:" : "item:") + id;
   // A cluster stands in for its members — it can only be highlighted as a whole.
   return "";
 }
 
-function setHover(key) {
+function setHover(key: string) {
   if (key === hoverKey) return;
   hoverKey = key;
   document
@@ -110,7 +112,7 @@ function setHover(key) {
 }
 
 // Written from other modules; ES module bindings are read-only for importers.
-export const setHoverKey = (v) => {
+export const setHoverKey = (v: string) => {
   hoverKey = v;
 };
 
@@ -119,13 +121,14 @@ export function wireHover() {
     // On a touch device there's no hover — the ⓘ is enough there.
     const coarse = () =>
       typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
-    const over = (e) => {
-      const a = e.target.closest && e.target.closest("[data-hover]");
+    const over = (e: MouseEvent) => {
+      const t = e.target as Element | null;
+      const a = t && t.closest && t.closest("[data-hover]");
       if (a === hoverNode) return;
       hideHover();
       if (!a || coarse()) return;
       hoverNode = a;
-      const v = a.getAttribute("data-hover"),
+      const v = a.getAttribute("data-hover")!, // guaranteed by the [data-hover] selector above
         i = v.indexOf(":");
       hoverTimer = setTimeout(() => showHover(v.slice(0, i), v.slice(i + 1), a), HOVER_WAIT);
     };
@@ -133,7 +136,7 @@ export function wireHover() {
     document.addEventListener("mouseover", over);
     document.addEventListener("mouseenter", over, true);
     document.addEventListener("mouseout", (e) => {
-      if (hoverNode && !hoverNode.contains(e.relatedTarget)) hideHover();
+      if (hoverNode && !hoverNode.contains(e.relatedTarget as Node | null)) hideHover();
     });
     document.addEventListener(
       "mouseleave",
@@ -154,9 +157,9 @@ export function wireHover() {
     );
   }
 
-  document.addEventListener("mouseover", (e) => setHover(hoverAt(e.target)));
+  document.addEventListener("mouseover", (e) => setHover(hoverAt(e.target as Element | null)));
 
   document.addEventListener("mouseout", (e) => {
-    if (!hoverAt(e.relatedTarget)) setHover("");
+    if (!hoverAt(e.relatedTarget as Element | null)) setHover("");
   });
 }

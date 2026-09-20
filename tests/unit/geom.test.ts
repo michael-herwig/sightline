@@ -114,11 +114,13 @@ describe("pointAtLen and pathMid", () => {
 });
 
 describe("sectionOffsets", () => {
+  // sectionOffsets() only reads the points; the conduit itself never comes into it.
+  const NO_CONDUIT: any = {};
   const line = (len: number, at?: string) => [P(0, 0, at), P(len, 0)];
 
   it("one cross-section in the middle, then a comb every SECTION_STEP screen points", () => {
     const total = 1000;
-    const out = sectionOffsets({}, line(total), 1);
+    const out = sectionOffsets(NO_CONDUIT, line(total), 1);
     expect(out).toEqual([60, 280, 500, 720, 940]);
     // Sorted, inside the route, and clear of both ends.
     expect(out.every((o) => o >= SECTION_EDGE && o <= total - SECTION_EDGE)).toBe(true);
@@ -126,19 +128,19 @@ describe("sectionOffsets", () => {
   });
 
   it("the zoom factor scales step and clearance alike", () => {
-    expect(sectionOffsets({}, line(1000), 2)).toEqual([500]);
-    expect(sectionOffsets({}, line(2000), 2)).toEqual([120, 560, 1000, 1440, 1880]);
-    expect(sectionOffsets({}, line(1000), 1)).toHaveLength(5);
+    expect(sectionOffsets(NO_CONDUIT, line(1000), 2)).toEqual([500]);
+    expect(sectionOffsets(NO_CONDUIT, line(2000), 2)).toEqual([120, 560, 1000, 1440, 1880]);
+    expect(sectionOffsets(NO_CONDUIT, line(1000), 1)).toHaveLength(5);
   });
 
   it("a route shorter than the clearance carries none", () => {
-    expect(sectionOffsets({}, line(SECTION_EDGE - 1), 1)).toEqual([]);
-    expect(sectionOffsets({}, line(100), 4)).toEqual([]);
+    expect(sectionOffsets(NO_CONDUIT, line(SECTION_EDGE - 1), 1)).toEqual([]);
+    expect(sectionOffsets(NO_CONDUIT, line(100), 4)).toEqual([]);
   });
 
   it("keeps clear of a bound vertex — a marker sits there", () => {
     const pts = [P(0, 0), P(280, 0, "j1"), P(1000, 0)];
-    const out = sectionOffsets({}, pts, 1);
+    const out = sectionOffsets(NO_CONDUIT, pts, 1);
     expect(out).not.toContain(280);
     expect(out.every((o) => Math.abs(o - 280) > SECTION_EDGE)).toBe(true);
     expect(out).toEqual([60, 500, 720, 940]);
@@ -147,6 +149,6 @@ describe("sectionOffsets", () => {
 
   it("the middle one is set before the clearance check and stays put", () => {
     // Known behaviour: only the comb around the middle runs through fits().
-    expect(sectionOffsets({}, [P(0, 0), P(500, 0, "j1"), P(1000, 0)], 1)).toContain(500);
+    expect(sectionOffsets(NO_CONDUIT, [P(0, 0), P(500, 0, "j1"), P(1000, 0)], 1)).toContain(500);
   });
 });

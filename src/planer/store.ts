@@ -1,5 +1,5 @@
-// @ts-nocheck
 // The working state and every binding that more than one module writes.
+import type { Conduit, Item, Look, Sel, State, View } from "./types";
 import { t } from "./i18n";
 import { H, W } from "./geo";
 import { CATALOG, INFRA, SHOPS } from "./catalogs";
@@ -7,8 +7,8 @@ import { CATALOG, INFRA, SHOPS } from "./catalogs";
 // ---------- Default plan (the proposal from the conversation) ----------
 // The planner starts empty. No example property, no foreign addresses —
 // whoever starts first searches a location, then places their house connection.
-export function defaultState() {
-  const infra = {};
+export function defaultState(): State {
+  const infra: State["infra"] = {};
   INFRA.forEach((i) => {
     infra[i.id] = { on: i.on, qty: i.qty };
   });
@@ -41,9 +41,9 @@ export function defaultState() {
 // ---------- State ----------
 export let state = defaultState();
 
-export let sel = null; // { kind: "item"|"conduit", id }
+export let sel: Sel | null = null; // { kind: "item"|"conduit", id }
 
-export let mode = "select"; // select | place-cam | place-ap | place-jb | draw
+export let mode: string = "select"; // select | place-cam | place-ap | place-jb | draw
 
 export let placeModel = "g6-bullet";
 
@@ -53,25 +53,29 @@ export let placeJb = "shaft";
 
 export let drawType = "fiber";
 
-export let draft = []; // points while drawing
+export let draft: { x: number; y: number; at?: string }[] = []; // points while drawing
 
-export let view = { x: 0, y: 0, w: W, h: H };
-export let db = null,
+export let view: View = { x: 0, y: 0, w: W, h: H };
+// The optional claude.ai host store; absent in the static build.
+export let db: any = null,
   dbReady = false;
 
-export let preview = null; // { kind, key } — catalog entry in the selection panel
+export let preview: { kind: string; key: string } | null = null; // { kind, key } — catalog entry in the selection panel
 
 export let catTab = "cam"; // active catalog tab
 
-export let catQuery = { cam: "", ap: "", jb: "", gear: "", cond: "" }; // search text per tab
+export let catQuery: Record<string, string> = { cam: "", ap: "", jb: "", gear: "", cond: "" }; // search text per tab
 
-export let catFacets = new Set(); // active filter badges (identifiers are unique)
+export let catFacets = new Set<string>(); // active filter badges (identifiers are unique)
 
-export const sameQueries = (q) => {
-  const out = { cam: "", ap: "", jb: "", gear: "", cond: "" };
+export const sameQueries = (q: unknown): Record<string, string> => {
+  const out: Record<string, string> = { cam: "", ap: "", jb: "", gear: "", cond: "" };
   if (typeof q === "string") out.cam = q; // old format: one field for everything
   else if (q && typeof q === "object")
-    for (const k in out) if (typeof q[k] === "string") out[k] = q[k];
+    for (const k in out) {
+      const v = (q as Record<string, unknown>)[k];
+      if (typeof v === "string") out[k] = v;
+    }
   return out;
 };
 
@@ -92,23 +96,23 @@ export const LOOK_DEF = { size: 1, font: 1, alpha: 1, line: 1, cluster: true };
 
 export const LOOK_RANGE = { size: [0.6, 1.6], font: [0.7, 1.5], alpha: [0, 1], line: [0.6, 1.6] };
 
-export let LOOK = { ...LOOK_DEF };
+export let LOOK: Look = { ...LOOK_DEF };
 
 // ---------- Drag / pan ----------
-export let drag = null;
+export let drag: any = null;
 
 export function uid() {
   state.seq = (state.seq || 0) + 1;
   return "e" + Date.now().toString(36) + state.seq;
 }
 
-export function nextLabel(prefix) {
+export function nextLabel(prefix: string) {
   let n = 1;
   const used = new Set(state.items.map((i) => i.label));
   while (used.has(prefix + n)) n++;
   return prefix + n;
 }
-export let dock = null;
+export let dock: any = null;
 
 // ---------- Project name ----------
 export function planTitle() {
@@ -122,78 +126,80 @@ export function planFile() {
   return ((state.name || "plan").trim().replace(/[^\w.-]+/g, "-") || "plan") + ".json";
 }
 
-export let planId = null;
+export let planId: string | null = null;
 
 export let legacyGeo = false;
 
-export function sane(s) {
+export function sane(s: any): boolean {
   return (
     s &&
     Array.isArray(s.items) &&
     Array.isArray(s.conduits) &&
-    s.items.every((i) => i.kind === "hub" || (CATALOG[i.kind] && CATALOG[i.kind][i.model])) &&
-    s.conduits.every((c) => Array.isArray(c.points) && c.points.length >= 2)
+    s.items.every(
+      (i: Item) => i.kind === "hub" || (CATALOG[i.kind] && CATALOG[i.kind][i.model as string]),
+    ) &&
+    s.conduits.every((c: Conduit) => Array.isArray(c.points) && c.points.length >= 2)
   );
 }
 
 // Written from other modules; ES module bindings are read-only for importers.
-export const setLookCache = (v) => {
+export const setLookCache = (v: Look) => {
   LOOK = v;
 };
-export const setCatFacets = (v) => {
+export const setCatFacets = (v: Set<string>) => {
   catFacets = v;
 };
-export const setCatQuery = (v) => {
+export const setCatQuery = (v: Record<string, string>) => {
   catQuery = v;
 };
-export const setCatTab = (v) => {
+export const setCatTab = (v: string) => {
   catTab = v;
 };
-export const setDb = (v) => {
+export const setDb = (v: any) => {
   db = v;
 };
-export const setDbReady = (v) => {
+export const setDbReady = (v: boolean) => {
   dbReady = v;
 };
-export const setDock = (v) => {
+export const setDock = (v: any) => {
   dock = v;
 };
-export const setDraft = (v) => {
+export const setDraft = (v: typeof draft) => {
   draft = v;
 };
-export const setDrag = (v) => {
+export const setDrag = (v: any) => {
   drag = v;
 };
-export const setDrawType = (v) => {
+export const setDrawType = (v: string) => {
   drawType = v;
 };
-export const setLegacyGeo = (v) => {
+export const setLegacyGeo = (v: boolean) => {
   legacyGeo = v;
 };
-export const setModeName = (v) => {
+export const setModeName = (v: string) => {
   mode = v;
 };
-export const setPlaceAp = (v) => {
+export const setPlaceAp = (v: string) => {
   placeAp = v;
 };
-export const setPlaceJb = (v) => {
+export const setPlaceJb = (v: string) => {
   placeJb = v;
 };
-export const setPlaceModel = (v) => {
+export const setPlaceModel = (v: string) => {
   placeModel = v;
 };
-export const setPlanId = (v) => {
+export const setPlanId = (v: string | null) => {
   planId = v;
 };
-export const setPreview = (v) => {
+export const setPreview = (v: typeof preview) => {
   preview = v;
 };
-export const setSel = (v) => {
+export const setSel = (v: Sel | null) => {
   sel = v;
 };
-export const setState = (v) => {
+export const setState = (v: State) => {
   state = v;
 };
-export const setView = (v) => {
+export const setView = (v: View) => {
   view = v;
 };

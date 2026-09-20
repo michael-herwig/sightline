@@ -1,5 +1,5 @@
-// @ts-nocheck
 // Tools and selection: mode, placing, drawing, deleting, the tool bar and keys.
+import type { Item, ItemKind, Sel } from "./types";
 import { renderMap, renderSide, scheduleSave } from "./hooks";
 import { t } from "./i18n";
 import { APS, CAMS, CONDUITS, KIND_PREFIX } from "./catalogs";
@@ -27,8 +27,12 @@ import { $, mapwrap, openPanel, setStatus } from "./dom";
 import { unbindAll } from "./bonds";
 import { changed, redo, undo } from "./history";
 
-export function addItem(base, p, e) {
-  const it = {
+export function addItem(
+  base: Partial<Item> & { kind: ItemKind },
+  p: { x: number; y: number },
+  e: { shiftKey: boolean },
+) {
+  const it: Item = {
     id: uid(),
     label: nextLabel(KIND_PREFIX[base.kind]),
     x: p.x,
@@ -81,7 +85,7 @@ export function finishDraft() {
 }
 
 // ---------- Modes ----------
-const MODE_TOOL = {
+const MODE_TOOL: Record<string, string> = {
   select: "select",
   "place-cam": "cam",
   "place-ap": "ap",
@@ -93,10 +97,10 @@ const MODE_TOOL = {
 // Drawing is one mode but two buttons: "Conduit" lays a trench with ducts
 // (default fiber), "Cable" a cable run without a duct. The matching one shows pressed —
 // decided by the kind of template, not by the cable inside it.
-const toolOf = (m) =>
+const toolOf = (m: string) =>
   m === "draw" ? (isCableRun(CONDUITS[drawType] || {}) ? "cable" : "draw") : MODE_TOOL[m];
 
-export function setMode(m) {
+export function setMode(m: string) {
   setModeName(m);
   if (m !== "draw") setDraft([]);
   // Tapping a model in the catalog means: I want to see and place this here.
@@ -106,7 +110,12 @@ export function setMode(m) {
     $("t-" + k).setAttribute("aria-pressed", String(toolOf(m) === k)),
   );
   $("t-finish").hidden = m !== "draw";
-  const tb = { "place-cam": "cam", "place-ap": "ap", "place-jb": "jb", draw: "cond" }[m];
+  const tb: string | undefined = (
+    { "place-cam": "cam", "place-ap": "ap", "place-jb": "jb", draw: "cond" } as Record<
+      string,
+      string
+    >
+  )[m];
   if (tb) {
     setCatTab(tb);
     state.catTab = tb;
@@ -124,8 +133,10 @@ export function updateHint() {
   if (!h2) return; // the hint line is gone; the help explains the tools
   if (mode === "select")
     h2.textContent = sel ? t(sel.kind === "conduit" ? "hint.vtx" : "hint.sel") : t("hint.idle");
-  else if (mode === "place-cam") h2.textContent = t("hint.cam", { name: CAMS[placeModel].name });
-  else if (mode === "place-ap") h2.textContent = t("hint.ap", { name: APS[placeAp].name });
+  else if (mode === "place-cam")
+    h2.textContent = t("hint.cam", { name: CAMS[placeModel].name as string });
+  else if (mode === "place-ap")
+    h2.textContent = t("hint.ap", { name: APS[placeAp].name as string });
   else if (mode === "place-jb") h2.textContent = t("hint.jb");
   else if (mode === "place-hub") h2.textContent = t("hint.hub");
   else if (mode === "draw")
@@ -147,8 +158,9 @@ function drawCable() {
 }
 
 // Selection no longer switches the tab — properties live in the ribbon above.
-export function select(s) {
-  const same = (!s && !sel) || (!!s && !!sel && s.kind === sel.kind && s.id === sel.id);
+export function select(s: Sel | null) {
+  const cur = sel;
+  const same = (!s && !cur) || (!!s && !!cur && s.kind === cur.kind && s.id === cur.id);
   setSel(s);
   if (!same) renderMap(); // otherwise the just-clicked node gets replaced
   renderSide();
@@ -156,20 +168,21 @@ export function select(s) {
 }
 
 export function deleteSelected() {
-  if (!sel) return;
+  const cur = sel;
+  if (!cur) return;
   // Hub and accessories aren't on the map: deleting means "not planned".
-  if (sel.kind === "infra") {
-    const cur = state.infra[sel.id] || {};
-    state.infra[sel.id] = { on: false, qty: Math.max(1, cur.qty || 1) };
+  if (cur.kind === "infra") {
+    const was = state.infra[cur.id] || { on: true, qty: 1 };
+    state.infra[cur.id] = { on: false, qty: Math.max(1, was.qty || 1) };
     setSel(null);
     changed();
     return;
   }
-  if (sel.kind === "item") {
-    const it = state.items.find((i) => i.id === sel.id);
+  if (cur.kind === "item") {
+    const it = state.items.find((i) => i.id === cur.id);
     if (it) unbindAll(it.id);
-    state.items = state.items.filter((i) => i.id !== sel.id);
-  } else state.conduits = state.conduits.filter((c) => c.id !== sel.id);
+    state.items = state.items.filter((i) => i.id !== cur.id);
+  } else state.conduits = state.conduits.filter((c) => c.id !== cur.id);
   setSel(null);
   changed();
 }
@@ -204,12 +217,13 @@ export function wireModes() {
 
   $("t-redo").onclick = redo;
 
-  document.addEventListener("keydown", (e) => {
-    const tag = (e.target.tagName || "").toLowerCase(),
+  document.addEventListener("keydown", (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement | null;
+    const tag = (target?.tagName || "").toLowerCase(),
       inField = tag === "input" || tag === "textarea" || tag === "select";
     // Esc from within a field (search, vendor picker) should end the mode in one step,
     // not just leave the field and cancel on the second press.
-    if (inField && e.key === "Escape") e.target.blur();
+    if (inField && e.key === "Escape") target?.blur();
     else if (inField) return;
     if (e.ctrlKey || e.metaKey) {
       const k = (e.key || "").toLowerCase();

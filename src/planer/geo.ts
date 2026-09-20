@@ -1,5 +1,5 @@
-// @ts-nocheck
 // Sheet geometry and EPSG:25832: the plan box, GEO, UTM, pixel <-> meter.
+import type { Geo, Placed, Stampable } from "./types";
 
 // ---------- Geometry ----------
 // Cadastral extract 1:1000 rendered at 150 dpi: 100 m = 595.7 px.
@@ -19,9 +19,9 @@ export const GEO_DEFAULT = { e0: 356448.6, n0: 5645366.7 };
 
 export const GEO = { e0: GEO_DEFAULT.e0, n0: GEO_DEFAULT.n0, pxPerM: 150 / 25.4 };
 
-export function useGeo(g) {
-  const e0 = g && Number.isFinite(+g.e0) ? +g.e0 : GEO_DEFAULT.e0,
-    n0 = g && Number.isFinite(+g.n0) ? +g.n0 : GEO_DEFAULT.n0;
+export function useGeo(g: Partial<Record<keyof Geo, unknown>> | null | undefined) {
+  const e0 = g && Number.isFinite(Number(g.e0)) ? Number(g.e0) : GEO_DEFAULT.e0,
+    n0 = g && Number.isFinite(Number(g.n0)) ? Number(g.n0) : GEO_DEFAULT.n0;
   const moved = e0 !== GEO.e0 || n0 !== GEO.n0;
   GEO.e0 = e0;
   GEO.n0 = n0;
@@ -29,16 +29,16 @@ export function useGeo(g) {
 }
 
 // New origin so that the location lies at the center of the plan.
-export const geoAround = (e, n) => ({
+export const geoAround = (e: number, n: number) => ({
   e0: +(e - W / 2 / GEO.pxPerM).toFixed(2),
   n0: +(n + H / 2 / GEO.pxPerM).toFixed(2),
 });
 
-export const px2e = (x) => GEO.e0 + x / GEO.pxPerM;
+export const px2e = (x: number) => GEO.e0 + x / GEO.pxPerM;
 
-export const px2n = (y) => GEO.n0 - y / GEO.pxPerM;
+export const px2n = (y: number) => GEO.n0 - y / GEO.pxPerM;
 
-export const bboxOf = (x, y, w, h) =>
+export const bboxOf = (x: number, y: number, w: number, h: number) =>
   [px2e(x), px2n(y + h), px2e(x + w), px2n(y)].map((v) => v.toFixed(2)).join(",");
 
 // Without a plan there is no "home". The start viewport is deliberately wide —
@@ -67,7 +67,7 @@ export const UTM = (() => {
     cos = Math.cos,
     tan = Math.tan,
     sqrt = Math.sqrt;
-  function fwd(lat, lon) {
+  function fwd(lat: number, lon: number) {
     const p = lat * rad,
       l = lon * rad;
     const N = a / sqrt(1 - e2 * pow(sin(p), 2));
@@ -98,7 +98,7 @@ export const UTM = (() => {
               ((61 - 58 * T + T * T + 600 * C - 330 * ep2) * pow(A, 6)) / 720)),
     };
   }
-  function inv(e, n) {
+  function inv(e: number, n: number) {
     const x = e - E0,
       e1 = (1 - sqrt(1 - e2)) / (1 + sqrt(1 - e2));
     const mu = n / k0 / (a * (1 - e2 / 4 - (3 * e2 * e2) / 64 - (5 * pow(e2, 3)) / 256));
@@ -129,17 +129,17 @@ export const UTM = (() => {
   return { fwd, inv };
 })();
 
-export const e2px = (e) => (e - GEO.e0) * GEO.pxPerM;
+export const e2px = (e: number) => (e - GEO.e0) * GEO.pxPerM;
 
-export const n2px = (n) => (GEO.n0 - n) * GEO.pxPerM;
+export const n2px = (n: number) => (GEO.n0 - n) * GEO.pxPerM;
 
-export const pxLatLon = (x, y) => UTM.inv(px2e(x), px2n(y));
+export const pxLatLon = (x: number, y: number) => UTM.inv(px2e(x), px2n(y));
 
 // Position in meters (EPSG:25832) on every element and conduit point: that's what gets saved
 // and shared. x/y are just the pixel cache for it and get recomputed from e/n whenever
 // a plan's raster origin differs. That way nothing drifts with the origin anymore.
-export function stampGeo(st) {
-  const put = (o) => {
+export function stampGeo<T extends Stampable>(st: T): T {
+  const put = (o: Placed) => {
     o.e = +px2e(o.x).toFixed(2);
     o.n = +px2n(o.y).toFixed(2);
   };
@@ -148,11 +148,13 @@ export function stampGeo(st) {
   return st;
 }
 
-export function unstampGeo(st) {
-  const take = (o) => {
-    if (Number.isFinite(+o.e) && Number.isFinite(+o.n)) {
-      o.x = +e2px(+o.e).toFixed(1);
-      o.y = +n2px(+o.n).toFixed(1);
+export function unstampGeo<T extends Stampable>(st: T): T {
+  const take = (o: Placed) => {
+    const e = Number(o.e),
+      n = Number(o.n);
+    if (Number.isFinite(e) && Number.isFinite(n)) {
+      o.x = +e2px(e).toFixed(1);
+      o.y = +n2px(n).toFixed(1);
     }
   };
   (st.items || []).forEach(take);

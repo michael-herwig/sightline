@@ -10,8 +10,9 @@ import {
 } from "../../src/planer/conduit";
 import { setLangValue } from "../../src/planer/i18n";
 
-const trench = (ducts: any[]) => ({ kind: "trench", ducts });
-const run = (cables: any[]) => ({ kind: "cable", ducts: [{ cables }] });
+// Fixtures stay loose on purpose: several of these are deliberately malformed.
+const trench = (ducts: any[]): any => ({ kind: "trench", ducts });
+const run = (cables: any[]): any => ({ kind: "cable", ducts: [{ cables }] });
 
 beforeEach(() => setLangValue("de"));
 
@@ -107,8 +108,8 @@ describe("isAutoLabel", () => {
     expect(isAutoLabel({ ...c, label: "" })).toBe(true);
     expect(isAutoLabel({ ...c, label: "   " })).toBe(true);
     expect(isAutoLabel({ ...c })).toBe(true);
-    expect(isAutoLabel({ ...c, label: CONDUITS.fiber.name.de })).toBe(true);
-    expect(isAutoLabel({ ...c, label: CONDUITS.fiber.name.en })).toBe(true);
+    expect(isAutoLabel({ ...c, label: (CONDUITS.fiber.name as { de: string }).de })).toBe(true);
+    expect(isAutoLabel({ ...c, label: (CONDUITS.fiber.name as { en: string }).en })).toBe(true);
     expect(isAutoLabel({ ...c, label: condName(c) })).toBe(true);
   });
 

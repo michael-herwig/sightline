@@ -1,5 +1,17 @@
-// @ts-nocheck
 // Product catalogues and the plain lookups over them. Prices live here only.
+import type {
+  Ap,
+  Cam,
+  CableSpec,
+  CondTemplate,
+  InfraItem,
+  Item,
+  Junction,
+  Model,
+  PipeSpec,
+  Shop,
+  WanSpec,
+} from "./types";
 import { t } from "./i18n";
 
 // ---------- Catalog (EUR incl. VAT, UI EU Store / Geizhals, as of 09/2026; ca. where not listed) ----------
@@ -7,7 +19,7 @@ import { t } from "./i18n";
 // `amazon:` is a verified /dp/<ASIN> link, as of 09/2026 — Amazon swaps ASINs
 // out when a listing disappears; verify instead of guessing when unsure.
 // `amazonSimilar: true` means: not the original item, but an equivalent substitute.
-export const CAMS = {
+export const CAMS: Record<string, Cam> = {
   "g6-bullet": {
     name: "G6 Bullet",
     img: "https://cdn.ecomm.ui.com/products/5dc40311-0e08-4eaa-b901-472cc707b436/4dee8c08-78b7-418f-ab85-01329267c062.png",
@@ -389,7 +401,7 @@ export const CAMS = {
   },
 };
 
-export const APS = {
+export const APS: Record<string, Ap> = {
   "u7-lite": {
     name: "U7 Lite",
     img: "https://cdn.ecomm.ui.com/products/253cc208-4b09-4b2e-9d1a-7aa1e8f93507/49241c96-878f-4e40-8541-c2e89c1c5e6e.png",
@@ -684,7 +696,7 @@ export const APS = {
 
 // Junctions: multiple conduits meet here. Conduit ends snap onto them
 // and move along until someone deliberately drags the end away.
-export const JUNCTIONS = {
+export const JUNCTIONS: Record<string, Junction> = {
   shaft: {
     kind: "housing",
     vendor: "any",
@@ -1740,9 +1752,9 @@ export const JUNCTIONS = {
 // The same map carries both; `kind` tells them apart. `power` used to do that —
 // which was wrong as soon as a device needs no power: splice box, surge
 // protector, SFP module, PoE extender are components, not housings.
-export const isHousing = (key) => !!JUNCTIONS[key] && JUNCTIONS[key].kind === "housing";
+export const isHousing = (key: string) => !!JUNCTIONS[key] && JUNCTIONS[key].kind === "housing";
 
-export const isDevice = (key) => !!JUNCTIONS[key] && JUNCTIONS[key].kind === "device";
+export const isDevice = (key: string) => !!JUNCTIONS[key] && JUNCTIONS[key].kind === "device";
 
 // A conduit is either a **trench** (`kind: "trench"`) — with one to six ducts inside,
 // each with **its own type and its own price**, and cables inside the ducts — or a
@@ -1750,12 +1762,12 @@ export const isDevice = (key) => !!JUNCTIONS[key] && JUNCTIONS[key].kind === "de
 // as an overhead line, with no trench and no duct. That's why duct and cable are separate here:
 // a trunk duct can carry two fibre cables that split onto two ducts at the junction
 // — nothing gets split (spliced) in the process.
-export const PIPES = {
+export const PIPES: Record<string, PipeSpec> = {
   dn50: { name: { de: "Leerrohr DN 50", en: "Conduit DN 50" }, m: 1.6 },
   dn63: { name: { de: "Leerrohr DN 63", en: "Conduit DN 63" }, m: 2.2 },
 };
 
-export const CABLES = {
+export const CABLES: Record<string, CableSpec> = {
   fiber: {
     name: { de: "Glasfaser SM, 4 Fasern", en: "Fibre SM, 4 cores" },
     m: 1.8,
@@ -1807,7 +1819,7 @@ export const CABLE_ORDER = ["fiber", "cat", "power"];
 
 // The buttons in the catalog are just templates. After that, every conduit can be
 // filled in individually: duct type, ducts in the trench, and per duct the cables inside.
-export const CONDUITS = {
+export const CONDUITS: Record<string, CondTemplate> = {
   fiber: {
     kind: "trench",
     name: { de: "Leerrohr DN 50 + Glasfaser", en: "Conduit DN 50 + fibre" },
@@ -1842,7 +1854,7 @@ export const CONDUITS = {
   },
 };
 
-export const INFRA = [
+export const INFRA: InfraItem[] = [
   {
     id: "ucg",
     role: "router",
@@ -2094,22 +2106,22 @@ export const INFRA = [
 const UI_STORE = "https://eu.store.ui.com/eu/en/category/";
 
 // Third-party manufacturers carry an absolute address; only UniFi paths get completed.
-export const productUrl = (m) =>
+export const productUrl = (m: Model) =>
   m && m.url ? (/^https?:/.test(m.url) ? m.url : UI_STORE + m.url) : null;
 
 // Amazon sits next to the manufacturer page. Where no original item is listed,
 // the title says so — otherwise someone might buy the wrong thing in good faith.
-export const amazonLabel = (m) =>
+export const amazonLabel = (m: Model) =>
   t(m && m.amazonSimilar ? "product.amazon.similar" : "product.amazon");
 
 // "Amazon" in the retailer list leads straight to the verified item if the catalog
 // knows one — otherwise to search. A separate button next to it was one too many.
-export const shopHref = (sh, name, amazon) =>
+export const shopHref = (sh: Shop, name: string, amazon?: string) =>
   sh.label === "Amazon" && amazon ? amazon : sh.url(name);
 
-export const vendorOf = (m) => (m && m.vendor) || "ubiquiti";
+export const vendorOf = (m: Model): string => (m && m.vendor) || "ubiquiti";
 
-export const VENDORS = {
+export const VENDORS: Record<string, string> = {
   ubiquiti: "UniFi",
   reolink: "Reolink",
   netatmo: "Netatmo",
@@ -2121,53 +2133,61 @@ export const VENDORS = {
 };
 
 // "any" = manufacturer-neutral (shaft, box, cabinet): passes through every manufacturer filter.
-export const isVendor = (m, v) => vendorOf(m) === v || m.vendor === "any";
+export const isVendor = (m: Model, v: string) => vendorOf(m) === v || m.vendor === "any";
 
-export const SHOPS = [
-  { label: "Geizhals", url: (q) => "https://geizhals.de/?fs=" + encodeURIComponent(q) },
+export const SHOPS: Shop[] = [
+  { label: "Geizhals", url: (q: string) => "https://geizhals.de/?fs=" + encodeURIComponent(q) },
   {
     label: "Idealo",
-    url: (q) =>
+    url: (q: string) =>
       "https://www.idealo.de/preisvergleich/MainSearchProductCategory.html?q=" +
       encodeURIComponent(q),
   },
-  { label: "Amazon", url: (q) => "https://www.amazon.de/s?k=" + encodeURIComponent(q) },
-  { label: "eBay", url: (q) => "https://www.ebay.de/sch/i.html?_nkw=" + encodeURIComponent(q) },
+  { label: "Amazon", url: (q: string) => "https://www.amazon.de/s?k=" + encodeURIComponent(q) },
+  {
+    label: "eBay",
+    url: (q: string) => "https://www.ebay.de/sch/i.html?_nkw=" + encodeURIComponent(q),
+  },
   {
     label: "Kleinanzeigen",
-    url: (q) => "https://www.kleinanzeigen.de/s-suchanfrage.html?keywords=" + encodeURIComponent(q),
+    url: (q: string) =>
+      "https://www.kleinanzeigen.de/s-suchanfrage.html?keywords=" + encodeURIComponent(q),
   },
 ];
 
-export const imgUrl = (kind, key, m) => (m && m.img) || "/products/" + kind + "-" + key + ".jpg";
+export const imgUrl = (kind: string, key: string, m?: Model) =>
+  (m && m.img) || "/products/" + kind + "-" + key + ".jpg";
 
-export const CATALOG = { cam: CAMS, ap: APS, jb: JUNCTIONS };
+// Loose on purpose: the element kind decides which of the three shapes comes
+// back, and every caller already branches on it.
+export const CATALOG: Record<string, Record<string, Model>> = { cam: CAMS, ap: APS, jb: JUNCTIONS };
 
 // A house node is the connection to the network. The speed depends on the
 // connection type, hence the tiers sit directly on the type.
-export const WAN = {
+export const WAN: Record<string, WanSpec> = {
   dsl: { name: { de: "DSL", en: "DSL" }, speeds: [10, 15, 25, 50] },
   fiber: { name: { de: "Glasfaser", en: "Fibre" }, speeds: [100, 200, 400, 600, 1000] },
 };
 
-export const wanOf = (it) => {
-  const w = it.wan || {};
-  const type = WAN[w.type] ? w.type : "dsl";
+export const wanOf = (it: Item) => {
+  const w: Partial<NonNullable<Item["wan"]>> = it.wan || {};
+  const type = w.type && WAN[w.type] ? w.type : "dsl";
   const speeds = WAN[type].speeds;
-  return { type, speed: speeds.includes(+w.speed) ? +w.speed : speeds[speeds.length - 1] };
+  const speed = Number(w.speed);
+  return { type, speed: speeds.includes(speed) ? speed : speeds[speeds.length - 1] };
 };
 
-export const KIND_PREFIX = { cam: "K", ap: "A", jb: "J", hub: "H" };
+export const KIND_PREFIX: Record<string, string> = { cam: "K", ap: "A", jb: "J", hub: "H" };
 
-export function modelOf(it) {
+export function modelOf(it: Item): Model {
   const c = CATALOG[it.kind];
-  return c && c[it.model];
+  return c && c[it.model as string];
 }
 
 // One datasheet for everything: camera, access point, housing, device, item from the
 // hub, and cable. Every ⓘ in the app goes through here — name, properties,
 // full text and, where there's something to buy, the product box.
-export const catEntry = (kind, key) =>
+export const catEntry = (kind: string, key: string): Model =>
   kind === "gear"
     ? INFRA.find((x) => x.id === key)
     : kind === "cable"

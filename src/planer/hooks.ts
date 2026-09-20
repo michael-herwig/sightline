@@ -1,4 +1,3 @@
-// @ts-nocheck
 // The four app-wide refresh entry points plus "start a new plan", late-bound.
 //
 // The module graph is a DAG — `import/no-cycle` is an error, and oxlint enforces
@@ -10,8 +9,16 @@
 //
 // Anything else that points upward is a layering mistake, not a new hook.
 
+interface Hooks {
+  renderMap: () => void;
+  renderSide: () => void;
+  scheduleSave: () => void;
+  updateHint: () => void;
+  createPlan: (seed?: unknown) => void;
+}
+
 const nop = () => {};
-let impl = {
+let impl: Hooks = {
   renderMap: nop,
   renderSide: nop,
   scheduleSave: nop,
@@ -19,7 +26,7 @@ let impl = {
   createPlan: nop,
 };
 
-export function setHooks(h) {
+export function setHooks(h: Partial<Hooks>): void {
   impl = { ...impl, ...h };
 }
 
@@ -27,4 +34,4 @@ export const renderMap = () => impl.renderMap();
 export const renderSide = () => impl.renderSide();
 export const scheduleSave = () => impl.scheduleSave();
 export const updateHint = () => impl.updateHint();
-export const createPlan = (seed) => impl.createPlan(seed);
+export const createPlan = (seed?: unknown) => impl.createPlan(seed);

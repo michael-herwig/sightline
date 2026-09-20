@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Cost panel and the bill of materials.
 import { lang, t, tx } from "./i18n";
 import { APS, CAMS, JUNCTIONS } from "./catalogs";
@@ -11,22 +10,25 @@ import { $, esc, fmt, fmtM, h, pane, setHtml, setText, setVal } from "./dom";
 import { changed } from "./history";
 import { fmtW } from "./panel-sel";
 
-export function bomRows(c) {
+// Everything here reads the same bundle: the return value of costs().
+type Costs = ReturnType<typeof costs>;
+
+export function bomRows(c: Costs) {
   const rows = [];
   rows.push(
     `<tr><th>${esc(t("cost.pos"))}</th><th></th><th style="text-align:right">${esc(t("cost.amount"))}</th></tr>`,
   );
-  const camGroups = {};
+  const camGroups: Record<string, number> = {};
   c.cams.forEach((i) => {
-    camGroups[i.model] = (camGroups[i.model] || 0) + 1;
+    camGroups[i.model as string] = (camGroups[i.model as string] || 0) + 1;
   });
   for (const k in camGroups)
     rows.push(
       `<tr><td>${esc(CAMS[k].name)}</td><td class="num">${camGroups[k]} ×</td><td class="num">${fmt(CAMS[k].price * camGroups[k])}</td></tr>`,
     );
-  const apGroups = {};
+  const apGroups: Record<string, number> = {};
   c.aps.forEach((i) => {
-    apGroups[i.model] = (apGroups[i.model] || 0) + 1;
+    apGroups[i.model as string] = (apGroups[i.model as string] || 0) + 1;
   });
   for (const k in apGroups)
     rows.push(
@@ -34,9 +36,10 @@ export function bomRows(c) {
     );
   // Housing and devices kept separate: devices bundled by model across all points.
   // "Indoor" costs nothing and isn't a purchase — so it never appears in a bill of materials.
-  const jbGroups = {};
+  const jbGroups: Record<string, number> = {};
   c.jbs.forEach((i) => {
-    if (JUNCTIONS[i.model].price) jbGroups[i.model] = (jbGroups[i.model] || 0) + 1;
+    if (JUNCTIONS[i.model as string].price)
+      jbGroups[i.model as string] = (jbGroups[i.model as string] || 0) + 1;
   });
   for (const k in jbGroups)
     rows.push(
@@ -95,12 +98,12 @@ export function renderCost() {
       <p class="note" style="margin-top:8px">${esc(t("cost.bom.note"))}</p>
       <div id="c-out"></div>`),
     );
-    $("f-budget").onchange = (e) => {
-      state.budget = Math.max(0, +e.target.value || 0);
+    $("f-budget").onchange = (e: Event) => {
+      state.budget = Math.max(0, +(e.target as HTMLInputElement).value || 0);
       changed();
     };
-    $("f-earth").onchange = (e) => {
-      state.earthwork = Math.max(0, +e.target.value || 0);
+    $("f-earth").onchange = (e: Event) => {
+      state.earthwork = Math.max(0, +(e.target as HTMLInputElement).value || 0);
       changed();
     };
   });
@@ -128,7 +131,7 @@ export function renderCost() {
     warn.push(
       `<div class="okbox">${esc(t("cost.nvr.ok", { a: c.n4k, b: c.n2k, dev: unvrOn ? "UNVR" : "UCG-Fiber" }))}</div>`,
     );
-  const wifiCams = c.cams.filter((i) => CAMS[i.model].wifi).length;
+  const wifiCams = c.cams.filter((i) => CAMS[i.model as string].wifi).length;
   if (wifiCams)
     warn.push(`<div class="warnbox">${esc(t("cost.wifi.warn", { n: wifiCams }))}</div>`);
   // Fiber needs a device at the other end that turns it back into copper.
@@ -151,7 +154,7 @@ export function renderCost() {
   setHtml("c-bom", bomRows(c).rows.join(""));
 }
 
-export function copyBom(c) {
+export function copyBom(c: Costs) {
   const b = bomRows(c);
   const lines = [
     t("bom.title", {
@@ -162,7 +165,9 @@ export function copyBom(c) {
   ];
   for (const k in b.camGroups)
     lines.push(`${b.camGroups[k]} × ${CAMS[k].name}  ${fmt(CAMS[k].price * b.camGroups[k])}`);
-  c.cams.forEach((i) => lines.push(`   ${i.label}  ${CAMS[i.model].name}  ${i.note || ""}`));
+  c.cams.forEach((i) =>
+    lines.push(`   ${i.label}  ${CAMS[i.model as string].name}  ${i.note || ""}`),
+  );
   for (const k in b.apGroups)
     lines.push(`${b.apGroups[k]} × ${APS[k].name}  ${fmt(APS[k].price * b.apGroups[k])}`);
   for (const k in b.jbGroups)

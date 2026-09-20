@@ -1,9 +1,9 @@
-// @ts-nocheck
 // Pure geometry: lengths, angles, offset paths, points along a path.
 import { PX_PER_M } from "./geo";
+import type { Conduit, Point } from "./types";
 
 // ---------- Costs ----------
-export function polyLength(pts) {
+export function polyLength(pts: Point[]): number {
   let l = 0;
   for (let i = 1; i < pts.length; i++)
     l += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
@@ -12,7 +12,7 @@ export function polyLength(pts) {
 
 // Angle of a point around a center in degrees, normalized to 0..359.
 // snap > 0 snaps to steps (Shift while rotating).
-export function angleAt(cx, cy, x, y, snap) {
+export function angleAt(cx: number, cy: number, x: number, y: number, snap: number): number {
   let a = (Math.atan2(y - cy, x - cx) * 180) / Math.PI;
   if (snap) a = Math.round(a / snap) * snap;
   return ((Math.round(a) % 360) + 360) % 360;
@@ -22,10 +22,10 @@ export function angleAt(cx, cy, x, y, snap) {
 // lines at the corners (miter join). A very sharp corner would otherwise shoot
 // far out of the trench — beyond four times the offset it's beveled instead.
 // d is in map units, not screen points: this is geometry, not a stroke.
-export function offsetPath(pts, d) {
+export function offsetPath(pts: Point[], d: number): Point[] {
   const P = pts.filter((p, i) => !i || Math.hypot(p.x - pts[i - 1].x, p.y - pts[i - 1].y) > 1e-6);
   if (P.length < 2 || !d) return P.map((p) => ({ x: p.x, y: p.y }));
-  const seg = [];
+  const seg: { ax: number; ay: number; bx: number; by: number; ux: number; uy: number }[] = [];
   for (let i = 1; i < P.length; i++) {
     const dx = P[i].x - P[i - 1].x,
       dy = P[i].y - P[i - 1].y,
@@ -41,7 +41,7 @@ export function offsetPath(pts, d) {
       uy,
     });
   }
-  const out = [{ x: seg[0].ax, y: seg[0].ay }];
+  const out: Point[] = [{ x: seg[0].ax, y: seg[0].ay }];
   for (let i = 1; i < seg.length; i++) {
     const s0 = seg[i - 1],
       s1 = seg[i],
@@ -62,7 +62,7 @@ export function offsetPath(pts, d) {
   return out;
 }
 
-export const dOf = (ps) =>
+export const dOf = (ps: Point[]): string =>
   ps.map((p, i) => (i ? "L" : "M") + p.x.toFixed(2) + " " + p.y.toFixed(2)).join(" ");
 
 // ---------- Cross-sections ----------
@@ -74,7 +74,7 @@ export const CSEC_R = 9,
   SECTION_EDGE = 40;
 
 // Arc lengths of the vertices, for placement search and point-on-route lookups.
-function arcLens(pts) {
+function arcLens(pts: Point[]): number[] {
   const acc = [0];
   for (let i = 1; i < pts.length; i++)
     acc.push(acc[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
@@ -82,7 +82,7 @@ function arcLens(pts) {
 }
 
 // Point and direction at a position on the route (arc length in map units).
-export function pointAtLen(pts, o) {
+export function pointAtLen(pts: Point[], o: number): { x: number; y: number; a: number } {
   let run = 0;
   for (let i = 1; i < pts.length; i++) {
     const a = pts[i - 1],
@@ -104,14 +104,15 @@ export function pointAtLen(pts, o) {
 // Where cross-sections belong: one at the middle, then more to the left and right every
 // 220 screen points — a comb around the middle. The first and last 40 px
 // stay clear, as do 40 px around every bound vertex: a marker sits there.
-export function sectionOffsets(c, pts, k) {
+export function sectionOffsets(_c: Conduit, pts: Point[], k: number): number[] {
   const acc = arcLens(pts),
     total = acc[acc.length - 1];
   if (total / k < SECTION_EDGE) return [];
   const out = [total / 2];
   const busy = pts.map((p, i) => (p.at ? acc[i] : -1)).filter((v) => v >= 0);
   const edge = SECTION_EDGE * k;
-  const fits = (o) => o >= edge && o <= total - edge && busy.every((b) => Math.abs(o - b) > edge);
+  const fits = (o: number) =>
+    o >= edge && o <= total - edge && busy.every((b) => Math.abs(o - b) > edge);
   for (let d = SECTION_STEP * k; ; d += SECTION_STEP * k) {
     const a = total / 2 - d,
       b = total / 2 + d;
@@ -125,7 +126,7 @@ export function sectionOffsets(c, pts, k) {
 // Midpoint of the route by length, not the middle waypoint — otherwise the
 // jump lands somewhere along the way instead of the middle. `a` is the direction of
 // the segment there, in degrees: the cross-section attaches to it next to the line.
-export function pathMid(pts) {
+export function pathMid(pts: Point[]): { x: number; y: number; a: number } {
   const acc = arcLens(pts);
   return pointAtLen(pts, acc[acc.length - 1] / 2);
 }

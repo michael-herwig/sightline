@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Pointer handling on the map: pan, drag, rotate, place, draw.
 import { renderMap, renderSide, scheduleSave, updateHint } from "./hooks";
 import { t } from "./i18n";
@@ -21,16 +20,21 @@ const ON_UI = ".mapui-tl, .mapui-br, .zoom, .palette, .toast";
 // Grabbing the map means you're done with the text field. Otherwise the
 // plan name stays in edit mode while the map is already being dragged.
 function dropFocus() {
+  // closeMapMenus(except) takes an optional argument; tiles.ts is still untyped,
+  // so the parameter reads as required until it is annotated there.
   if ($("layerMenu")) closeMapMenus();
-  const a = document.activeElement;
+  const a = document.activeElement as HTMLElement | null;
   if (a && a !== document.body && typeof a.blur === "function") a.blur();
 }
 
 // Pointer events arrive faster than frames get drawn. Once per frame is enough.
-let moveEvt = null,
+// Only the three fields applyDrag() reads — the frame callback gets a copy, not the event.
+type MoveEvt = { clientX: number; clientY: number; shiftKey: boolean };
+
+let moveEvt: MoveEvt | null = null,
   moveQueued = false;
 
-function applyDrag(e) {
+function applyDrag(e: MoveEvt) {
   if (drag.target.type === "pan") {
     const k = view.w / (svg.clientWidth || 1);
     const dx = (e.clientX - drag.sx) * k,
@@ -100,8 +104,8 @@ function endDrag() {
 }
 
 export function wireDrag() {
-  mapwrap.addEventListener("pointerdown", (e) => {
-    if (e.target.closest && e.target.closest(ON_UI)) return;
+  mapwrap.addEventListener("pointerdown", (e: PointerEvent) => {
+    if ((e.target as Element).closest && (e.target as Element).closest(ON_UI)) return;
     if (e.button !== 0 && e.pointerType === "mouse") return;
     dropFocus();
     e.preventDefault(); // otherwise the browser selects the SVG labels
@@ -121,7 +125,7 @@ export function wireDrag() {
     }
   });
 
-  mapwrap.addEventListener("pointermove", (e) => {
+  mapwrap.addEventListener("pointermove", (e: PointerEvent) => {
     if (!drag) return;
     moveEvt = { clientX: e.clientX, clientY: e.clientY, shiftKey: e.shiftKey };
     if (moveQueued) return;
@@ -146,17 +150,17 @@ export function wireDrag() {
   // click actions for place / draw
   // Right-click while drawing finishes the draft, same as Enter. Outside draw
   // mode the browser menu stays until the planner has its own.
-  mapwrap.addEventListener("contextmenu", (e) => {
+  mapwrap.addEventListener("contextmenu", (e: MouseEvent) => {
     if (mode !== "draw") return;
     e.preventDefault();
     if (draft.length >= 2) finishDraft();
   });
 
-  mapwrap.addEventListener("click", (e) => {
+  mapwrap.addEventListener("click", (e: MouseEvent) => {
     if (mode === "select") return;
     // A click on the tool button itself bubbles up to here — otherwise the element
     // would land right under the palette.
-    if (e.target.closest && e.target.closest(ON_UI)) return;
+    if ((e.target as Element).closest && (e.target as Element).closest(ON_UI)) return;
     const p = toSvg(e);
     p.x = +p.x.toFixed(1);
     p.y = +p.y.toFixed(1);
@@ -181,7 +185,7 @@ export function wireDrag() {
     }
   });
 
-  mapwrap.addEventListener("dblclick", (e) => {
+  mapwrap.addEventListener("dblclick", (e: MouseEvent) => {
     if (mode === "draw") {
       e.preventDefault();
       finishDraft();
@@ -190,7 +194,7 @@ export function wireDrag() {
 
   mapwrap.addEventListener(
     "wheel",
-    (e) => {
+    (e: WheelEvent) => {
       e.preventDefault();
       const p = toSvg(e);
       zoomAt(e.deltaY < 0 ? 1.18 : 1 / 1.18, p.x, p.y);

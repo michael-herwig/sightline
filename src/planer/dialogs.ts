@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Product sheet, guide, image and help dialogues.
 import { t, tx } from "./i18n";
 import { SHOPS, amazonLabel, catEntry, imgUrl, productUrl, shopHref } from "./catalogs";
@@ -6,11 +5,24 @@ import { shopOf } from "./store";
 import { SPECS, whenOf } from "./specs";
 import { GUIDE, HELP } from "./help";
 import { $, EXPAND, FIND, LINKOUT, closeDlg, closeOnBackdrop, esc, setHtml, setText } from "./dom";
+import type { Model } from "./types";
+
+// A property row out of SPECS. Only some rows carry `when`, so the loop below
+// needs one shape for all of them.
+type SpecRow = {
+  k: string;
+  v: (m: Model) => unknown;
+  g: (m: Model) => string;
+  when?: (m: Model) => boolean;
+};
+
+// What showInfo() reads off a CAT_TABS entry.
+type CatTab = { id: string; label: string; note: string };
 
 // Properties in a fixed order, rating as color AND symbol
 // (color alone doesn't carry the information).
-export function specList(kind, m) {
-  const rows = (SPECS[kind] || [])
+export function specList(kind: string, m: Model) {
+  const rows = ((SPECS[kind as keyof typeof SPECS] || []) as SpecRow[])
     .filter((r) => !r.when || r.when(m))
     .map((r) => {
       const g = r.g(m),
@@ -21,7 +33,7 @@ export function specList(kind, m) {
   return `<dl class="spec">${rows.join("")}</dl>`;
 }
 
-export function productBox(kind, key, m) {
+export function productBox(kind: string, key: string, m: Model) {
   const name = tx(m.name);
   const direct = productUrl(m);
   const src = imgUrl(kind, key, m);
@@ -58,7 +70,7 @@ export function productBox(kind, key, m) {
   </div>`;
 }
 
-export function showProductInfo(kind, key) {
+export function showProductInfo(kind: string, key: string) {
   const m = catEntry(kind, key),
     dlg = $("infoDlg");
   if (!m || !dlg) return;
@@ -99,7 +111,7 @@ export function showProductInfo(kind, key) {
   }
 }
 
-export function showGuide(id, head) {
+export function showGuide(id: string, head: string) {
   const dlg = $("infoDlg");
   if (!dlg || !GUIDE[id]) return;
   setText("infoHead", head);
@@ -111,7 +123,7 @@ export function showGuide(id, head) {
   }
 }
 
-export function showInfo(tab) {
+export function showInfo(tab: CatTab) {
   const dlg = $("infoDlg");
   if (!dlg) return;
   setText("infoHead", t(tab.label));
@@ -130,7 +142,7 @@ export function showInfo(tab) {
 // Works as a magnifier — a full pan-and-zoom tool would be overkill for a product photo.
 let imgZoom = 0;
 
-function setImgZoom(z) {
+function setImgZoom(z: number) {
   const im = $("imgBig"),
     wrap = $("imgWrap");
   if (!im) return;
@@ -153,7 +165,7 @@ function setImgZoom(z) {
   }
 }
 
-function showImage(src, title) {
+function showImage(src: string | null, title: string | null) {
   const d = $("imgDlg");
   if (!d) return;
   setText("imgHead", title || "");
@@ -211,11 +223,11 @@ export function wireDialogs() {
   // Drag to pan — scrollbars alone are awkward in the dialog.
   {
     const wrap = $("imgWrap");
-    let p0 = null;
+    let p0: { x: number; y: number; l: number; t: number } | null = null;
     // Without preventDefault the browser starts its own image drag and
     // panning never gets through.
-    wrap.addEventListener("dragstart", (e) => e.preventDefault());
-    wrap.addEventListener("pointerdown", (e) => {
+    wrap.addEventListener("dragstart", (e: Event) => e.preventDefault());
+    wrap.addEventListener("pointerdown", (e: PointerEvent) => {
       if (e.button) return;
       e.preventDefault();
       p0 = { x: e.clientX, y: e.clientY, l: wrap.scrollLeft, t: wrap.scrollTop };
@@ -224,7 +236,7 @@ export function wireDialogs() {
         wrap.setPointerCapture(e.pointerId);
       } catch {}
     });
-    wrap.addEventListener("pointermove", (e) => {
+    wrap.addEventListener("pointermove", (e: PointerEvent) => {
       if (!p0) return;
       e.preventDefault();
       wrap.scrollLeft = p0.l - (e.clientX - p0.x);
@@ -240,7 +252,7 @@ export function wireDialogs() {
 
   $("imgWrap").addEventListener(
     "wheel",
-    (e) => {
+    (e: WheelEvent) => {
       e.preventDefault();
       setImgZoom(
         e.deltaY < 0 ? (imgZoom ? imgZoom * 1.25 : 1.25) : imgZoom <= 1.25 ? 0 : imgZoom / 1.25,
@@ -251,7 +263,7 @@ export function wireDialogs() {
 
   // The box gets rebuilt over and over, so delegate here.
   document.addEventListener("click", (e) => {
-    const b = e.target.closest && e.target.closest("[data-imgfull]");
+    const b = (e.target as Element).closest && (e.target as Element).closest("[data-imgfull]");
     if (b) showImage(b.getAttribute("data-imgfull"), b.getAttribute("data-imgtitle"));
   });
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Wires the modules together and starts the planner.
 import { setHooks } from "./hooks";
 import { setLangValue, storedLang, t } from "./i18n";
@@ -56,6 +55,14 @@ import {
   usePlan,
   wirePersist,
 } from "./persist";
+import type { State } from "./types";
+
+// The claude.ai host injects this at runtime; it is not part of lib.dom.
+declare global {
+  interface Window {
+    claude?: { use?: (name: string) => Promise<unknown> };
+  }
+}
 
 export function renderSide() {
   renderSel();
@@ -109,7 +116,8 @@ async function boot() {
   let hadLocal = false;
   if (sane(fromLink)) {
     // A shared link becomes its own plan — it never overwrites someone else's.
-    usePlan(newPlanId(), fromLink);
+    // sane() has vouched for the payload; older links may still lack fields.
+    usePlan(newPlanId(), fromLink as Partial<State>);
     touchIndex();
     scheduleSave();
     setStatus(t("share.loaded"));
@@ -119,7 +127,7 @@ async function boot() {
     setStatus(t("status.ready"));
     hadLocal = true; // otherwise the server save would lay its plan over the fresh one
   } else {
-    let id = openId && readPlan(openId) ? openId : null;
+    let id: string | null = openId && readPlan(openId) ? openId : null;
     if (!id) {
       try {
         const cur = localStorage.getItem(CURRENT_KEY);
@@ -148,9 +156,11 @@ async function boot() {
     // The server has only one slot. So it may only step in when the
     // browser has nothing at all — otherwise it would overwrite the just-selected plan.
     if (db && !hadLocal) {
+      // store.ts leaves `db` at its null initialiser; the host object is untyped.
       const snap = await db.doc("plan/current").get();
       if (snap.exists && sane(snap.data())) {
-        usePlan(planId, snap.data());
+        // Every branch above went through usePlan(), so planId is set by now.
+        usePlan(planId!, snap.data());
         setStatus(t("status.loaded"));
       } else setStatus(t("status.ready"));
     } else setStatus(t(hadLocal ? "status.loadedlocal" : "status.ready"));
@@ -159,7 +169,7 @@ async function boot() {
   }
   // Arrived from the homepage with a location: jump there — and for a
   // fresh plan, fill in the house connection, name, address, and parcel right away.
-  let place = null;
+  let place: { lat: number; lon: number; label: string } | null = null;
   if (ll) place = { lat: +ll[1], lon: +ll[2], label: label ? decodeURIComponent(label) : "" };
   else if (addr) {
     try {
@@ -174,6 +184,7 @@ async function boot() {
   if (place) {
     if (wantNew) await seedFromPlace(place);
     else {
+      // gotoLatLon(lat, lon, span) reads `span || 150`; geosearch.ts has yet to mark it optional.
       gotoLatLon(place.lat, place.lon);
       if (place.label) setStatus(place.label);
     }

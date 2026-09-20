@@ -1,12 +1,19 @@
-// @ts-nocheck
 // WMS base map: tile pyramid, cache, prefetch, overlay and the layer menu.
+import type { Show } from "./types";
 import { scheduleSave } from "./hooks";
 import { t } from "./i18n";
 import { GEO, px2e, px2n } from "./geo";
 import { drag, state, view } from "./store";
 import { $, el, svg } from "./dom";
 
-export const wms = (service, layers, bbox, wpx, hpx, transparent) =>
+export const wms = (
+  service: string,
+  layers: string,
+  bbox: string,
+  wpx: number,
+  hpx: number,
+  transparent: boolean,
+): string =>
   `https://www.wms.nrw.de/geobasis/${service}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap` +
   `&LAYERS=${layers}&STYLES=&CRS=EPSG:25832&BBOX=${bbox}&WIDTH=${wpx}&HEIGHT=${hpx}` +
   // Aerial imagery as JPEG: a PNG tile weighs a good ten times as much, and noise
@@ -18,7 +25,13 @@ const ALKIS_FULL =
 
 export const ALKIS_LINES = "adv_alkis_flurstuecke,adv_alkis_gebaeude";
 
-export const BASEMAPS = {
+interface Basemap {
+  label: string;
+  service: string;
+  layers: string;
+}
+
+export const BASEMAPS: Record<string, Basemap> = {
   dop: { label: "layer.dop", service: "wms_nw_dop", layers: "nw_dop_rgb" },
   alkis: { label: "layer.alkis", service: "wms_nw_alkis", layers: ALKIS_FULL },
 };
@@ -42,12 +55,31 @@ const TILE_BUDGET = 320; // one viewport plus prefetch stock around it
 
 const MAX_PARALLEL = 8; // concurrent requests to the WMS
 
+// One pyramid level: a <g> per zoom, and the tiles placed in it so far.
+interface TileEntry {
+  img: SVGImageElement;
+  ok: boolean;
+  seen: number;
+}
+interface Level {
+  g: SVGGElement;
+  tiles: Map<string, TileEntry>;
+}
+interface TileJob {
+  img: SVGImageElement;
+  url: string;
+  cx: number;
+  cy: number;
+  lv: Level;
+  key: string;
+}
+
 // Tile loader: every URL is requested exactly once (after that the browser
 // cache takes over), at most MAX_PARALLEL requests run at a time, and whoever
 // is closest to the center gets served first.
-const dispatched = new Set();
+const dispatched = new Set<string>();
 
-const queue = [];
+const queue: TileJob[] = [];
 
 let inflight = 0;
 
@@ -63,11 +95,11 @@ const MEM_TILES = 400;
 // Blobs live here, not blob: addresses. Previously the LRU released addresses
 // that were still attached to a visible tile — the tile then stayed
 // empty and the coarser zoom level flashed through underneath.
-const memTiles = new Map(); // URL -> Blob
+const memTiles = new Map<string, Blob>(); // URL -> Blob
 
-const tileFails = new Map(); // URL -> number of failed attempts
+const tileFails = new Map<string, number>(); // URL -> number of failed attempts
 
-let cachePromise = null;
+let cachePromise: Promise<Cache | null> | null = null;
 
 function tileStore() {
   if (!cachePromise) {
@@ -79,15 +111,15 @@ function tileStore() {
   return cachePromise;
 }
 
-function rememberTile(url, blob) {
+function rememberTile(url: string, blob: Blob): Blob {
   memTiles.delete(url);
   memTiles.set(url, blob); // touched again = young again
-  if (memTiles.size > MEM_TILES) memTiles.delete(memTiles.keys().next().value);
+  if (memTiles.size > MEM_TILES) memTiles.delete(memTiles.keys().next().value as string);
   return blob;
 }
 
-async function tileBlob(url) {
-  if (memTiles.has(url)) return rememberTile(url, memTiles.get(url));
+async function tileBlob(url: string): Promise<Blob> {
+  if (memTiles.has(url)) return rememberTile(url, memTiles.get(url)!);
   if (typeof fetch !== "function") throw new Error("kein fetch");
   const store = await tileStore();
   if (store) {
@@ -122,7 +154,7 @@ async function tileBlob(url) {
 
 // Every tile gets its own blob: address and releases it again when
 // removed. Its lifetime is thus tied to the element, not to an LRU.
-function releaseTile(img) {
+function releaseTile(img: SVGImageElement): void {
   const obj = img.getAttribute("data-obj");
   if (obj) {
     try {
@@ -136,14 +168,19 @@ function releaseTile(img) {
 // document, must also drop out of the bookkeeping. Otherwise it stays in
 // lv.tiles, applyBasemap() considers it done and never requests it again —
 // that spot stays a gray hole forever.
-function forgetTile(lv, key, img, url) {
+function forgetTile(lv: Level | null, key: string, img: SVGImageElement, url: string | null): void {
   if (url) dispatched.delete(url);
   releaseTile(img);
   img.remove();
   if (lv) lv.tiles.delete(key);
 }
 
-function setTileHref(img, url, lv, key) {
+function setTileHref(
+  img: SVGImageElement,
+  url: string,
+  lv: Level | null,
+  key: string,
+): Promise<void> {
   return tileBlob(url).then(
     (blob) => {
       if (!img.isConnected) {
@@ -152,7 +189,7 @@ function setTileHref(img, url, lv, key) {
       }
       releaseTile(img);
       // From the cache in under 120 ms: show immediately, otherwise panning looks like loading.
-      if (Date.now() - (+img.dataset.t || 0) < 120) img.classList.add("instant");
+      if (Date.now() - (+(img.dataset.t as string) || 0) < 120) img.classList.add("instant");
       const obj = URL.createObjectURL(blob);
       img.setAttribute("data-obj", obj);
       img.setAttribute("href", obj);
@@ -165,7 +202,7 @@ function setTileHref(img, url, lv, key) {
   );
 }
 
-async function clearTileCache() {
+async function clearTileCache(): Promise<void> {
   memTiles.clear();
   dispatched.clear();
   tileFails.clear();
@@ -176,7 +213,14 @@ async function clearTileCache() {
   resetTiles();
 }
 
-function queueTile(img, url, cx, cy, lv, key) {
+function queueTile(
+  img: SVGImageElement,
+  url: string,
+  cx: number,
+  cy: number,
+  lv: Level,
+  key: string,
+): void {
   img.setAttribute("data-url", url);
   if (dispatched.has(url)) {
     setTileHref(img, url, lv, key);
@@ -187,7 +231,7 @@ function queueTile(img, url, cx, cy, lv, key) {
   pump();
 }
 
-function pump() {
+function pump(): void {
   while (inflight < MAX_PARALLEL && queue.length) {
     // Nobody wants to see what's two viewports old anymore — but it also has to
     // be forgotten, otherwise the tile is never requested again.
@@ -232,7 +276,7 @@ function pump() {
   }
 }
 
-function tileDone() {
+function tileDone(): void {
   inflight = Math.max(0, inflight - 1);
   pump();
   pumpWarm();
@@ -240,10 +284,10 @@ function tileDone() {
 
 // Prefetch for the neighboring zoom levels: cache only, no <image>. Runs
 // only once the visible queue is empty, and never more than two at a time.
-const warmQ = [];
+const warmQ: string[] = [];
 let warming = 0;
 
-function warmTile(url) {
+function warmTile(url: string): void {
   if (
     memTiles.has(url) ||
     dispatched.has(url) ||
@@ -255,9 +299,9 @@ function warmTile(url) {
   pumpWarm();
 }
 
-function pumpWarm() {
+function pumpWarm(): void {
   while (warming < 2 && warmQ.length && !queue.length && inflight === 0) {
-    const u = warmQ.shift();
+    const u = warmQ.shift()!; // guarded by warmQ.length above
     warming++;
     tileBlob(u)
       .catch(() => {
@@ -270,9 +314,9 @@ function pumpWarm() {
   }
 }
 
-const tileM = (z) => BASE_M / Math.pow(2, z);
+const tileM = (z: number): number => BASE_M / Math.pow(2, z);
 
-function zoomFor() {
+function zoomFor(): number {
   const mPerScreenPx = view.w / GEO.pxPerM / Math.max(1, svg.clientWidth);
   // floor instead of round: when in doubt, the larger tile — that's fewer requests.
   const z = Math.floor(Math.log2(BASE_M / (mPerScreenPx * TARGET_SCREEN_PX)));
@@ -290,7 +334,7 @@ function zoomFor() {
 // as long as dockview has the map panel detached.
 const TILE_SEAM = 1 / 1024;
 
-const tileRect = (z, tx, ty) => {
+const tileRect = (z: number, tx: number, ty: number) => {
   const m = tileM(z),
     e = tx * m,
     n = (ty + 1) * m,
@@ -303,13 +347,13 @@ const tileRect = (z, tx, ty) => {
   };
 };
 
-const tileBbox = (z, tx, ty) => {
+const tileBbox = (z: number, tx: number, ty: number): string => {
   const m = tileM(z);
   return [tx * m, ty * m, (tx + 1) * m, (ty + 1) * m].map((v) => v.toFixed(2)).join(",");
 };
 
 // pad "view" = one whole viewport in each direction: whoever pans finds the tiles already there.
-function tileRange(z, pad) {
+function tileRange(z: number, pad: number | "view") {
   const m = tileM(z);
   const r = {
     tx0: Math.floor(px2e(view.x) / m),
@@ -324,32 +368,40 @@ function tileRange(z, pad) {
 
 // A separate group per zoom level, coarse at the bottom, fine on top. A level is only
 // removed once the finer one is actually loaded — otherwise there's a brief flash of nothing.
-const levels = new Map(); // z -> { g, tiles: Map<key, {img, ok}>, pending }
+const levels = new Map<number, Level>();
 
-function levelFor(z) {
+function levelFor(z: number): Level {
   let lv = levels.get(z);
   if (!lv) {
-    const g = el("g", { "data-z": String(z) }, null);
+    // el() returns `any` by design (dom.ts) — the SVG group shape is enforced by Level below.
+    const g: SVGGElement = el("g", { "data-z": String(z) }, null);
     const host = $("g-tiles");
     const after = [...host.children].find((c) => +c.getAttribute("data-z") > z);
     host.insertBefore(g, after || null);
-    lv = { g, tiles: new Map() };
+    lv = { g, tiles: new Map<string, TileEntry>() };
     levels.set(z, lv);
   }
   return lv;
 }
 
-let tileClock = 0,
-  forceTimer = null;
+let tileClock = 0;
+let forceTimer: ReturnType<typeof setTimeout> | undefined;
 
-function addTile(lv, service, layers, z, tx, ty) {
+function addTile(
+  lv: Level,
+  service: string,
+  layers: string,
+  z: number,
+  tx: number,
+  ty: number,
+): TileEntry | null {
   const key = `${z}/${tx}/${ty}`;
   let e2 = lv.tiles.get(key);
   if (!e2) {
     const url0 = wms(service, layers, tileBbox(z, tx, ty), TILE_PX, TILE_PX, false);
     if ((tileFails.get(url0) || 0) >= 3) return null; // three strikes, then give up
     const r = tileRect(z, tx, ty);
-    const img = el(
+    const img: SVGImageElement = el(
       "image",
       {
         x: r.x.toFixed(2),
@@ -360,17 +412,21 @@ function addTile(lv, service, layers, z, tx, ty) {
       },
       lv.g,
     );
-    e2 = { img, ok: false };
+    // `entry` (const) instead of reassigning `e2` from inside the closures below:
+    // a `let` narrowed to non-undefined right before a closure is defined loses
+    // that narrowing inside the closure, `entry` never had the `undefined` case.
+    const entry: TileEntry = { img, ok: false, seen: 0 }; // seen is overwritten below before anyone reads it
+    e2 = entry;
     img.addEventListener("load", () => {
-      e2.ok = true;
+      entry.ok = true;
       img.classList.add("ok");
-      tileFails.delete(img.getAttribute("data-url"));
+      tileFails.delete(img.getAttribute("data-url")!);
       dropStaleLevels();
     });
     // Otherwise a broken tile stays empty forever and keeps the coarser level
     // underneath alive — that's exactly what looked like a "wrong layer".
     img.addEventListener("error", () => {
-      const u = img.getAttribute("data-url");
+      const u = img.getAttribute("data-url")!;
       tileFails.set(u, (tileFails.get(u) || 0) + 1);
       dispatched.delete(u);
       releaseTile(img);
@@ -378,7 +434,7 @@ function addTile(lv, service, layers, z, tx, ty) {
       lv.tiles.delete(key);
       dropStaleLevels();
     });
-    lv.tiles.set(key, e2);
+    lv.tiles.set(key, entry);
     queueTile(img, url0, r.x + r.w / 2, r.y + r.h / 2, lv, key);
   }
   e2.seen = ++tileClock;
@@ -387,7 +443,7 @@ function addTile(lv, service, layers, z, tx, ty) {
 
 // A zoom level only drops out once the current one is fully in place — otherwise
 // the empty background flashes through briefly while zooming.
-function dropStaleLevels(force) {
+function dropStaleLevels(force?: boolean): void {
   const z = zoomFor(),
     cur = levels.get(z);
   if (!cur || !cur.tiles.size) return;
@@ -409,7 +465,7 @@ function dropStaleLevels(force) {
   }, 280);
 }
 
-function sweepLevel(lv, z, pad) {
+function sweepLevel(lv: Level, z: number, pad: number | "view"): void {
   if (lv.tiles.size <= TILE_BUDGET) return;
   const r = tileRange(z, pad);
   [...lv.tiles.entries()]
@@ -426,16 +482,16 @@ function sweepLevel(lv, z, pad) {
     });
 }
 
-const ovLevels = new Map();
+const ovLevels = new Map<number, Level>();
 
-function ovLevelFor(z) {
+function ovLevelFor(z: number): Level {
   let lv = ovLevels.get(z);
   if (!lv) {
     const host = $("g-overlay"),
-      g = el("g", { "data-z": String(z) }, null);
+      g: SVGGElement = el("g", { "data-z": String(z) }, null);
     const after = [...host.children].find((c) => +c.getAttribute("data-z") > z);
     host.insertBefore(g, after || null);
-    lv = { g, tiles: new Map() };
+    lv = { g, tiles: new Map<string, TileEntry>() };
     ovLevels.set(z, lv);
   }
   return lv;
@@ -444,9 +500,9 @@ function ovLevelFor(z) {
 // Like dropStaleLevels, the overlay also needs an emergency exit: a tile that
 // neither loads nor fails (a hanging request) otherwise held the old level
 // forever — its parcel lines then sat offset over the new ones.
-let ovForceTimer = null;
+let ovForceTimer: ReturnType<typeof setTimeout> | undefined;
 
-function dropStaleOv(force) {
+function dropStaleOv(force?: boolean): void {
   const z = zoomFor(),
     cur = ovLevels.get(z);
   if (!cur || !cur.tiles.size) return;
@@ -473,7 +529,7 @@ function dropStaleOv(force) {
   }, 280);
 }
 
-export function applyBasemap(pad) {
+export function applyBasemap(pad?: number | "view"): void {
   const key = BASEMAPS[state.basemap] ? state.basemap : "dop";
   state.basemap = key;
   const bm = BASEMAPS[key],
@@ -518,11 +574,11 @@ export function applyBasemap(pad) {
         for (let ty = rr.ty0; ty <= rr.ty1; ty++) {
           const k = `${z}/${tx}/${ty}`;
           if (olv.tiles.has(k)) {
-            olv.tiles.get(k).seen = ++tileClock;
+            olv.tiles.get(k)!.seen = ++tileClock;
             continue;
           }
           const rect = tileRect(z, tx, ty);
-          const img = el(
+          const img: SVGImageElement = el(
             "image",
             {
               x: rect.x.toFixed(2),
@@ -534,7 +590,7 @@ export function applyBasemap(pad) {
             },
             olv.g,
           );
-          const e2 = { img, ok: false, seen: ++tileClock };
+          const e2: TileEntry = { img, ok: false, seen: ++tileClock };
           img.addEventListener("load", () => {
             e2.ok = true;
             img.classList.add("ok");
@@ -568,13 +624,13 @@ export function applyBasemap(pad) {
   $("attrib").hidden = false;
   $("attrib").textContent = t("layer.attrib");
   document
-    .querySelectorAll("#layerRow [data-bm]")
+    .querySelectorAll<HTMLElement>("#layerRow [data-bm]")
     .forEach((b) => b.setAttribute("aria-checked", String(b.dataset.bm === key)));
   $("overlayBtn").setAttribute("aria-pressed", String(!!state.overlay));
   $("overlayBtn").disabled = key === "alkis";
 }
 
-export function resetTiles() {
+export function resetTiles(): void {
   levels.forEach((lv) => {
     lv.tiles.forEach((tl) => releaseTile(tl.img));
     lv.g.remove();
@@ -590,11 +646,11 @@ export function resetTiles() {
 }
 
 export let booted = false,
-  saveTimerView = null,
-  tileTimer = null,
-  prefetchTimer = null;
+  saveTimerView: ReturnType<typeof setTimeout> | undefined,
+  tileTimer: ReturnType<typeof setTimeout> | undefined,
+  prefetchTimer: ReturnType<typeof setTimeout> | undefined;
 
-export function basemapLater() {
+export function basemapLater(): void {
   // While dragging: no DOM work and no saving per frame.
   // Both together made panning stutter.
   clearTimeout(tileTimer);
@@ -606,25 +662,25 @@ export function basemapLater() {
   saveTimerView = setTimeout(scheduleSave, 400);
 }
 
-export function fillBasemapSelect() {
-  document.querySelectorAll("#layerRow [data-bm]").forEach((b) => {
+export function fillBasemapSelect(): void {
+  document.querySelectorAll<HTMLElement>("#layerRow [data-bm]").forEach((b) => {
     b.setAttribute("aria-checked", String(state.basemap === b.dataset.bm));
     b.onclick = () => {
       if (state.basemap === b.dataset.bm) return;
-      state.basemap = b.dataset.bm;
+      state.basemap = b.dataset.bm!; // CSS selector [data-bm] guarantees the attribute is present
       resetTiles();
       scheduleSave();
     };
   });
 }
 
-const MENUS = [
+const MENUS: [string, string][] = [
   ["layerMenu", "layerBtn"],
   ["viewMenu2", "viewBtn"],
   ["lookMenu", "lookBtn"],
 ];
 
-export function closeMapMenus(except) {
+export function closeMapMenus(except?: string): void {
   MENUS.forEach(([m, b]) => {
     if (m === except) return;
     $(m).classList.remove("open");
@@ -633,9 +689,9 @@ export function closeMapMenus(except) {
 }
 
 // What the map shows: cones, rings, conduits, labels — stored per plan.
-const SHOW_KEYS = ["cones", "rings", "conds", "labels", "sections"];
+const SHOW_KEYS: (keyof Show)[] = ["cones", "rings", "conds", "labels", "sections"];
 
-export function applyShow() {
+export function applyShow(): void {
   const sh = state.show || {};
   SHOW_KEYS.forEach((k) => {
     const on = sh[k] !== false;
@@ -646,11 +702,11 @@ export function applyShow() {
 }
 
 // Written from other modules; ES module bindings are read-only for importers.
-export const setBooted = (v) => {
+export const setBooted = (v: boolean): void => {
   booted = v;
 };
 
-export function wireTiles() {
+export function wireTiles(): void {
   MENUS.forEach(([m, b]) => {
     $(b).onclick = () => {
       const open = !$(m).classList.contains("open");
@@ -660,10 +716,11 @@ export function wireTiles() {
     };
   });
 
-  document.querySelectorAll("#showRow [data-show]").forEach((b) => {
+  document.querySelectorAll<HTMLElement>("#showRow [data-show]").forEach((b) => {
     b.onclick = () => {
+      const k = b.dataset.show as keyof Show; // CSS selector [data-show] guarantees the attribute is present
       state.show = state.show || {};
-      state.show[b.dataset.show] = state.show[b.dataset.show] === false;
+      state.show[k] = state.show[k] === false;
       applyShow();
       scheduleSave();
     };

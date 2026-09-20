@@ -1,16 +1,19 @@
-// @ts-nocheck
 // Old save shapes -> current ones. Share links from earlier builds run through here.
 import { CONDUITS, JUNCTIONS, PIPES, isHousing } from "./catalogs";
 import { cabList, condCables, ductCables } from "./conduit";
+import type { Conduit, Gear, Item } from "./types";
 
 // Old state: a jb carried exactly one model, even when it was a device. New:
 // model = housing/location, gear = what sits inside it. This path must stay.
-export function migrateJb(it) {
-  it.gear = (Array.isArray(it.gear) ? it.gear : [])
-    .filter((g) => g && JUNCTIONS[g.model])
-    .map((g) => ({ model: g.model, n: Math.max(1, +g.n || 1) }));
-  if (!isHousing(it.model)) {
-    if (JUNCTIONS[it.model]) it.gear.unshift({ model: it.model, n: 1 });
+// any: like migrateConduit(), takes a legacy point — old saves and tests feed
+// it partial objects (missing id/x/y, or `gear` not even an array yet).
+export function migrateJb(it: any): Item {
+  const gear: Gear[] = (Array.isArray(it.gear) ? it.gear : [])
+    .filter((g: any) => g && JUNCTIONS[g.model])
+    .map((g: any) => ({ model: g.model, n: Math.max(1, +g.n || 1) }));
+  it.gear = gear;
+  if (!isHousing(it.model || "")) {
+    if (it.model && JUNCTIONS[it.model]) gear.unshift({ model: it.model, n: 1 });
     it.model = "indoor";
   }
   return it;
@@ -23,12 +26,15 @@ export function migrateJb(it) {
 //   { kind, ducts: [{ pipe, cables: [{type,n}] }] }       — now: kind on the conduit, type per duct
 // Share links carry whatever shape they had back then, **this path must stay**.
 // `pipe: "none"` used to be a duct type and is now its own kind: the cable run.
-export function migrateConduit(c) {
+// any: a legacy share-link conduit — the four shapes above are mutually
+// incompatible (e.g. `ducts` is a plain number in one, an array in the others),
+// so there is no single interface to give it before this function untangles it.
+export function migrateConduit(c: any): Conduit {
   const bare = c.pipe === "none";
   let pipe0 = PIPES[c.pipe] ? c.pipe : ""; // old duct type — applied to every duct in the trench
   delete c.pipe;
   if (Array.isArray(c.ducts)) {
-    c.ducts = c.ducts.slice(0, 6).map((d) => ({
+    c.ducts = c.ducts.slice(0, 6).map((d: any) => ({
       pipe: d && PIPES[d.pipe] ? d.pipe : pipe0 || "dn50",
       cables: cabList(d && d.cables),
     }));

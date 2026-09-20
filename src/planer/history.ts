@@ -1,5 +1,5 @@
-// @ts-nocheck
 // Undo/redo over JSON snapshots, plus the mutate-and-record entry points.
+import type { Conduit, State } from "./types";
 import { renderMap, renderSide, scheduleSave, updateHint } from "./hooks";
 import { condName, isAutoLabel } from "./conduit";
 import { setSel, state } from "./store";
@@ -7,7 +7,7 @@ import { $ } from "./dom";
 import { syncBonds } from "./bonds";
 
 // Check first, then change: after the change the old name would no longer look automatic.
-export function condEdit(c, mutate) {
+export function condEdit(c: Conduit, mutate: () => void) {
   const auto = isAutoLabel(c);
   mutate();
   if (auto) c.label = condName(c);
@@ -20,15 +20,15 @@ export function condEdit(c, mutate) {
 // ponytail: no command pattern — JSON copies, capped at HIST_MAX.
 const HIST_MAX = 60;
 
-const HIST_KEYS = ["items", "conduits", "infra", "budget", "earthwork", "seq"];
+const HIST_KEYS = ["items", "conduits", "infra", "budget", "earthwork", "seq"] as const;
 
-let past = [],
-  future = [],
-  histNow = null;
+let past: string[] = [],
+  future: string[] = [],
+  histNow: string | null = null;
 
 function snapState() {
-  const o = {};
-  HIST_KEYS.forEach((k) => (o[k] = state[k]));
+  const o: Partial<State> = {};
+  HIST_KEYS.forEach((k) => ((o as Record<string, unknown>)[k] = state[k]));
   return JSON.stringify(o);
 }
 
@@ -53,7 +53,7 @@ function histPush() {
   updateHist();
 }
 
-function histApply(s2) {
+function histApply(s2: string) {
   Object.assign(state, JSON.parse(s2));
   histNow = s2;
   setSel(null);
@@ -67,14 +67,14 @@ function histApply(s2) {
 
 export function undo() {
   if (!past.length) return;
-  future.push(histNow);
-  histApply(past.pop());
+  future.push(histNow as string);
+  histApply(past.pop() as string);
 }
 
 export function redo() {
   if (!future.length) return;
-  past.push(histNow);
-  histApply(future.pop());
+  past.push(histNow as string);
+  histApply(future.pop() as string);
 }
 
 function updateHist() {

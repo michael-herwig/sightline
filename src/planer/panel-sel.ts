@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Selection panel: fields, lists, connection status, recommendations.
 import { scheduleSave } from "./hooks";
 import { lang, t, tx } from "./i18n";
@@ -69,26 +68,27 @@ import { refreshItem } from "./render";
 import { geoReverse, parcelAt, shortAddress } from "./geosearch";
 import { productBox, showGuide, showInfo, showProductInfo, specList } from "./dialogs";
 import { addGear } from "./catalog";
+import type { Conduit, Gear, InfraItem, Item, Junction, Model, PipeType, Wan } from "./types";
 
 // ---------- Ribbon: selection properties ----------
 // Jump target inside the selection panel. The box gets patched via setHtml, so
 // the listener hangs off the document (see data-goto further below), not the button.
-const goLink = (kind, id, txt) =>
+const goLink = (kind: string, id: string, txt: string) =>
   `<button class="golink" data-goto="${kind}:${esc(id)}">${esc(txt)}</button>`;
 
-export const fmtW = (v) => {
+export const fmtW = (v: number) => {
   const s = String(+v.toFixed(1));
   return lang === "de" ? s.replace(".", ",") : s;
 };
 
 // Connection status, PoE budget, and the conduits ending here — rows for <dl class="spec">.
-function linkHtml(it) {
+function linkHtml(it: Item) {
   const L = links(),
     st = L.status.get(it.id),
     g = L.gear.get(it.id),
     rows = [];
-  const mk = (s) => (s === "ok" ? "✓" : "!");
-  const cls = (s) => (s === "err" ? "warn" : s);
+  const mk = (s: string) => (s === "ok" ? "✓" : "!");
+  const cls = (s: string) => (s === "err" ? "warn" : s);
   if (st)
     rows.push(
       `<dt>${esc(t(it.kind === "hub" ? "link.hub" : it.kind === "jb" ? "link.uplink" : "link.state"))}</dt>` +
@@ -107,7 +107,7 @@ function linkHtml(it) {
       `<dt>${esc(t("link.devices"))}</dt><dd class="${g.devices.length ? "" : "none"}">` +
         (g.devices.length
           ? g.devices
-              .map((d) =>
+              .map((d: Item) =>
                 goLink(
                   "item",
                   d.id,
@@ -124,7 +124,7 @@ function linkHtml(it) {
     `<dt>${esc(t("link.conds"))}</dt><dd class="${cs.length ? "" : "none"}">` +
       (cs.length
         ? cs
-            .map((c) =>
+            .map((c: Conduit) =>
               goLink(
                 "conduit",
                 c.id,
@@ -138,12 +138,12 @@ function linkHtml(it) {
   return rows.join("");
 }
 
-function condStatsHtml(c) {
+function condStatsHtml(c: Conduit) {
   const cc = conduitCost(c);
   // Cat6A only carries up to 90 m — that's the only length that deserves a warning here.
   const cabs = condCables(c),
     catN = cabs.some((x) => x.type === "cat");
-  const lenG = catN ? (cc.len > CABLES.cat.max ? "warn" : "ok") : "";
+  const lenG = catN ? (cc.len > CABLES.cat.max! ? "warn" : "ok") : "";
   const cabTxt = cabs.map((x) => `${x.n} × ${tx(CABLES[x.type].name)}`).join(", ") || "–";
   // A cable run has neither duct nor earthwork — both rows show a dash there.
   const pipeTxt = condPipes(c)
@@ -158,10 +158,10 @@ function condStatsHtml(c) {
 }
 
 export function renderSel() {
-  const it = sel && sel.kind === "item" ? state.items.find((i) => i.id === sel.id) : null;
-  const c = sel && sel.kind === "conduit" ? state.conduits.find((x) => x.id === sel.id) : null;
+  const it = sel && sel.kind === "item" ? state.items.find((i) => i.id === sel!.id) : null;
+  const c = sel && sel.kind === "conduit" ? state.conduits.find((x) => x.id === sel!.id) : null;
   // Hub and accessories: a catalog entry with no position on the map.
-  const gi = sel && sel.kind === "infra" ? INFRA.find((x) => x.id === sel.id && !x.hidden) : null;
+  const gi = sel && sel.kind === "infra" ? INFRA.find((x) => x.id === sel!.id && !x.hidden) : null;
   if (sel && !it && !c && !gi) setSel(null);
   const sig = !sel
     ? "empty"
@@ -176,7 +176,7 @@ export function renderSel() {
           )
             .map((g) => g.model)
             .join("-")}:${lang}`
-        : `cond:${c.id}:${c.kind}:${condDucts(c)
+        : `cond:${c!.id}:${c!.kind}:${condDucts(c!)
             .map((d) =>
               ductCables(d)
                 .map((x) => x.type)
@@ -194,7 +194,7 @@ export function renderSel() {
     }
     if (gi) return buildGearSel(root, gi);
     if (it) return buildItemSel(root, it);
-    buildCondSel(root, c);
+    buildCondSel(root, c!);
   });
   if (!rib || !sel) return;
 
@@ -211,7 +211,7 @@ export function renderSel() {
     setVal("f-note", it.note || "");
     if (it.kind === "cam") {
       setVal("f-rot", it.rot);
-      setText("f-rot-val", t("f.rot.val", { n: it.rot }));
+      setText("f-rot-val", t("f.rot.val", { n: it.rot! }));
     }
     jbGear(it).forEach((g, i) => {
       setVal("f-gear-" + i, g.n);
@@ -237,22 +237,22 @@ export function renderSel() {
     }
     return;
   }
-  setText("f-chead", t(isCableRun(c) ? "cond.cablehead" : "cond.head", { label: c.label }));
-  setVal("f-kind", c.kind);
-  setVal("f-clabel", c.label);
-  condDucts(c).forEach((d, di) => {
+  setText("f-chead", t(isCableRun(c!) ? "cond.cablehead" : "cond.head", { label: c!.label! }));
+  setVal("f-kind", c!.kind);
+  setVal("f-clabel", c!.label);
+  condDucts(c!).forEach((d, di) => {
     setVal(`f-duct-pipe-${di}`, d.pipe);
     ductCables(d).forEach((x, i) => setVal(`f-cab-${di}-${i}`, x.n));
   });
-  setHtml("f-cstats", condStatsHtml(c));
+  setHtml("f-cstats", condStatsHtml(c!));
 }
 
-const previewModel = (pv) =>
+const previewModel = (pv: { kind: string; key: string } | null) =>
   pv && (pv.kind === "cond" ? CONDUITS[pv.key] : (CATALOG[pv.kind] || {})[pv.key]);
 
 // Everything worth knowing about the tapped catalog entry, without leaving the page:
 // datasheet, when it fits and when it doesn't, image, and retailer.
-function buildPreview(root, pv) {
+function buildPreview(root: HTMLElement, pv: { kind: string; key: string }) {
   const m = previewModel(pv);
   if (!m) return;
   const w = whenOf(pv.kind, pv.key),
@@ -296,7 +296,7 @@ function buildPreview(root, pv) {
 
 // The header row carries the two actions that belong to the whole element.
 // A button row used to sit at the bottom for this — far away from the name.
-function headRow(dup, info) {
+function headRow(dup: boolean, info?: boolean) {
   return `<div class="selhead">
     <h2 id="f-head"></h2>
     <div class="hacts">
@@ -313,17 +313,23 @@ const GEAR_GROUPS = ["poe", "sw", "feed", "acc"];
 
 // Accessory is whatever draws no power at all (`powerIn: "none"`) — not whatever has no
 // power supply: a PoE-fed switch is still a switch.
-const gearGroup = (m) =>
+const gearGroup = (m: Junction) =>
   m.poePorts || m.extend ? "feed" : (m.poe || 0) > 0 ? "poe" : powerIn(m) === "none" ? "acc" : "sw";
 
 // Housing: where it goes. IP54 and higher mounts outside, IP20 inside.
 const HOUSE_GROUPS = ["dig", "out", "in"];
 
-const houseGroup = (m) => (m.dig ? "dig" : /IP[4-9]/.test(m.ip || "") ? "out" : "in");
+const houseGroup = (m: Junction) => (m.dig ? "dig" : /IP[4-9]/.test(m.ip || "") ? "out" : "in");
 
 // Flat lists don't say what an entry is for — <optgroup> does.
 // Empty groups drop out, every option belongs to exactly one.
-function optGroups(groups, keys, groupOf, label, opt) {
+function optGroups(
+  groups: string[],
+  keys: string[],
+  groupOf: (k: string) => string,
+  label: (g: string) => string,
+  opt: (k: string) => string,
+) {
   return groups
     .map((g) => {
       const ks = keys.filter((k) => groupOf(k) === g);
@@ -334,7 +340,7 @@ function optGroups(groups, keys, groupOf, label, opt) {
     .join("");
 }
 
-const optText = (kind, key, m) =>
+const optText = (kind: string, key: string, m: Model) =>
   [tx(m.name), m.price != null ? m.price + " €" : "", optHint(kind, key)]
     .filter(Boolean)
     .join(" · ");
@@ -343,15 +349,15 @@ const optText = (kind, key, m) =>
 // No preview box — image, properties, and product link live in the ⓘ dialog,
 // the short version in the hover card on the field.
 // Stands on its own here because the mains connection should get the same row.
-const gearAddHtml = (cat) =>
+const gearAddHtml = (cat: Record<string, Junction>) =>
   `<div class="field"><label for="f-gear-new">${esc(t("jb.gear.add"))}</label>` +
   `<div class="addcab"><select id="f-gear-new">` +
   optGroups(
     GEAR_GROUPS,
     Object.keys(cat).filter(isDevice),
-    (k) => gearGroup(cat[k]),
-    (g) => t("cat.grp." + g),
-    (k) => `<option value="${k}">${esc(optText("jb", k, cat[k]))}</option>`,
+    (k: string) => gearGroup(cat[k]),
+    (g: string) => t("cat.grp." + g),
+    (k: string) => `<option value="${k}">${esc(optText("jb", k, cat[k]))}</option>`,
   ) +
   `</select>` +
   `<button class="btn icon" id="f-geari-new" title="${esc(t("info.title"))}" aria-label="${esc(t("info.title"))}">${INFO}</button>` +
@@ -359,7 +365,7 @@ const gearAddHtml = (cat) =>
 
 // No more preview box in the panel — it pushed the rest of the page far down.
 // The ⓘ next to it shows the datasheet of the currently selected entry in the dialog.
-function wireGearAdd(cat, add) {
+function wireGearAdd(add: (key: string) => void) {
   const pick = $("f-gear-new");
   if (!pick) return;
   $("f-gear-go").onclick = () => add(pick.value);
@@ -369,41 +375,41 @@ function wireGearAdd(cat, add) {
 
 // Unit price on the row: for multiple pieces "2 × 60 €", so the unit price
 // stays visible and doesn't get mistaken for the total.
-const gearRowPrice = (g) => (g.n > 1 ? g.n + " × " : "") + JUNCTIONS[g.model].price + " €";
+const gearRowPrice = (g: Gear) => (g.n > 1 ? g.n + " × " : "") + JUNCTIONS[g.model].price + " €";
 
 // Device list for a point — and for the hub: quantity, datasheet, trash.
-function buildGearRows(it) {
+function buildGearRows(it: Item) {
   const box = $("f-gears"),
     gs = jbGear(it);
   if (!gs.length) {
-    box.appendChild(h(`<div class="empty">${esc(t("jb.gear.none"))}</div>`).firstElementChild);
+    box.appendChild(h(`<div class="empty">${esc(t("jb.gear.none"))}</div>`).firstElementChild!);
     return;
   }
   gs.forEach((g, i) => {
     const gm = JUNCTIONS[g.model];
     const r = h(
       `<div class="cabrow withp" data-hover="jb:${esc(g.model)}"><span class="dot" style="background:var(--accent)"></span><span class="n">${esc(tx(gm.name))}</span><small class="p" id="f-gearp-${i}">${esc(gearRowPrice(g))}</small><input class="qty" type="number" min="1" max="12" id="f-gear-${i}" value="${g.n}"><button class="btn ico" id="f-geari-${i}" title="${esc(t("info.title"))}" aria-label="${esc(t("info.title"))}">${INFO}</button><button class="btn del" id="f-gearx-${i}" title="${esc(t("jb.gear.del"))}" aria-label="${esc(t("jb.gear.del"))}">${TRASH}</button></div>`,
-    ).firstElementChild;
+    ).firstElementChild as HTMLElement;
     box.appendChild(r);
-    r.querySelector("#f-gear-" + i).onchange = (e) => {
-      g.n = Math.max(1, +e.target.value | 0);
+    r.querySelector<HTMLElement>("#f-gear-" + i)!.onchange = (e) => {
+      g.n = Math.max(1, +(e.target as HTMLInputElement).value | 0);
       changed();
     };
-    r.querySelector("#f-gearx-" + i).onclick = () => {
-      it.gear.splice(it.gear.indexOf(g), 1);
+    r.querySelector<HTMLElement>("#f-gearx-" + i)!.onclick = () => {
+      it.gear!.splice(it.gear!.indexOf(g), 1);
       changed();
     };
-    r.querySelector("#f-geari-" + i).onclick = () => showProductInfo("jb", g.model);
+    r.querySelector<HTMLElement>("#f-geari-" + i)!.onclick = () => showProductInfo("jb", g.model);
   });
 }
 
 // What's still missing at the hub — derived from router, devices, and conduits,
 // not from the catalog. One sentence, not a paragraph.
-function hubAdvice(it) {
+function hubAdvice(it: Item) {
   const L = links(),
-    g = L.gear.get(it.id) || {},
+    g: { devices?: Item[] } = L.gear.get(it.id) || {},
     r = hubRouter();
-  const fiber = (L.touch.get(it.id) || []).some((c) =>
+  const fiber = (L.touch.get(it.id) || []).some((c: Conduit) =>
     condCables(c).some((x) => x.type === "fiber"),
   );
   if (!r) return t("hub.adv.norouter");
@@ -420,7 +426,7 @@ function hubAdvice(it) {
 // suggested here. Nothing gets changed: the sentence is a hint, not an action.
 const SWAP_SLACK = 30; // € surcharge that one fewer device in the box is worth
 
-function jbAdvice(it) {
+function jbAdvice(it: Item) {
   const L = links();
   return fiberAdvice(it, L) || mainsAdvice(it, L);
 }
@@ -429,7 +435,7 @@ function jbAdvice(it) {
 // same copper cable as the camera behind it — one less cable in the trench. It has to
 // do the same things — SFP if fiber arrives there, and enough PoE for what's attached.
 // Power-feed devices (injector, extender) don't replace a switch and stay excluded.
-function mainsAdvice(it, L) {
+function mainsAdvice(it: Item, L: ReturnType<typeof links>) {
   const mn = jbMains(it);
   if (!mn || mainsAt(it, L.touch)) return "";
   const have = jbGear(it),
@@ -464,8 +470,10 @@ function mainsAdvice(it, L) {
   });
 }
 
-function fiberAdvice(it, L) {
-  if (!(L.touch.get(it.id) || []).some((c) => condCables(c).some((x) => x.type === "fiber")))
+function fiberAdvice(it: Item, L: ReturnType<typeof links>) {
+  if (
+    !(L.touch.get(it.id) || []).some((c: Conduit) => condCables(c).some((x) => x.type === "fiber"))
+  )
     return "";
   const have = jbGear(it),
     sum = have.reduce((a, g) => a + JUNCTIONS[g.model].price * g.n, 0);
@@ -478,7 +486,7 @@ function fiberAdvice(it, L) {
       const m = JUNCTIONS[k];
       // poe > 0 isn't a technicality: a media converter satisfies ">= 0 W" and
       // would otherwise show up as a recommendation that "delivers 0 W PoE".
-      return m.sfp && (m.poe || 0) > 0 && m.poe >= need.watts && (m.ports || 0) >= need.used;
+      return m.sfp && (m.poe || 0) > 0 && m.poe! >= need.watts && (m.ports || 0) >= need.used;
     })
     .map((k) => JUNCTIONS[k])
     .sort((a, b) => a.price - b.price)[0];
@@ -494,7 +502,7 @@ function fiberAdvice(it, L) {
 
 // One router per plan: the chosen one turns on, all others off. The quantity stays
 // put, so an accidental switch doesn't discard it.
-function pickRouter(id) {
+function pickRouter(id: string) {
   ROUTERS.forEach((r) => {
     const st = state.infra[r.id] || { on: false, qty: 1 };
     state.infra[r.id] = { on: r.id === id, qty: Math.max(1, st.qty || 1) };
@@ -502,7 +510,7 @@ function pickRouter(id) {
   changed();
 }
 
-function buildItemSel(root, it) {
+function buildItemSel(root: HTMLElement, it: Item) {
   if (it.kind === "hub") {
     const w = wanOf(it);
     root.appendChild(
@@ -522,9 +530,9 @@ function buildItemSel(root, it) {
         optGroups(
           [...new Set(ROUTERS.map(vendorOf))],
           ROUTERS.map((r) => r.id),
-          (id) => vendorOf(catEntry("gear", id)),
-          (v) => VENDORS[v] || v,
-          (id) =>
+          (id: string) => vendorOf(catEntry("gear", id)),
+          (v: string) => VENDORS[v] || v,
+          (id: string) =>
             `<option value="${id}">${esc(optText("gear", id, catEntry("gear", id)))}</option>`,
         )
       }</select><button class="btn icon" id="f-routeri" title="${esc(t("info.title"))}" aria-label="${esc(t("info.title"))}">${INFO}</button></div></div>
@@ -536,15 +544,15 @@ function buildItemSel(root, it) {
       <div class="row"><button class="btn" id="f-addr">${esc(t("f.addr"))}</button><button class="btn" id="f-parcel">${esc(t("f.parcel"))}</button></div>`),
     );
     buildGearRows(it);
-    wireGearAdd(JUNCTIONS, (key) => addGear(it, key));
+    wireGearAdd((key) => addGear(it, key));
     $("f-info").onclick = () => showGuide("hub", t("cat.gear"));
-    $("f-router").onchange = (e) => pickRouter(e.target.value);
+    $("f-router").onchange = (e: { target: HTMLSelectElement }) => pickRouter(e.target.value);
     $("f-routeri").onclick = () => {
       const id = $("f-router").value;
       if (id) showProductInfo("gear", id);
     };
     hoverSel($("f-router"), "gear");
-    $("f-parcel").onclick = async (ev) => {
+    $("f-parcel").onclick = async (ev: { target: HTMLButtonElement }) => {
       const btn = ev.target;
       btn.disabled = true;
       btn.textContent = t("f.addr.busy");
@@ -568,7 +576,7 @@ function buildItemSel(root, it) {
       btn.textContent = t("f.parcel");
     };
     $("f-dup").onclick = () => duplicate(it);
-    $("f-addr").onclick = async (e) => {
+    $("f-addr").onclick = async (e: { target: HTMLButtonElement }) => {
       const btn = e.target;
       btn.disabled = true;
       btn.textContent = t("f.addr.busy");
@@ -585,21 +593,21 @@ function buildItemSel(root, it) {
       btn.disabled = false;
       btn.textContent = t("f.addr");
     };
-    $("f-label").onchange = (e) => {
+    $("f-label").onchange = (e: { target: HTMLInputElement }) => {
       it.label = e.target.value.trim() || it.label;
       changed();
     };
-    $("f-note").onchange = (e) => {
+    $("f-note").onchange = (e: { target: HTMLInputElement }) => {
       it.note = e.target.value;
       changed();
     };
     // Changing the type means different tiers — the highest matching one is the most sensible default.
-    $("f-wan").onchange = (e) => {
+    $("f-wan").onchange = (e: { target: HTMLSelectElement }) => {
       const sp = WAN[e.target.value].speeds;
-      it.wan = { type: e.target.value, speed: sp[sp.length - 1] };
+      it.wan = { type: e.target.value as Wan["type"], speed: sp[sp.length - 1] };
       changed();
     };
-    $("f-speed").onchange = (e) => {
+    $("f-speed").onchange = (e: { target: HTMLSelectElement }) => {
       it.wan = { type: wanOf(it).type, speed: +e.target.value };
       changed();
     };
@@ -607,13 +615,13 @@ function buildItemSel(root, it) {
     return;
   }
   const cat = CATALOG[it.kind],
-    m = cat[it.model];
+    m = cat[it.model as string];
   // A junction only picks its housing here; the devices inside it live in their
   // own section below. The housing's datasheet sits behind the ⓘ
   // next to it — the panel holds only fields, lists, and the status.
   const jb = it.kind === "jb";
   const models = jb ? Object.keys(cat).filter(isHousing) : Object.keys(cat);
-  const opt = (k) =>
+  const opt = (k: string) =>
     `<option value="${k}" ${k === it.model ? "selected" : ""}>${esc(optText(it.kind, k, cat[k]))}</option>`;
   // Housings grouped by location (buried, outdoor wall, indoor); cameras and
   // access points stay a single list — there's nothing to separate there.
@@ -622,8 +630,8 @@ function buildItemSel(root, it) {
       ? optGroups(
           HOUSE_GROUPS,
           models,
-          (k) => houseGroup(cat[k]),
-          (g) => t("cat.grp." + g),
+          (k: string) => houseGroup(cat[k]),
+          (g: string) => t("cat.grp." + g),
           opt,
         )
       : models.map(opt).join("")
@@ -654,26 +662,27 @@ function buildItemSel(root, it) {
 
   if (jb) {
     buildGearRows(it);
-    wireGearAdd(cat, (key) => addGear(it, key));
+    wireGearAdd((key) => addGear(it, key));
   }
   $("f-modeli").onclick = () => showProductInfo(it.kind, $("f-model").value);
   hoverSel($("f-model"), it.kind);
-  $("f-model").onchange = (e) => {
+  $("f-model").onchange = (e: { target: HTMLSelectElement }) => {
     it.model = e.target.value;
     changed();
   };
   if (it.kind === "ap") {
-    $("f-rings").onchange = (e) => {
-      it.rings = e.target.value;
+    // Both selects only ever offer the values of their union.
+    $("f-rings").onchange = (e: { target: HTMLSelectElement }) => {
+      it.rings = e.target.value as Item["rings"];
       changed();
     };
-    $("f-place").onchange = (e) => {
-      it.place = e.target.value;
+    $("f-place").onchange = (e: { target: HTMLSelectElement }) => {
+      it.place = e.target.value as Item["place"];
       changed();
     };
   }
   if (it.kind === "cam") {
-    $("f-rot").oninput = (e) => {
+    $("f-rot").oninput = (e: { target: HTMLInputElement }) => {
       it.rot = +e.target.value;
       setText("f-rot-val", t("f.rot.val", { n: it.rot }));
       refreshItem(it);
@@ -681,11 +690,11 @@ function buildItemSel(root, it) {
     $("f-rot").onchange = () => changed();
   }
   $("f-dup").onclick = () => duplicate(it);
-  $("f-label").onchange = (e) => {
+  $("f-label").onchange = (e: { target: HTMLInputElement }) => {
     it.label = e.target.value.trim() || it.label;
     changed();
   };
-  $("f-note").onchange = (e) => {
+  $("f-note").onchange = (e: { target: HTMLInputElement }) => {
     it.note = e.target.value;
     changed();
   };
@@ -694,7 +703,7 @@ function buildItemSel(root, it) {
 
 // Hub and accessories have no position, otherwise they're normal catalog items:
 // quantity instead of a label, deleting means "no longer planned".
-function buildGearSel(root, m) {
+function buildGearSel(root: HTMLElement, m: InfraItem) {
   root.appendChild(
     h(`
     ${headRow(false, true)}
@@ -705,7 +714,7 @@ function buildGearSel(root, m) {
     </dl>`),
   );
   $("f-info").onclick = () => showProductInfo("gear", m.id);
-  $("f-qty").onchange = (e) => {
+  $("f-qty").onchange = (e: { target: HTMLInputElement }) => {
     state.infra[m.id] = { on: true, qty: Math.max(1, Math.min(99, +e.target.value | 0)) };
     changed();
   };
@@ -714,7 +723,7 @@ function buildGearSel(root, m) {
 
 // Duct and cable are two different things: a trench can carry several ducts, a duct
 // several cables. Only this way can a trunk carrying two fibers be modeled.
-function duplicate(it) {
+function duplicate(it: Item) {
   const cp = {
     ...it,
     id: uid(),
@@ -722,7 +731,7 @@ function duplicate(it) {
     x: it.x + 20,
     y: it.y + 20,
   };
-  if (Array.isArray(cp.gear)) cp.gear = cp.gear.map((g) => ({ ...g })); // otherwise both points would share one device list
+  if (Array.isArray(cp.gear)) cp.gear = cp.gear.map((g: Gear) => ({ ...g })); // otherwise both points would share one device list
   state.items.push(cp);
   select({ kind: "item", id: cp.id });
   changed();
@@ -731,7 +740,7 @@ function duplicate(it) {
 // One block per duct: containing its type, its cables, and the add row. A cable run
 // (`kind: "cable"`) has exactly one bundle without a duct — then the duct select,
 // heading and "add duct" drop, leaving just the plain cable list.
-function buildCondSel(root, c) {
+function buildCondSel(root: HTMLElement, c: Conduit) {
   const solo = isCableRun(c);
   root.appendChild(
     h(`
@@ -747,7 +756,7 @@ function buildCondSel(root, c) {
 
   const box = $("f-ducts");
   condDucts(c).forEach((duct, di) => {
-    const used = new Set(ductCables(duct).map((x) => x.type));
+    const used = new Set<string>(ductCables(duct).map((x) => x.type));
     const free = Object.keys(CABLES).filter((k) => !used.has(k));
     const head = solo ? esc(t("f.cabs")) : `${esc(t("f.duct.n", { n: di + 1 }))}`;
     const bin =
@@ -770,50 +779,52 @@ function buildCondSel(root, c) {
       }
       <div class="cabs" id="f-cabs-${di}"></div>
       ${free.length ? `<div class="field"><label for="f-cab-new-${di}">${esc(t("f.cab.add"))}</label><div class="addcab"><select id="f-cab-new-${di}">${free.map((k) => `<option value="${k}">${esc(optText("cable", k, CABLES[k]))}</option>`).join("")}</select><button class="btn icon" id="f-cabi-new-${di}" title="${esc(t("info.title"))}" aria-label="${esc(t("info.title"))}">${INFO}</button><button class="btn add" id="f-cab-go-${di}" title="${esc(t("f.cab.add"))}" aria-label="${esc(t("f.cab.add"))}">${PLUS}</button></div></div>` : ""}
-    </div>`).firstElementChild;
+    </div>`).firstElementChild as HTMLElement;
     box.appendChild(blk);
     // Each duct has its own type and therefore its own price.
     if (!solo)
-      blk.querySelector("#f-duct-pipe-" + di).onchange = (e) =>
+      blk.querySelector<HTMLElement>("#f-duct-pipe-" + di)!.onchange = (e) =>
         condEdit(c, () => {
-          duct.pipe = PIPES[e.target.value] ? e.target.value : "dn50";
+          const v = (e.target as HTMLSelectElement).value;
+          duct.pipe = PIPES[v] ? (v as PipeType) : "dn50";
         });
-    const cabs = blk.querySelector("#f-cabs-" + di);
+    const cabs = blk.querySelector<HTMLElement>("#f-cabs-" + di)!;
     const list = ductCables(duct);
     if (!list.length)
       cabs.appendChild(
         h(`<div class="empty">${esc(t(solo ? "f.cabs.none.bare" : "f.cabs.none"))}</div>`)
-          .firstElementChild,
+          .firstElementChild!,
       );
     list.forEach((x, i) => {
       const d = CABLES[x.type];
       const r = h(
         `<div class="cabrow" data-hover="cable:${esc(x.type)}"><span class="dot" style="background:${d.color}"></span><span class="n">${esc(tx(d.name))}</span><input class="qty" type="number" min="1" max="12" id="f-cab-${di}-${i}" value="${x.n}"><button class="btn ico" id="f-cabi-${di}-${i}" title="${esc(t("info.title"))}" aria-label="${esc(t("info.title"))}">${INFO}</button><button class="btn del" id="f-cabx-${di}-${i}" title="${esc(t("f.cab.del"))}" aria-label="${esc(t("f.cab.del"))}">${TRASH}</button></div>`,
-      ).firstElementChild;
+      ).firstElementChild as HTMLElement;
       cabs.appendChild(r);
-      r.querySelector(`#f-cab-${di}-${i}`).onchange = (e) =>
+      r.querySelector<HTMLElement>(`#f-cab-${di}-${i}`)!.onchange = (e) =>
         condEdit(c, () => {
-          x.n = Math.max(1, +e.target.value | 0);
+          x.n = Math.max(1, +(e.target as HTMLInputElement).value | 0);
         });
-      r.querySelector(`#f-cabx-${di}-${i}`).onclick = () =>
+      r.querySelector<HTMLElement>(`#f-cabx-${di}-${i}`)!.onclick = () =>
         condEdit(c, () => {
           duct.cables.splice(duct.cables.indexOf(x), 1);
         });
-      r.querySelector(`#f-cabi-${di}-${i}`).onclick = () => showProductInfo("cable", x.type);
+      r.querySelector<HTMLElement>(`#f-cabi-${di}-${i}`)!.onclick = () =>
+        showProductInfo("cable", x.type);
     });
     if (free.length) {
-      blk.querySelector("#f-cab-go-" + di).onclick = () =>
+      blk.querySelector<HTMLElement>("#f-cab-go-" + di)!.onclick = () =>
         condEdit(c, () => {
           duct.cables = duct.cables || [];
           duct.cables.push({ type: $("f-cab-new-" + di).value, n: 1 });
         });
-      blk.querySelector("#f-cabi-new-" + di).onclick = () =>
+      blk.querySelector<HTMLElement>("#f-cabi-new-" + di)!.onclick = () =>
         showProductInfo("cable", $("f-cab-new-" + di).value);
       hoverSel(blk.querySelector("#f-cab-new-" + di), "cable");
     }
     // Removing a duct takes its cables with it — nothing gets reassigned.
     if (bin)
-      blk.querySelector("#f-ductx-" + di).onclick = () =>
+      blk.querySelector<HTMLElement>("#f-ductx-" + di)!.onclick = () =>
         condEdit(c, () => {
           c.ducts.splice(di, 1);
         });
@@ -823,16 +834,16 @@ function buildCondSel(root, c) {
       condEdit(c, () => {
         if (c.ducts.length < 6) c.ducts.push({ pipe: "dn50", cables: [] });
       });
-  $("f-cinfo").onclick = () => showInfo(CAT_TABS.find((x) => x.id === "cond"));
+  $("f-cinfo").onclick = () => showInfo(CAT_TABS.find((x) => x.id === "cond")!);
   // Switching type: to cable run collapses all cables into one bundle, back to trench
   // wraps a DN 50 duct around it. Both go through migrateConduit — the same rule
   // as on load, so a cable run never carries more than one duct.
-  $("f-kind").onchange = (e) =>
+  $("f-kind").onchange = (e: { target: HTMLSelectElement }) =>
     condEdit(c, () => {
       c.kind = e.target.value === "cable" ? "cable" : "trench";
       migrateConduit(c);
     });
-  $("f-clabel").onchange = (e) => {
+  $("f-clabel").onchange = (e: { target: HTMLInputElement }) => {
     c.label = e.target.value;
     changed();
   };

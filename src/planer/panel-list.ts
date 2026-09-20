@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Element list and centring on a selection.
 import { createPlan, scheduleSave } from "./hooks";
 import { lang, t, tx } from "./i18n";
@@ -15,12 +14,13 @@ import { deleteSelected, select } from "./modes";
 import { syncAspect } from "./view";
 import { applyView, jumpView, syncJump } from "./render";
 import { exportPlan, importPlan } from "./share";
+import type { Item, Sel, SelKind } from "./types";
 
 export function renderList() {
   const c = costs(),
     L = links();
   // Finding and source belong in the signature, otherwise the row stays stale.
-  const stKey = (id) => {
+  const stKey = (id: string) => {
     const s = L.status.get(id),
       r = L.src.get(id);
     return (
@@ -28,7 +28,7 @@ export function renderList() {
     );
   };
   // Subtitle of a camera or an AP: where the power comes from — or what's missing.
-  const feed = (i) => {
+  const feed = (i: Item) => {
     const s = L.status.get(i.id),
       r = L.src.get(i.id);
     const txt =
@@ -69,19 +69,27 @@ export function renderList() {
       <h2>${esc(t("list.conds", { n: c.conds.length }))}</h2><div class="list" id="l-conds"></div>`),
     );
     // The dot before the price carries the connection status; the title names the reason.
-    const dot = (id) => {
+    const dot = (id: string) => {
       const s = L.status.get(id);
       return s && s.g !== "ok" ? `<span class="st ${s.g}" title="${esc(linkText(s))}"></span>` : "";
     };
-    const row = (cls, badge, title, sub, price, s, mark) => {
+    const row = (
+      cls: string,
+      badge: string,
+      title: string | undefined,
+      sub: string,
+      price: string,
+      s: Sel,
+      mark?: string,
+    ) => {
       const r = h(
         `<div class="lrow" data-sk="${s.kind}:${s.id}"><span class="b ${cls}">${badge}</span><span class="t">${esc(title)}<small>${esc(sub)}</small></span><span class="p">${mark || ""}${price}</span><button class="del" title="${esc(t("f.del"))}" aria-label="${esc(t("f.del"))}">${TRASH}</button></div>`,
-      ).firstElementChild;
+      ).firstElementChild as HTMLElement;
       r.onclick = () => {
         select(s);
         centerOn(s);
       };
-      r.querySelector(".del").onclick = (e) => {
+      r.querySelector<HTMLElement>(".del")!.onclick = (e: Event) => {
         e.stopPropagation();
         setSel(s);
         deleteSelected();
@@ -90,14 +98,14 @@ export function renderList() {
     };
     if (!c.cams.length)
       $("l-cams").appendChild(
-        h(`<div class="empty">${esc(t("list.empty.cams"))}</div>`).firstElementChild,
+        h(`<div class="empty">${esc(t("list.empty.cams"))}</div>`).firstElementChild!,
       );
     c.cams.forEach((i) =>
       $("l-cams").appendChild(
         row(
           "cam",
           esc(i.label),
-          CAMS[i.model].name,
+          CAMS[i.model as string].name as string,
           feed(i),
           fmt(i.price),
           { kind: "item", id: i.id },
@@ -110,7 +118,7 @@ export function renderList() {
         row(
           "ap",
           esc(i.label),
-          APS[i.model].name,
+          APS[i.model as string].name as string,
           feed(i),
           fmt(i.price),
           { kind: "item", id: i.id },
@@ -124,7 +132,7 @@ export function renderList() {
         row(
           "jb",
           esc(i.label),
-          tx(JUNCTIONS[i.model].name),
+          tx(JUNCTIONS[i.model as string].name),
           gearNames(i) || t("jb.bound.n", { n: boundCount(i.id) }),
           fmt(i.price),
           { kind: "item", id: i.id },
@@ -159,21 +167,21 @@ export function renderList() {
     );
     $("l-export").onclick = exportPlan;
     $("l-import").onclick = () => $("l-file").click();
-    $("l-file").onchange = (e) => {
-      const f = e.target.files[0];
+    $("l-file").onchange = (e: Event) => {
+      const f = (e.target as HTMLInputElement).files![0];
       if (f) importPlan(f);
-      e.target.value = "";
+      (e.target as HTMLInputElement).value = "";
     };
     $("l-new").onclick = () => createPlan();
   });
   if (!p) return;
   const k = selKey();
-  p.querySelectorAll(".lrow[data-sk]").forEach((r) =>
+  p.querySelectorAll(".lrow[data-sk]").forEach((r: HTMLElement) =>
     r.classList.toggle("selected", r.dataset.sk === k),
   );
 }
 
-function centerOn(s) {
+function centerOn(s: Sel) {
   let p;
   if (s.kind !== "item" && s.kind !== "conduit") return; // hub has no position
   if (s.kind === "item") {
@@ -206,27 +214,34 @@ function centerOn(s) {
 export function wirePanelList() {
   // Jump targets from the connection rows — the box gets replaced via setHtml.
   document.addEventListener("click", (e) => {
-    const b = e.target.closest && e.target.closest("[data-goto]");
+    const b = (e.target as Element).closest && (e.target as Element).closest("[data-goto]");
     if (!b) return;
-    const i = b.getAttribute("data-goto").indexOf(":");
+    const i = b.getAttribute("data-goto")!.indexOf(":");
     const s = {
-      kind: b.getAttribute("data-goto").slice(0, i),
-      id: b.getAttribute("data-goto").slice(i + 1),
+      // The attribute is written as "<kind>:<id>" by the connection rows.
+      kind: b.getAttribute("data-goto")!.slice(0, i) as SelKind,
+      id: b.getAttribute("data-goto")!.slice(i + 1),
     };
     select(s);
     centerOn(s);
   });
 
   document.addEventListener("change", (e) => {
-    const pick = e.target.closest && e.target.closest("[data-shopsel]");
+    const pick =
+      (e.target as Element).closest &&
+      (e.target as Element).closest<HTMLSelectElement>("[data-shopsel]");
     if (!pick) return;
     state.shop = pick.value;
     scheduleSave();
     // There can be more than one bar (selection and preview) — update all of them.
-    document.querySelectorAll(".shopsel").forEach((box) => {
+    document.querySelectorAll<HTMLElement>(".shopsel").forEach((box) => {
       const sh = shopOf(),
         nm = box.getAttribute("data-pname") || "";
-      box.querySelector("a.go").href = shopHref(sh, nm, box.getAttribute("data-pamazon") || "");
+      box.querySelector<HTMLAnchorElement>("a.go")!.href = shopHref(
+        sh,
+        nm,
+        box.getAttribute("data-pamazon") || "",
+      );
       box.querySelectorAll("option").forEach((o) => {
         o.selected = o.value === sh.label;
       });
